@@ -12,27 +12,25 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.MobileApp"
         tools:targetApi="31">
-
+        <activity
+            android:name=".SoloActivity"
+            android:exported="false" />
         <!-- Attività principale (LoginActivity) -->
-        <activity android:name="com.example.mobileapp.LoginActivity"
+        <activity
+            android:name=".LoginActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity>
-
-        <!-- Attività di Registrazione (RegisterActivity) -->
-        <activity android:name="com.example.mobileapp.RegisterActivity"
+        </activity> <!-- Attività di Registrazione (RegisterActivity) -->
+        <activity
+            android:name=".RegisterActivity"
+            android:exported="true" /> <!-- Attività principale dopo il login (MainActivity) -->
+        <activity
+            android:name=".MainActivity"
             android:exported="true" />
-
-        <!-- Attività principale dopo il login (MainActivity) -->
-        <activity android:name="com.example.mobileapp.MainActivity"
-            android:exported="true" />
-
     </application>
 
 </manifest>
-
-
-

@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">MobileApp</string>
+    <string name="default_web_client_id">1:585964098102:android:ca1f423a5d4c34ec55fe97</string>
+
 </resources>

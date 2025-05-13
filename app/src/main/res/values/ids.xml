@@ -2,4 +2,5 @@
 <resources>
     <item name="buttonLogin" type="id" />
     <item name="textViewRegister" type="id" />
+    <item name="buttonGoogleSignIn" type="id" />
 </resources>

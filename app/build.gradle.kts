@@ -36,8 +36,11 @@ android {
 }
 
 dependencies {
+    // Firebase BoM per gestire le versioni in modo centralizzato
     implementation(platform("com.google.firebase:firebase-bom:33.13.0"))
     implementation("com.google.firebase:firebase-auth-ktx")
+
+    // Support libraries
     implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("com.google.android.material:material:1.9.0")
     implementation(libs.androidx.core.ktx)
@@ -45,8 +48,16 @@ dependencies {
     implementation(libs.material)
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
+
+    // Google Sign-In e Identity API
+    implementation("com.google.android.gms:play-services-auth:20.7.0")
+    implementation("com.google.android.gms:play-services-identity:18.0.1")
+
+    // Firebase Analytics (opzionale ma consigliato)
+    implementation("com.google.firebase:firebase-analytics-ktx")
+
+    // Testing
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
-    implementation("com.google.firebase:firebase-analytics")
 }

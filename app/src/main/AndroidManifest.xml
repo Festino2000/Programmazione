@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools">
+    xmlns:tools="http://schemas.android.com/tools"
+    package="com.example.mobileapp">
+
+    <!-- Permessi -->
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
 
     <application
         android:allowBackup="true"
@@ -12,25 +17,45 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.MobileApp"
         tools:targetApi="31">
-        <activity
-            android:name=".SoloActivity"
-            android:exported="false" />
+
         <!-- Attività principale (LoginActivity) -->
         <activity
             android:name=".LoginActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity> <!-- Attività di Registrazione (RegisterActivity) -->
+        </activity>
+
+        <!-- Attività di Registrazione (RegisterActivity) -->
         <activity
             android:name=".RegisterActivity"
-            android:exported="true" /> <!-- Attività principale dopo il login (MainActivity) -->
+            android:exported="true" />
+
+        <!-- Attività principale dopo il login (MainActivity) -->
         <activity
             android:name=".MainActivity"
             android:exported="true" />
+
+        <!-- Attività per il login con Google -->
+        <activity
+            android:name="com.google.android.gms.auth.api.signin.internal.SignInHubActivity"
+            android:exported="true"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar"
+            tools:replace="android:exported" />
+        <!-- Configurazione dell'API Google -->
+
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_icon"
+            android:resource="@mipmap/ic_launcher" />
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_color"
+            android:resource="@color/purple_500" />
+
     </application>
 
 </manifest>

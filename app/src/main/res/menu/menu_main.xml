@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <!-- Pulsante Filtra -->
+    <item
+        android:id="@+id/action_filter"
+        android:icon="@android:drawable/ic_menu_sort_by_size"
+        android:title="Filtra"
+        app:showAsAction="always" />
+
+    <!-- Pulsante Cerca -->
+    <item
+        android:id="@+id/action_search"
+        android:icon="@android:drawable/ic_menu_search"
+        android:title="Cerca"
+        app:showAsAction="ifRoom" />
+
+    <!-- Pulsante Impostazioni -->
+    <item
+        android:id="@+id/action_settings"
+        android:title="Aggiungi nuova Spesa"
+        android:icon="@android:drawable/ic_menu_preferences"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_profile"
+        android:title="Visualizza statistiche"
+        app:showAsAction="never" />
+</menu>

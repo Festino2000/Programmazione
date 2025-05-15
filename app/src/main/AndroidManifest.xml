@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    package="com.example.mobileapp">
+    xmlns:tools="http://schemas.android.com/tools">
 
     <!-- Permessi -->
     <uses-permission android:name="android.permission.INTERNET"/>
@@ -37,6 +36,11 @@
         <activity
             android:name=".MainActivity"
             android:exported="true" />
+
+        <!-- Attivita per il singolo -->
+        <activity
+            android:name=".SoloActivity"
+            android:exported="true"/>
 
         <!-- Attività per il login con Google -->
         <activity

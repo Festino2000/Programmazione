@@ -54,11 +54,6 @@
             android:name=".GruppoActivity"
             android:exported="true" />
 
-        <!-- Dichiarazione della SoloActivity -->
-        <activity
-            android:name=".SoloActivity"
-            android:exported="true" />
-
         <!-- Configurazione dell'API Google -->
         <meta-data
             android:name="com.google.android.gms.version"

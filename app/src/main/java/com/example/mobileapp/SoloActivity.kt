@@ -3,6 +3,8 @@ package com.example.mobileapp
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.ImageButton
+import android.widget.ImageView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -19,9 +21,13 @@ class SoloActivity : AppCompatActivity() {
         val toolbar = findViewById<Toolbar>(R.id.toolbar)
         setSupportActionBar(toolbar)
 
-        //supportActionBar?.title = "     Nome App"
+        val trasportiButton = findViewById<ImageView>(R.id.trasporti)
 
+        trasportiButton.setOnClickListener {
+            mostraListaSpesePerCategoria("TRASPORTI")
+        }
     }
+
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.menu_main, menu)
         return true
@@ -44,5 +50,12 @@ class SoloActivity : AppCompatActivity() {
             }
             else -> super.onOptionsItemSelected(item)
         }
+    }
+    private fun mostraListaSpesePerCategoria(category: String) { // per visulaizzare il fragment
+        val fragment = ListaSpeseFragment.newInstance(category)
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.fragment_container, fragment)
+            .addToBackStack(null)
+            .commit()
     }
 }

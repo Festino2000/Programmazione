@@ -1,5 +1,7 @@
 <resources>
     <string name="app_name">MobileApp</string>
     <string name="default_web_client_id">1:585964098102:android:ca1f423a5d4c34ec55fe97</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 </resources>

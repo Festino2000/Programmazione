@@ -57,7 +57,8 @@
         <!-- Dichiarazione della SoloActivity -->
         <activity
             android:name=".SoloActivity"
-            android:exported="true" />
+            android:exported="true"
+            />
 
         <!-- Configurazione dell'API Google -->
         <meta-data

@@ -29,13 +29,10 @@ class SoloActivity : AppCompatActivity(), AggiungiSpesaFragment.OnSpesaAggiuntaL
         btnAggiungiSpesa.setOnClickListener {
             // Caricamento del Fragment al click del pulsante
             supportFragmentManager.beginTransaction()
-                .replace(R.id.fragment_container, AggiungiSpesaFragment()) // ID corretto
-                .addToBackStack(null)
-                .commit()
+                .replace(R.id.fragment_container, AggiungiSpesaFragment()).addToBackStack(null).commit()
         }
 
         val trasportiButton = findViewById<ImageView>(R.id.trasporti)
-
         trasportiButton.setOnClickListener {
             mostraListaSpesePerCategoria("TRASPORTI")
         }

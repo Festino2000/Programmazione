@@ -10,7 +10,7 @@ import android.widget.EditText
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 
-class AggiungiSpesaFragment : Fragment() {
+class AggiungiSpesaFragment : Fragment(R.layout.fragment_aggiungi_spesa) {
 
     private lateinit var callback: OnSpesaAggiuntaListener
 

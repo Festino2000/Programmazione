@@ -1,54 +1,95 @@
 package com.example.mobileapp
 
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.ImageButton
-import android.widget.ImageView
+import android.view.View
 import android.widget.Button
+import android.widget.FrameLayout
+import android.widget.ImageView
 import android.widget.Toast
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.fragment.app.Fragment
+import com.google.firebase.firestore.FirebaseFirestore
 
 class SoloActivity : AppCompatActivity(), AggiungiSpesaFragment.OnSpesaAggiuntaListener {
 
-    // Lista per memorizzare le spese
     private val listaSpese = mutableListOf<Spesa>()
+    private lateinit var db: FirebaseFirestore
+    private lateinit var btnAggiungiSpesa: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
         setContentView(R.layout.activity_solo)
+
+        db = FirebaseFirestore.getInstance()
 
         val toolbar = findViewById<Toolbar>(R.id.toolbar)
         setSupportActionBar(toolbar)
 
-        // Pulsante per aggiungere una spesa
-        val btnAggiungiSpesa = findViewById<Button>(R.id.btnAggiungiSpesa)
+        // Pulsante "Aggiungi Spesa"
+        btnAggiungiSpesa = findViewById(R.id.btnAggiungiSpesa)
         btnAggiungiSpesa.setOnClickListener {
-            // Caricamento del Fragment al click del pulsante
-            supportFragmentManager.beginTransaction()
-                .replace(R.id.fragment_container, AggiungiSpesaFragment()).addToBackStack(null).commit()
+            Log.d("SoloActivity", "Pulsante Aggiungi Spesa cliccato")
+            apriAggiungiSpesaFragment()
         }
 
+        // Pulsante "Trasporti"
         val trasportiButton = findViewById<ImageView>(R.id.trasporti)
         trasportiButton.setOnClickListener {
             mostraListaSpesePerCategoria("TRASPORTI")
         }
     }
 
-    // Implementazione dell'interfaccia per ricevere la spesa dal Fragment
+    // Funzione per aprire il Fragment di aggiunta spesa
+    private fun apriAggiungiSpesaFragment() {
+        btnAggiungiSpesa.visibility = View.GONE
+        findViewById<FrameLayout>(R.id.fragment_container).visibility = View.VISIBLE
+
+        val fragment = AggiungiSpesaFragment()
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.fragment_container, fragment)
+            .addToBackStack(null)
+            .commit()
+        Log.d("SoloActivity", "Fragment Aggiungi Spesa caricato")
+    }
+
+    // Funzione per chiudere il Fragment e mostrare il pulsante
+    fun chiudiFragment() {
+        btnAggiungiSpesa.visibility = View.VISIBLE
+        val fragment = supportFragmentManager.findFragmentByTag("AGGIUNGI_SPESA_FRAGMENT")
+        if (fragment != null) {
+            supportFragmentManager.beginTransaction().remove(fragment).commit()
+            supportFragmentManager.popBackStack("AGGIUNGI_SPESA_FRAGMENT", androidx.fragment.app.FragmentManager.POP_BACK_STACK_INCLUSIVE)
+            Log.d("SoloActivity", "Fragment chiuso correttamente")
+        } else {
+            Log.e("SoloActivity", "Errore: Fragment non trovato")
+        }
+    }
+
+
+    // Funzione per visualizzare la lista di spese filtrata per categoria
+    private fun mostraListaSpesePerCategoria(category: String) {
+        val fragment = ListaSpeseFragment.newInstance(category)
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.fragment_container, fragment)
+            .addToBackStack(null)
+            .commit()
+    }
+
     override fun onSpesaAggiunta(spesa: Spesa) {
         listaSpese.add(spesa)
         Toast.makeText(this, "Spesa aggiunta: ${spesa.titolo}", Toast.LENGTH_SHORT).show()
+        chiudiFragment()
     }
+
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.menu_main, menu)
         return true
     }
 
-    // Gestione dei click sul menu
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.action_search -> {
@@ -65,12 +106,5 @@ class SoloActivity : AppCompatActivity(), AggiungiSpesaFragment.OnSpesaAggiuntaL
             }
             else -> super.onOptionsItemSelected(item)
         }
-    }
-    private fun mostraListaSpesePerCategoria(category: String) { // per visulaizzare il fragment
-        val fragment = ListaSpeseFragment.newInstance(category)
-        supportFragmentManager.beginTransaction()
-            .replace(R.id.fragment_container, fragment)
-            .addToBackStack(null)
-            .commit()
     }
 }

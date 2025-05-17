@@ -38,6 +38,8 @@ android {
 dependencies {
     // Firebase BoM per gestire le versioni in modo centralizzato
     implementation(platform("com.google.firebase:firebase-bom:33.13.0"))
+    // Firestore con integrazione Kotlin
+    implementation("com.google.firebase:firebase-firestore-ktx")
     implementation("com.google.firebase:firebase-auth-ktx")
     implementation("com.google.firebase:firebase-auth:22.1.1")
     implementation("com.google.android.gms:play-services-auth:20.7.0")

@@ -1,13 +1,13 @@
 package com.example.mobileapp
 
 data class Spesa(
-    val titolo: String,
-    val descrizione: String,
-    val giorno: Int,
-    val mese: Int,
-    val anno: Int,
-    val importo: Float,
-    val categoria: String
+    val titolo: String = "",
+    val descrizione: String = "",
+    val giorno: Int = 0,
+    val mese: Int = 0,
+    val anno: Int = 0,
+    val importo: Float = 0.0f,
+    val categoria: String = ""
 ) {
     // Formatta la data come stringa leggibile
     fun getData(): String {
@@ -19,3 +19,4 @@ data class Spesa(
         return "[$categoria] $titolo - ${getData()} - €$importo"
     }
 }
+

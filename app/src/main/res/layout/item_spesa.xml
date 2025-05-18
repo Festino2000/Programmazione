@@ -4,8 +4,10 @@
     android:orientation="vertical"
     android:padding="16dp"
     android:background="@drawable/background_item"
-    android:layout_margin="8dp"
-    android:elevation="2dp">
+    android:layout_margin="12dp"
+    android:elevation="4dp"
+    android:clickable="true"
+    android:gravity="center">
 
     <!-- Titolo della Spesa -->
     <TextView
@@ -17,14 +19,14 @@
         android:textSize="18sp"
         android:textColor="#000000" />
 
-    <!-- Descrizione della Spesa -->
+    <!-- Importo della Spesa -->
     <TextView
         android:id="@+id/importoSpesa"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="importo"
-        android:textSize="14sp"
-        android:textColor="#555555" />
+        android:text="Importo"
+        android:textSize="16sp"
+        android:textColor="#000000" />
 
     <!-- Data della Spesa -->
     <TextView
@@ -32,6 +34,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="15/05/2025"
-        android:textSize="12sp"
-        android:textColor="#777777" />
+        android:textSize="14sp"
+        android:textColor="#000000" />
 </LinearLayout>

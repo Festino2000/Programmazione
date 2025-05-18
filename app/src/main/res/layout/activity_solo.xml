@@ -53,7 +53,8 @@
                 android:id="@+id/recyclerViewSpese"
                 android:layout_width="401dp"
                 android:layout_height="580dp"
-                android:layout_marginBottom="5dp"
+                android:layout_margin="12dp"
+
                 app:layout_constraintBottom_toTopOf="@+id/btnAggiungiSpesa"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent" />

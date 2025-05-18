@@ -2,6 +2,7 @@ package com.example.mobileapp
 
 import android.app.DatePickerDialog
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -14,6 +15,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import java.util.Calendar
 import com.example.mobileapp.AreaPersonale.Spesa
+import com.example.mobileapp.AreaPersonale.SoloActivity
 
 class AggiungiSpesaFragment : Fragment(R.layout.fragment_aggiungi_spesa) {
 
@@ -112,6 +114,11 @@ class AggiungiSpesaFragment : Fragment(R.layout.fragment_aggiungi_spesa) {
                 .addOnSuccessListener {
                     Toast.makeText(requireContext(), "Spesa Aggiunta Con Successo!", Toast.LENGTH_SHORT).show()
                     callback.onSpesaAggiunta(Spesa(titolo, descrizione, giorno, mese, anno, importo, categoria))
+
+                    // Reindirizza alla SoloActivity
+                    val intent = Intent(requireContext(), SoloActivity::class.java)
+                    startActivity(intent)
+
                 }
                 .addOnFailureListener { e ->
                     Toast.makeText(requireContext(), "Errore nel salvataggio su Firestore", Toast.LENGTH_SHORT).show()

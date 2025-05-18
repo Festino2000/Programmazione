@@ -3,10 +3,9 @@ package com.example.mobileapp
 import android.content.Intent
 import android.os.Bundle
 import android.widget.ImageButton
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.mobileapp.AreaGruppo.GruppoActivity
-import com.example.mobileapp.GestioneSpese.SoloActivity
+import com.example.mobileapp.AreaPersonale.SoloActivity
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

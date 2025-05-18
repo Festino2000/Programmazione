@@ -1,4 +1,4 @@
-package com.example.mobileapp.GestioneSpese
+package com.example.mobileapp
 
 import android.app.DatePickerDialog
 import android.content.Context
@@ -11,12 +11,11 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import androidx.fragment.app.Fragment
-import com.example.mobileapp.R
-import com.example.mobileapp.GestioneSpese.SoloActivity
-import com.example.mobileapp.GestioneSpese.Spesa
 import com.google.firebase.Timestamp
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import java.util.Calendar
+import com.example.mobileapp.AreaPersonale.Spesa
 
 class AggiungiSpesaFragment : Fragment(R.layout.fragment_aggiungi_spesa) {
 
@@ -54,7 +53,6 @@ class AggiungiSpesaFragment : Fragment(R.layout.fragment_aggiungi_spesa) {
         var mese = 0
         var anno = 0
 
-        // Listener per il campo data
         dataSpesa.setOnClickListener {
             val calendario = Calendar.getInstance()
             anno = calendario.get(Calendar.YEAR)
@@ -62,18 +60,22 @@ class AggiungiSpesaFragment : Fragment(R.layout.fragment_aggiungi_spesa) {
             giorno = calendario.get(Calendar.DAY_OF_MONTH)
 
             DatePickerDialog(requireContext(), { _, selectedYear, selectedMonth, selectedDay ->
-                // Aggiorna la data selezionata
                 giorno = selectedDay
-                mese = selectedMonth + 1 // Mese da 0 a 11, quindi aggiungi 1
+                mese = selectedMonth + 1
                 anno = selectedYear
                 val dataFormattata = "$giorno/$mese/$anno"
                 dataSpesa.setText(dataFormattata)
             }, anno, mese, giorno).show()
         }
 
-        // Listener per il pulsante di conferma
         btnConferma.setOnClickListener {
-            Log.d("AggiungiSpesaFragment", "Pulsante Conferma Spesa cliccato")
+            val currentUser = FirebaseAuth.getInstance().currentUser
+            val uid = currentUser?.uid
+
+            if (uid == null) {
+                Toast.makeText(requireContext(), "Utente non loggato", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
 
             val titolo = titoloSpesa.text.toString()
             val descrizione = descrizioneSpesa.text.toString()
@@ -82,12 +84,11 @@ class AggiungiSpesaFragment : Fragment(R.layout.fragment_aggiungi_spesa) {
 
             if (titolo.isBlank() || importo == 0.0f) {
                 Toast.makeText(requireContext(), "Compila almeno il titolo e l'importo", Toast.LENGTH_SHORT).show()
-                Log.e("AggiungiSpesaFragment", "Dati non validi: Titolo o Importo vuoti")
                 return@setOnClickListener
             }
 
-            // Crea una mappa con i dati della spesa
             val nuovaSpesa = hashMapOf(
+                "uid" to uid,
                 "titolo" to titolo,
                 "descrizione" to descrizione,
                 "giorno" to giorno,
@@ -95,43 +96,20 @@ class AggiungiSpesaFragment : Fragment(R.layout.fragment_aggiungi_spesa) {
                 "anno" to anno,
                 "importo" to importo,
                 "categoria" to categoria,
-                "data" to Timestamp.Companion.now()
+                "data" to Timestamp.now()
             )
 
-            // Aggiungi la spesa a Firestore
             db.collection("Spese")
                 .add(nuovaSpesa)
-                .addOnSuccessListener { documentReference ->
-                    Log.d("AggiungiSpesaFragment", "Spesa salvata su Firestore con ID: ${documentReference.id}")
+                .addOnSuccessListener {
                     Toast.makeText(requireContext(), "Spesa Aggiunta Con Successo!", Toast.LENGTH_SHORT).show()
-
-                    // Chiamata alla callback per aggiornare l'Activity
-                    callback.onSpesaAggiunta(
-                        Spesa(
-                            titolo,
-                            descrizione,
-                            giorno,
-                            mese,
-                            anno,
-                            importo,
-                            categoria
-                        )
-                    )
-
-                    try {
-                        val soloActivity = requireActivity() as? SoloActivity
-                        soloActivity?.chiudiFragment()
-                        Log.d("AggiungiSpesaFragment", "Fragment chiuso tramite SoloActivity")
-                    } catch (e: Exception) {
-                        Log.e("AggiungiSpesaFragment", "Errore nella chiusura del fragment: ${e.message}")
-                    }
+                    callback.onSpesaAggiunta(Spesa(titolo, descrizione, giorno, mese, anno, importo, categoria))
                 }
                 .addOnFailureListener { e ->
-                    Log.e("AggiungiSpesaFragment", "Errore nel salvataggio su Firestore", e)
                     Toast.makeText(requireContext(), "Errore nel salvataggio su Firestore", Toast.LENGTH_SHORT).show()
+                    Log.e("AggiungiSpesaFragment", "Errore nel salvataggio su Firestore", e)
                 }
         }
-
         return view
     }
 }

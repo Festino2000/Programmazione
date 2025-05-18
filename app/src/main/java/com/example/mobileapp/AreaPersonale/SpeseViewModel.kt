@@ -1,9 +1,10 @@
-package com.example.mobileapp.GestioneSpese
+package com.example.mobileapp.AreaPersonale
 
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
 class SpeseViewModel : ViewModel() {
@@ -17,8 +18,16 @@ class SpeseViewModel : ViewModel() {
 
     fun caricaTutteLeSpese() {
         val db = FirebaseFirestore.getInstance()
+        val uid = FirebaseAuth.getInstance().currentUser?.uid
 
-        db.collectionGroup("Spese")
+        if (uid == null) {
+            Log.e("SpeseViewModel", "Utente non loggato")
+            return
+        }
+
+        // Filtra per l'UID dell'utente corrente
+        db.collection("Spese")
+            .whereEqualTo("uid", uid)
             .get()
             .addOnSuccessListener { result ->
                 val listaSpese = mutableListOf<Spesa>()

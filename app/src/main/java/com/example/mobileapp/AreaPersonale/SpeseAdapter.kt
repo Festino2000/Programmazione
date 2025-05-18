@@ -1,4 +1,4 @@
-package com.example.mobileapp.GestioneSpese
+package com.example.mobileapp.AreaPersonale
 
 import android.view.LayoutInflater
 import android.view.View

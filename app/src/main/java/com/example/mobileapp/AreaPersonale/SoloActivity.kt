@@ -1,4 +1,4 @@
-package com.example.mobileapp.GestioneSpese
+package com.example.mobileapp.AreaPersonale
 
 import android.os.Bundle
 import android.util.Log
@@ -13,6 +13,7 @@ import androidx.appcompat.widget.Toolbar
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.mobileapp.AggiungiSpesaFragment
 import com.example.mobileapp.R
 import com.google.firebase.firestore.FirebaseFirestore
 

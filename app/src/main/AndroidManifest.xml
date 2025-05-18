@@ -39,7 +39,7 @@
 
         <!-- Attivita per il singolo -->
         <activity
-            android:name=".GestioneSpese.SoloActivity"
+            android:name=".AreaPersonale.SoloActivity"
             android:exported="true"/>
 
         <!-- Attività per il login con Google -->

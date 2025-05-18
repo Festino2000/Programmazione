@@ -8,6 +8,7 @@ import android.view.View
 import android.widget.Button
 import android.widget.FrameLayout
 import android.widget.ImageView
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
@@ -45,29 +46,32 @@ class SoloActivity : AppCompatActivity(), AggiungiSpesaFragment.OnSpesaAggiuntaL
 
     // Funzione per aprire il Fragment di aggiunta spesa
     private fun apriAggiungiSpesaFragment() {
+        // Nascondi il pulsante e l'icona Trasporti
         btnAggiungiSpesa.visibility = View.GONE
+        findViewById<ImageView>(R.id.trasporti).visibility = View.GONE
+        findViewById<TextView>(R.id.textView4).visibility = View.GONE
         findViewById<FrameLayout>(R.id.fragment_container).visibility = View.VISIBLE
 
         val fragment = AggiungiSpesaFragment()
         supportFragmentManager.beginTransaction()
-            .replace(R.id.fragment_container, fragment)
+            .replace(R.id.fragment_container, fragment, "AGGIUNGI_SPESA_FRAGMENT")
             .addToBackStack(null)
             .commit()
-        Log.d("SoloActivity", "Fragment Aggiungi Spesa caricato")
     }
+
+
+
 
     // Funzione per chiudere il Fragment e mostrare il pulsante
     fun chiudiFragment() {
         btnAggiungiSpesa.visibility = View.VISIBLE
-        val fragment = supportFragmentManager.findFragmentByTag("AGGIUNGI_SPESA_FRAGMENT")
-        if (fragment != null) {
-            supportFragmentManager.beginTransaction().remove(fragment).commit()
-            supportFragmentManager.popBackStack("AGGIUNGI_SPESA_FRAGMENT", androidx.fragment.app.FragmentManager.POP_BACK_STACK_INCLUSIVE)
-            Log.d("SoloActivity", "Fragment chiuso correttamente")
-        } else {
-            Log.e("SoloActivity", "Errore: Fragment non trovato")
-        }
+        findViewById<ImageView>(R.id.trasporti).visibility = View.VISIBLE
+        findViewById<TextView>(R.id.textView4).visibility = View.VISIBLE
+        findViewById<FrameLayout>(R.id.fragment_container).visibility = View.GONE
+        supportFragmentManager.popBackStack()
     }
+
+
 
 
     // Funzione per visualizzare la lista di spese filtrata per categoria

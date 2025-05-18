@@ -10,6 +10,7 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import com.google.firebase.Timestamp
 import com.google.firebase.firestore.FirebaseFirestore
 
 class AggiungiSpesaFragment : Fragment(R.layout.fragment_aggiungi_spesa) {
@@ -63,18 +64,27 @@ class AggiungiSpesaFragment : Fragment(R.layout.fragment_aggiungi_spesa) {
                 return@setOnClickListener
             }
 
-            val nuovaSpesa = Spesa(titolo, descrizione, giorno, mese, anno, importo, categoria)
-            Log.d("AggiungiSpesaFragment", "Nuova Spesa creata: $nuovaSpesa")
+            // Crea una mappa con i dati della spesa
+            val nuovaSpesa = hashMapOf(
+                "titolo" to titolo,
+                "descrizione" to descrizione,
+                "giorno" to giorno,
+                "mese" to mese,
+                "anno" to anno,
+                "importo" to importo,
+                "categoria" to categoria,
+                "data" to Timestamp.now() // Usa il timestamp corrente per la data
+            )
 
             // Aggiungi la spesa a Firestore
-            db.collection("spese")
+            db.collection("Spese") // Nome collezione con la "S" maiuscola
                 .add(nuovaSpesa)
                 .addOnSuccessListener { documentReference ->
                     Log.d("AggiungiSpesaFragment", "Spesa salvata su Firestore con ID: ${documentReference.id}")
                     Toast.makeText(requireContext(), "Spesa Aggiunta Con Successo!", Toast.LENGTH_SHORT).show()
 
                     // Chiamata alla callback per aggiornare l'Activity
-                    callback.onSpesaAggiunta(nuovaSpesa)
+                    callback.onSpesaAggiunta(Spesa(titolo, descrizione, giorno, mese, anno, importo, categoria))
 
                     try {
                         // Verifica se l'activity è effettivamente SoloActivity e chiudi il fragment
@@ -98,6 +108,7 @@ class AggiungiSpesaFragment : Fragment(R.layout.fragment_aggiungi_spesa) {
         return view
     }
 }
+
 
 
 

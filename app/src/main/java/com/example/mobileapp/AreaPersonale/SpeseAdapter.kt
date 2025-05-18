@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.mobileapp.R
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
 class SpeseAdapter : ListAdapter<Spesa, SpeseAdapter.SpesaViewHolder>(SpesaDiffCallback()) {
 
@@ -31,6 +32,21 @@ class SpeseAdapter : ListAdapter<Spesa, SpeseAdapter.SpesaViewHolder>(SpesaDiffC
     override fun onBindViewHolder(holder: SpesaViewHolder, position: Int) {
         val spesa = getItem(position)
         holder.bind(spesa)
+
+        holder.itemView.setOnClickListener {
+            // Mostra un pop-up con le informazioni complete
+            MaterialAlertDialogBuilder(holder.itemView.context)
+                .setTitle("Dettagli Spesa")
+                .setMessage(
+                    "Titolo: ${spesa.titolo}\n" +
+                            "Descrizione: ${spesa.descrizione}\n" +
+                            "Data: ${String.format("%02d/%02d/%04d", spesa.giorno, spesa.mese, spesa.anno)}\n" +
+                            "Importo: €${spesa.importo}\n" +
+                            "Categoria: ${spesa.categoria}"
+                )
+                .setPositiveButton("OK") { dialog, _ -> dialog.dismiss() }
+                .show()
+        }
     }
 
     class SpesaDiffCallback : DiffUtil.ItemCallback<Spesa>() {

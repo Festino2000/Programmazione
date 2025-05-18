@@ -11,10 +11,12 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.mobileapp.AggiungiSpesaFragment
 import com.example.mobileapp.R
+import com.example.mobileapp.SpacingItemDecoration
 import com.google.firebase.firestore.FirebaseFirestore
 
 class SoloActivity : AppCompatActivity(), AggiungiSpesaFragment.OnSpesaAggiuntaListener {
@@ -36,8 +38,12 @@ class SoloActivity : AppCompatActivity(), AggiungiSpesaFragment.OnSpesaAggiuntaL
 
         val recyclerView = findViewById<RecyclerView>(R.id.recyclerViewSpese)
         adapter = SpeseAdapter()
-        recyclerView.layoutManager = LinearLayoutManager(this)
+
+        recyclerView.layoutManager = GridLayoutManager(this, 2)
         recyclerView.adapter = adapter
+
+        val spacingInPixels = resources.getDimensionPixelSize(R.dimen.item_spacing)
+        recyclerView.addItemDecoration(SpacingItemDecoration(spacingInPixels, 2))
 
         viewModel = ViewModelProvider(this).get(SpeseViewModel::class.java)
         viewModel.caricaTutteLeSpese()

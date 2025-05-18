@@ -42,6 +42,7 @@ class AggiungiSpesaFragment : Fragment(R.layout.fragment_aggiungi_spesa) {
     ): View? {
         val view = inflater.inflate(R.layout.fragment_aggiungi_spesa, container, false)
 
+        // Riferimenti agli elementi del layout
         val titoloSpesa = view.findViewById<EditText>(R.id.titoloSpesa)
         val descrizioneSpesa = view.findViewById<EditText>(R.id.descrizioneSpesa)
         val dataSpesa = view.findViewById<EditText>(R.id.DataSelezionata)
@@ -63,6 +64,7 @@ class AggiungiSpesaFragment : Fragment(R.layout.fragment_aggiungi_spesa) {
         var mese = 0
         var anno = 0
 
+        // Selezione della data tramite DatePickerDialog
         dataSpesa.setOnClickListener {
             val calendario = Calendar.getInstance()
             anno = calendario.get(Calendar.YEAR)
@@ -78,6 +80,7 @@ class AggiungiSpesaFragment : Fragment(R.layout.fragment_aggiungi_spesa) {
             }, anno, mese, giorno).show()
         }
 
+        // Azione al clic del pulsante "Conferma Spesa"
         btnConferma.setOnClickListener {
             val currentUser = FirebaseAuth.getInstance().currentUser
             val uid = currentUser?.uid
@@ -87,16 +90,19 @@ class AggiungiSpesaFragment : Fragment(R.layout.fragment_aggiungi_spesa) {
                 return@setOnClickListener
             }
 
+            // Raccolta dei dati inseriti dall'utente
             val titolo = titoloSpesa.text.toString()
             val descrizione = descrizioneSpesa.text.toString()
             val importo = importoSpesa.text.toString().toFloatOrNull() ?: 0.0f
             val categoria = categoriaSpesa.text.toString()
 
+            // Verifica campi obbligatori
             if (titolo.isBlank() || importo == 0.0f) {
                 Toast.makeText(requireContext(), "Compila almeno il titolo e l'importo", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
+            // Creazione della mappa della nuova spesa
             val nuovaSpesa = hashMapOf(
                 "uid" to uid,
                 "titolo" to titolo,
@@ -109,13 +115,14 @@ class AggiungiSpesaFragment : Fragment(R.layout.fragment_aggiungi_spesa) {
                 "data" to Timestamp.now()
             )
 
+            // Salvataggio della spesa su Firestore
             db.collection("Spese")
                 .add(nuovaSpesa)
                 .addOnSuccessListener {
                     Toast.makeText(requireContext(), "Spesa Aggiunta Con Successo!", Toast.LENGTH_SHORT).show()
                     callback.onSpesaAggiunta(Spesa(titolo, descrizione, giorno, mese, anno, importo, categoria))
 
-                    // Reindirizza alla SoloActivity
+                    // Reindirizza alla SoloActivity dopo l'aggiunta
                     val intent = Intent(requireContext(), SoloActivity::class.java)
                     startActivity(intent)
 
@@ -129,3 +136,4 @@ class AggiungiSpesaFragment : Fragment(R.layout.fragment_aggiungi_spesa) {
         return view
     }
 }
+

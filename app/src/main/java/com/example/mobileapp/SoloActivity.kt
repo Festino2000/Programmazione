@@ -38,19 +38,17 @@ class SoloActivity : AppCompatActivity(), AggiungiSpesaFragment.OnSpesaAggiuntaL
         }
 
         // Pulsante "Trasporti"
-        val trasportiButton = findViewById<ImageView>(R.id.trasporti)
+        /*val trasportiButton = findViewById<ImageView>(R.id.trasporti)
         trasportiButton.setOnClickListener {
             mostraListaSpesePerCategoria("TRASPORTI")
-        }
+        }*/
     }
 
     // Funzione per aprire il Fragment di aggiunta spesa
     private fun apriAggiungiSpesaFragment() {
         // Nascondi il pulsante e l'icona Trasporti
         btnAggiungiSpesa.visibility = View.GONE
-        findViewById<ImageView>(R.id.trasporti).visibility = View.GONE
-        findViewById<TextView>(R.id.textView4).visibility = View.GONE
-        findViewById<FrameLayout>(R.id.fragment_container).visibility = View.VISIBLE
+        //findViewById<FrameLayout>(R.id.fragment_container).visibility = View.VISIBLE
 
         val fragment = AggiungiSpesaFragment()
         supportFragmentManager.beginTransaction()
@@ -61,12 +59,9 @@ class SoloActivity : AppCompatActivity(), AggiungiSpesaFragment.OnSpesaAggiuntaL
 
 
 
-
     // Funzione per chiudere il Fragment e mostrare il pulsante
     fun chiudiFragment() {
         btnAggiungiSpesa.visibility = View.VISIBLE
-        findViewById<ImageView>(R.id.trasporti).visibility = View.VISIBLE
-        findViewById<TextView>(R.id.textView4).visibility = View.VISIBLE
         findViewById<FrameLayout>(R.id.fragment_container).visibility = View.GONE
         supportFragmentManager.popBackStack()
     }
@@ -75,18 +70,18 @@ class SoloActivity : AppCompatActivity(), AggiungiSpesaFragment.OnSpesaAggiuntaL
 
 
     // Funzione per visualizzare la lista di spese filtrata per categoria
-    private fun mostraListaSpesePerCategoria(category: String) {
+    /*private fun mostraListaSpesePerCategoria(category: String) {
         val fragment = ListaSpeseFragment.newInstance(category)
         supportFragmentManager.beginTransaction()
             .replace(R.id.fragment_container, fragment)
             .addToBackStack(null)
             .commit()
-    }
+    }*/
 
     override fun onSpesaAggiunta(spesa: Spesa) {
         listaSpese.add(spesa)
         Toast.makeText(this, "Spesa aggiunta: ${spesa.titolo}", Toast.LENGTH_SHORT).show()
-        chiudiFragment()
+        //chiudiFragment()
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

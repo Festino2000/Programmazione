@@ -51,11 +51,12 @@ class AggiungiSpesaFragment : Fragment(R.layout.fragment_aggiungi_spesa) {
         var mese = 0
         var anno = 0
 
+        // Listener per il campo data
         dataSpesa.setOnClickListener {
             val calendario = Calendar.getInstance()
-            var anno = calendario.get(Calendar.YEAR)
-            var mese = calendario.get(Calendar.MONTH)
-            var giorno = calendario.get(Calendar.DAY_OF_MONTH)
+            anno = calendario.get(Calendar.YEAR)
+            mese = calendario.get(Calendar.MONTH)
+            giorno = calendario.get(Calendar.DAY_OF_MONTH)
 
             DatePickerDialog(requireContext(), { _, selectedYear, selectedMonth, selectedDay ->
                 // Aggiorna la data selezionata
@@ -67,6 +68,7 @@ class AggiungiSpesaFragment : Fragment(R.layout.fragment_aggiungi_spesa) {
             }, anno, mese, giorno).show()
         }
 
+        // Listener per il pulsante di conferma
         btnConferma.setOnClickListener {
             Log.d("AggiungiSpesaFragment", "Pulsante Conferma Spesa cliccato")
 
@@ -90,11 +92,11 @@ class AggiungiSpesaFragment : Fragment(R.layout.fragment_aggiungi_spesa) {
                 "anno" to anno,
                 "importo" to importo,
                 "categoria" to categoria,
-                "data" to Timestamp.now() // Usa il timestamp corrente per la data
+                "data" to Timestamp.now()
             )
 
             // Aggiungi la spesa a Firestore
-            db.collection("Spese") // Nome collezione con la "S" maiuscola
+            db.collection("Spese")
                 .add(nuovaSpesa)
                 .addOnSuccessListener { documentReference ->
                     Log.d("AggiungiSpesaFragment", "Spesa salvata su Firestore con ID: ${documentReference.id}")
@@ -104,14 +106,9 @@ class AggiungiSpesaFragment : Fragment(R.layout.fragment_aggiungi_spesa) {
                     callback.onSpesaAggiunta(Spesa(titolo, descrizione, giorno, mese, anno, importo, categoria))
 
                     try {
-                        // Verifica se l'activity è effettivamente SoloActivity e chiudi il fragment
                         val soloActivity = requireActivity() as? SoloActivity
-                        if (soloActivity != null) {
-                            soloActivity.chiudiFragment()
-                            Log.d("AggiungiSpesaFragment", "Fragment chiuso tramite SoloActivity")
-                        } else {
-                            Log.e("AggiungiSpesaFragment", "Errore: L'activity non è di tipo SoloActivity")
-                        }
+                        soloActivity?.chiudiFragment()
+                        Log.d("AggiungiSpesaFragment", "Fragment chiuso tramite SoloActivity")
                     } catch (e: Exception) {
                         Log.e("AggiungiSpesaFragment", "Errore nella chiusura del fragment: ${e.message}")
                     }
@@ -121,11 +118,7 @@ class AggiungiSpesaFragment : Fragment(R.layout.fragment_aggiungi_spesa) {
                     Toast.makeText(requireContext(), "Errore nel salvataggio su Firestore", Toast.LENGTH_SHORT).show()
                 }
         }
-            return view
+
+        return view
     }
 }
-
-
-
-
-

@@ -8,11 +8,12 @@ import android.view.View
 import android.widget.Button
 import android.widget.FrameLayout
 import android.widget.ImageView
-import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
-import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.firestore.FirebaseFirestore
 
 class SoloActivity : AppCompatActivity(), AggiungiSpesaFragment.OnSpesaAggiuntaListener {
@@ -20,6 +21,8 @@ class SoloActivity : AppCompatActivity(), AggiungiSpesaFragment.OnSpesaAggiuntaL
     private val listaSpese = mutableListOf<Spesa>()
     private lateinit var db: FirebaseFirestore
     private lateinit var btnAggiungiSpesa: Button
+    private lateinit var viewModel: SpeseViewModel
+    private lateinit var adapter: SpeseAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -30,34 +33,36 @@ class SoloActivity : AppCompatActivity(), AggiungiSpesaFragment.OnSpesaAggiuntaL
         val toolbar = findViewById<Toolbar>(R.id.toolbar)
         setSupportActionBar(toolbar)
 
+        val recyclerView = findViewById<RecyclerView>(R.id.recyclerViewSpese)
+        adapter = SpeseAdapter()
+        recyclerView.layoutManager = LinearLayoutManager(this)
+        recyclerView.adapter = adapter
+
+        viewModel = ViewModelProvider(this).get(SpeseViewModel::class.java)
+        viewModel.caricaTutteLeSpese()
+
+        // Corretto: Blocco osservazione chiuso correttamente
+        viewModel.spese.observe(this) { spese ->
+            adapter.submitList(spese)
+        }
+
         // Pulsante "Aggiungi Spesa"
         btnAggiungiSpesa = findViewById(R.id.btnAggiungiSpesa)
         btnAggiungiSpesa.setOnClickListener {
             Log.d("SoloActivity", "Pulsante Aggiungi Spesa cliccato")
             apriAggiungiSpesaFragment()
         }
-
-        // Pulsante "Trasporti"
-        /*val trasportiButton = findViewById<ImageView>(R.id.trasporti)
-        trasportiButton.setOnClickListener {
-            mostraListaSpesePerCategoria("TRASPORTI")
-        }*/
     }
 
     // Funzione per aprire il Fragment di aggiunta spesa
     private fun apriAggiungiSpesaFragment() {
-        // Nascondi il pulsante e l'icona Trasporti
         btnAggiungiSpesa.visibility = View.GONE
-        //findViewById<FrameLayout>(R.id.fragment_container).visibility = View.VISIBLE
-
         val fragment = AggiungiSpesaFragment()
         supportFragmentManager.beginTransaction()
             .replace(R.id.fragment_container, fragment, "AGGIUNGI_SPESA_FRAGMENT")
             .addToBackStack(null)
             .commit()
     }
-
-
 
     // Funzione per chiudere il Fragment e mostrare il pulsante
     fun chiudiFragment() {
@@ -66,22 +71,9 @@ class SoloActivity : AppCompatActivity(), AggiungiSpesaFragment.OnSpesaAggiuntaL
         supportFragmentManager.popBackStack()
     }
 
-
-
-
-    // Funzione per visualizzare la lista di spese filtrata per categoria
-    /*private fun mostraListaSpesePerCategoria(category: String) {
-        val fragment = ListaSpeseFragment.newInstance(category)
-        supportFragmentManager.beginTransaction()
-            .replace(R.id.fragment_container, fragment)
-            .addToBackStack(null)
-            .commit()
-    }*/
-
     override fun onSpesaAggiunta(spesa: Spesa) {
         listaSpese.add(spesa)
         Toast.makeText(this, "Spesa aggiunta: ${spesa.titolo}", Toast.LENGTH_SHORT).show()
-        //chiudiFragment()
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

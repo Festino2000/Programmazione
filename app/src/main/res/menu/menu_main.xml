@@ -21,12 +21,7 @@
     <!-- Pulsante Impostazioni -->
     <item
         android:id="@+id/action_settings"
-        android:title="Aggiungi nuova Spesa"
-        android:icon="@android:drawable/ic_menu_preferences"
-        app:showAsAction="never" />
-
-    <item
-        android:id="@+id/action_profile"
         android:title="Visualizza statistiche"
+        android:icon="@android:drawable/ic_menu_preferences"
         app:showAsAction="never" />
 </menu>

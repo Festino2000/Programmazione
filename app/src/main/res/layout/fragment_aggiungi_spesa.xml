@@ -25,28 +25,14 @@
         android:orientation="horizontal">
 
     <EditText
-        android:id="@+id/giornoSpesa"
-        android:layout_width="0dp"
-        android:layout_weight="1"
+        android:id="@+id/DataSelezionata"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Giorno"
-        android:inputType="number" />
+        android:hint="Data"
+        android:inputType="none"
+        android:focusable="false"
+        android:clickable="true" />
 
-    <EditText
-        android:id="@+id/meseSpesa"
-        android:layout_width="0dp"
-        android:layout_weight="1"
-        android:layout_height="wrap_content"
-        android:hint="Mese"
-        android:inputType="number" />
-
-    <EditText
-        android:id="@+id/annoSpesa"
-        android:layout_width="0dp"
-        android:layout_weight="1"
-        android:layout_height="wrap_content"
-        android:hint="Anno"
-        android:inputType="number" />
 
 </LinearLayout>
 

@@ -1,5 +1,6 @@
 package com.example.mobileapp
 
+import android.app.DatePickerDialog
 import android.content.Context
 import android.os.Bundle
 import android.util.Log
@@ -12,6 +13,7 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.google.firebase.Timestamp
 import com.google.firebase.firestore.FirebaseFirestore
+import java.util.Calendar
 
 class AggiungiSpesaFragment : Fragment(R.layout.fragment_aggiungi_spesa) {
 
@@ -40,21 +42,36 @@ class AggiungiSpesaFragment : Fragment(R.layout.fragment_aggiungi_spesa) {
 
         val titoloSpesa = view.findViewById<EditText>(R.id.titoloSpesa)
         val descrizioneSpesa = view.findViewById<EditText>(R.id.descrizioneSpesa)
-        val giornoSpesa = view.findViewById<EditText>(R.id.giornoSpesa)
-        val meseSpesa = view.findViewById<EditText>(R.id.meseSpesa)
-        val annoSpesa = view.findViewById<EditText>(R.id.annoSpesa)
+        val dataSpesa = view.findViewById<EditText>(R.id.DataSelezionata)
         val importoSpesa = view.findViewById<EditText>(R.id.importoSpesa)
         val categoriaSpesa = view.findViewById<EditText>(R.id.categoriaSpesa)
         val btnConferma = view.findViewById<Button>(R.id.btnConfermaSpesa)
+
+        var giorno = 0
+        var mese = 0
+        var anno = 0
+
+        dataSpesa.setOnClickListener {
+            val calendario = Calendar.getInstance()
+            var anno = calendario.get(Calendar.YEAR)
+            var mese = calendario.get(Calendar.MONTH)
+            var giorno = calendario.get(Calendar.DAY_OF_MONTH)
+
+            DatePickerDialog(requireContext(), { _, selectedYear, selectedMonth, selectedDay ->
+                // Aggiorna la data selezionata
+                giorno = selectedDay
+                mese = selectedMonth + 1 // Mese da 0 a 11, quindi aggiungi 1
+                anno = selectedYear
+                val dataFormattata = "$giorno/$mese/$anno"
+                dataSpesa.setText(dataFormattata)
+            }, anno, mese, giorno).show()
+        }
 
         btnConferma.setOnClickListener {
             Log.d("AggiungiSpesaFragment", "Pulsante Conferma Spesa cliccato")
 
             val titolo = titoloSpesa.text.toString()
             val descrizione = descrizioneSpesa.text.toString()
-            val giorno = giornoSpesa.text.toString().toIntOrNull() ?: 0
-            val mese = meseSpesa.text.toString().toIntOrNull() ?: 0
-            val anno = annoSpesa.text.toString().toIntOrNull() ?: 0
             val importo = importoSpesa.text.toString().toFloatOrNull() ?: 0.0f
             val categoria = categoriaSpesa.text.toString()
 
@@ -104,8 +121,7 @@ class AggiungiSpesaFragment : Fragment(R.layout.fragment_aggiungi_spesa) {
                     Toast.makeText(requireContext(), "Errore nel salvataggio su Firestore", Toast.LENGTH_SHORT).show()
                 }
         }
-
-        return view
+            return view
     }
 }
 

@@ -19,22 +19,21 @@
         android:layout_height="wrap_content"
         android:hint="Descrizione" />
 
-<LinearLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
 
-    <EditText
-        android:id="@+id/DataSelezionata"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Data"
-        android:inputType="none"
-        android:focusable="false"
-        android:clickable="true" />
+        <EditText
+            android:id="@+id/DataSelezionata"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Data"
+            android:inputType="none"
+            android:focusable="false"
+            android:clickable="true" />
 
-
-</LinearLayout>
+    </LinearLayout>
 
     <EditText
         android:id="@+id/importoSpesa"
@@ -43,11 +42,15 @@
         android:hint="Importo"
         android:inputType="numberDecimal" />
 
-    <EditText
+    <AutoCompleteTextView
         android:id="@+id/categoriaSpesa"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Categoria" />
+        android:hint="Categoria"
+        android:inputType="none"
+        android:focusable="false"
+        android:clickable="true"
+        android:padding="8dp" />
 
     <Button
         android:id="@+id/btnConfermaSpesa"
@@ -55,3 +58,4 @@
         android:layout_height="wrap_content"
         android:text="Conferma Spesa" />
 </LinearLayout>
+

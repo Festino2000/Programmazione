@@ -7,9 +7,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.EditText
-import android.widget.Toast
+import android.widget.*
 import androidx.fragment.app.Fragment
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
@@ -46,8 +44,18 @@ class AggiungiSpesaFragment : Fragment(R.layout.fragment_aggiungi_spesa) {
         val descrizioneSpesa = view.findViewById<EditText>(R.id.descrizioneSpesa)
         val dataSpesa = view.findViewById<EditText>(R.id.DataSelezionata)
         val importoSpesa = view.findViewById<EditText>(R.id.importoSpesa)
-        val categoriaSpesa = view.findViewById<EditText>(R.id.categoriaSpesa)
+        val categoriaSpesa = view.findViewById<AutoCompleteTextView>(R.id.categoriaSpesa)
         val btnConferma = view.findViewById<Button>(R.id.btnConfermaSpesa)
+
+        // Popola l'AutoCompleteTextView con le categorie
+        val categorie = resources.getStringArray(R.array.categorie_spesa)
+        val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, categorie)
+        categoriaSpesa.setAdapter(adapter)
+
+        // Mostra il menu a tendina al clic
+        categoriaSpesa.setOnClickListener {
+            categoriaSpesa.showDropDown()
+        }
 
         var giorno = 0
         var mese = 0
@@ -110,6 +118,7 @@ class AggiungiSpesaFragment : Fragment(R.layout.fragment_aggiungi_spesa) {
                     Log.e("AggiungiSpesaFragment", "Errore nel salvataggio su Firestore", e)
                 }
         }
+
         return view
     }
 }

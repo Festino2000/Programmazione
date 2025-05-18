@@ -1,4 +1,4 @@
-package com.example.mobileapp
+package com.example.mobileapp.Login_Registrazione
 
 import android.content.Intent
 import android.os.Bundle
@@ -7,6 +7,8 @@ import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.example.mobileapp.MainActivity
+import com.example.mobileapp.R
 import com.google.firebase.auth.FirebaseAuth
 
 class LoginActivity : AppCompatActivity() {

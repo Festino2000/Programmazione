@@ -1,4 +1,4 @@
-package com.example.mobileapp
+package com.example.mobileapp.GestioneSpese
 
 import android.view.LayoutInflater
 import android.view.View
@@ -7,6 +7,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.example.mobileapp.R
 
 class SpeseAdapter : ListAdapter<Spesa, SpeseAdapter.SpesaViewHolder>(SpesaDiffCallback()) {
 

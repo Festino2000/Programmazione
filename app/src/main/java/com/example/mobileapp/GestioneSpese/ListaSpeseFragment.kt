@@ -1,11 +1,12 @@
-package com.example.mobileapp
+package com.example.mobileapp.GestioneSpese
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.fragment.app.Fragment
+import com.example.mobileapp.R
 
 class ListaSpeseFragment : Fragment(R.layout.fragment_lista_spese) {
 
@@ -14,7 +15,8 @@ class ListaSpeseFragment : Fragment(R.layout.fragment_lista_spese) {
 
         fun newInstance(category: String): ListaSpeseFragment {
             val fragment = ListaSpeseFragment()
-            val args = Bundle() //bundle per passare i dati (poi imposta la cateforia come argomento e restituisce l'istanza del fragment)
+            val args =
+                Bundle() //bundle per passare i dati (poi imposta la cateforia come argomento e restituisce l'istanza del fragment)
             args.putString(ARG_CATEGORIA, category)
             fragment.arguments = args
             return fragment

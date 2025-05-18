@@ -1,9 +1,11 @@
-package com.example.mobileapp
+package com.example.mobileapp.AreaGruppo
+
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.example.mobileapp.R
 
 class GruppoAdapter(private val gruppiList: List<String>) : RecyclerView.Adapter<GruppoAdapter.GruppiViewHolder>() {
 

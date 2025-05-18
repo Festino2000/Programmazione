@@ -5,6 +5,8 @@ import android.os.Bundle
 import android.widget.ImageButton
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.example.mobileapp.AreaGruppo.GruppoActivity
+import com.example.mobileapp.GestioneSpese.SoloActivity
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

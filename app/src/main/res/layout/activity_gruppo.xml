@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".GruppoActivity">
+    tools:context=".AreaGruppo.GruppoActivity">
 
     <!-- RecyclerView per visualizzare i gruppi -->
     <androidx.recyclerview.widget.RecyclerView

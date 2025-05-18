@@ -1,4 +1,4 @@
-package com.example.mobileapp
+package com.example.mobileapp.GestioneSpese
 
 import android.app.DatePickerDialog
 import android.content.Context
@@ -11,6 +11,9 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import com.example.mobileapp.R
+import com.example.mobileapp.GestioneSpese.SoloActivity
+import com.example.mobileapp.GestioneSpese.Spesa
 import com.google.firebase.Timestamp
 import com.google.firebase.firestore.FirebaseFirestore
 import java.util.Calendar
@@ -92,7 +95,7 @@ class AggiungiSpesaFragment : Fragment(R.layout.fragment_aggiungi_spesa) {
                 "anno" to anno,
                 "importo" to importo,
                 "categoria" to categoria,
-                "data" to Timestamp.now()
+                "data" to Timestamp.Companion.now()
             )
 
             // Aggiungi la spesa a Firestore
@@ -103,7 +106,17 @@ class AggiungiSpesaFragment : Fragment(R.layout.fragment_aggiungi_spesa) {
                     Toast.makeText(requireContext(), "Spesa Aggiunta Con Successo!", Toast.LENGTH_SHORT).show()
 
                     // Chiamata alla callback per aggiornare l'Activity
-                    callback.onSpesaAggiunta(Spesa(titolo, descrizione, giorno, mese, anno, importo, categoria))
+                    callback.onSpesaAggiunta(
+                        Spesa(
+                            titolo,
+                            descrizione,
+                            giorno,
+                            mese,
+                            anno,
+                            importo,
+                            categoria
+                        )
+                    )
 
                     try {
                         val soloActivity = requireActivity() as? SoloActivity

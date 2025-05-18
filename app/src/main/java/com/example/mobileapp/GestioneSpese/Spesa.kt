@@ -1,4 +1,4 @@
-package com.example.mobileapp
+package com.example.mobileapp.GestioneSpese
 
 data class Spesa(
     val titolo: String = "",
@@ -19,4 +19,3 @@ data class Spesa(
         return "[$categoria] $titolo - ${getData()} - €$importo"
     }
 }
-

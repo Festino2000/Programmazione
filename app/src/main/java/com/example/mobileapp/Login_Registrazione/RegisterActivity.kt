@@ -1,17 +1,19 @@
-package com.example.mobileapp
+package com.example.mobileapp.Login_Registrazione
 
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
+import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import com.example.mobileapp.MainActivity
+import com.example.mobileapp.R
+import com.google.android.gms.auth.api.identity.BeginSignInRequest
 import com.google.android.gms.auth.api.identity.Identity
 import com.google.android.gms.auth.api.identity.SignInClient
-import com.google.android.gms.auth.api.identity.BeginSignInRequest
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
-import androidx.activity.result.IntentSenderRequest
 
 class RegisterActivity : AppCompatActivity() {
 
@@ -107,4 +109,3 @@ class RegisterActivity : AppCompatActivity() {
         }
     }
 }
-

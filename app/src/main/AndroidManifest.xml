@@ -19,7 +19,7 @@
 
         <!-- Attività principale (LoginActivity) -->
         <activity
-            android:name=".LoginActivity"
+            android:name=".Login_Registrazione.LoginActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -29,7 +29,7 @@
 
         <!-- Attività di Registrazione (RegisterActivity) -->
         <activity
-            android:name=".RegisterActivity"
+            android:name=".Login_Registrazione.RegisterActivity"
             android:exported="true" />
 
         <!-- Attività principale dopo il login (MainActivity) -->
@@ -39,7 +39,7 @@
 
         <!-- Attivita per il singolo -->
         <activity
-            android:name=".SoloActivity"
+            android:name=".GestioneSpese.SoloActivity"
             android:exported="true"/>
 
         <!-- Attività per il login con Google -->
@@ -51,7 +51,7 @@
 
         <!-- Dichiarazione della GruppoActivity -->
         <activity
-            android:name=".GruppoActivity"
+            android:name=".AreaGruppo.GruppoActivity"
             android:exported="true" />
 
         <!-- Configurazione dell'API Google -->

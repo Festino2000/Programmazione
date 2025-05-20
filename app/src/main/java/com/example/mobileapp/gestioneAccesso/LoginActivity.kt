@@ -1,4 +1,4 @@
-package com.example.mobileapp.Login_Registrazione
+package com.example.mobileapp.gestioneAccesso
 
 import android.content.Intent
 import android.os.Bundle

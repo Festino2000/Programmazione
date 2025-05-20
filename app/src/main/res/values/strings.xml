@@ -3,6 +3,8 @@
     <string name="default_web_client_id">1:585964098102:android:ca1f423a5d4c34ec55fe97</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <!-- Array delle categorie di spesa, inclusa l'opzione "Aggiungi Categoria" -->
     <string-array name="categorie_spesa">
         <item>Alimentari</item>
         <item>Trasporti</item>
@@ -10,6 +12,9 @@
         <item>Salute</item>
         <item>Casa</item>
         <item>Altro</item>
+        <item>Aggiungi Categoria</item>
     </string-array>
 
+    <!-- Stringa per aggiungere una nuova categoria -->
+    <string name="aggiungi_categoria">Aggiungi Categoria</string>
 </resources>

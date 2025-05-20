@@ -1,4 +1,4 @@
-package com.example.mobileapp.AreaPersonale
+package com.example.mobileapp.areaPersonale
 
 data class Spesa(
     val titolo: String = "",

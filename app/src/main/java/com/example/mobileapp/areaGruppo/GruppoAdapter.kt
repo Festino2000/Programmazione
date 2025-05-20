@@ -1,4 +1,4 @@
-package com.example.mobileapp.AreaGruppo
+package com.example.mobileapp.areaGruppo
 
 import android.view.LayoutInflater
 import android.view.View

@@ -1,11 +1,10 @@
-package com.example.mobileapp.AreaGruppo
+package com.example.mobileapp.areaGruppo
 
 import android.os.Bundle
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.mobileapp.AreaGruppo.GruppoAdapter
 import com.example.mobileapp.R
 
 class GruppoActivity : AppCompatActivity() {

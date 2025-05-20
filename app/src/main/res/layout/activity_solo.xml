@@ -6,7 +6,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".AreaPersonale.SoloActivity">
+    tools:context=".areaPersonale.SoloActivity">
 
     <!-- Toolbar -->
     <androidx.appcompat.widget.Toolbar
@@ -17,49 +17,73 @@
         android:elevation="6dp"
         android:paddingTop="14dp"
         android:paddingBottom="14dp"
-        app:contentInsetEnd="0dp"
-        app:contentInsetLeft="0dp"
-        app:contentInsetStart="0dp"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <!-- FrameLayout per i Fragment -->
+    <!-- RecyclerView -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerViewSpese"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_margin="12dp"
+        app:layout_constraintTop_toBottomOf="@id/toolbar"
+        app:layout_constraintBottom_toTopOf="@id/btnAggiungiSpesa"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- Pulsante Aggiungi Spesa -->
+    <Button
+        android:id="@+id/btnAggiungiSpesa"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Aggiungi Spesa"
+        android:layout_margin="16dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <!-- FloatingActionButton per Aggiungi Categoria -->
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/btnAggiungiCategoria"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:contentDescription="Aggiungi Categoria"
+        android:backgroundTint="@color/purple_500"
+        app:fabSize="mini"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:tint="@android:color/white"
+        app:iconTint="@android:color/white"
+        app:useCompatPadding="true"
+        android:foregroundTint="@android:color/white"
+        android:src="@android:color/transparent" />
+
+    <!-- Testo "+" sopra il FAB -->
+    <TextView
+        android:id="@+id/plusText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="+"
+        android:textSize="18sp"
+        android:textColor="@android:color/white"
+        android:layout_margin="16dp"
+        app:layout_constraintBottom_toBottomOf="@id/btnAggiungiCategoria"
+        app:layout_constraintEnd_toEndOf="@id/btnAggiungiCategoria"
+        app:layout_constraintStart_toStartOf="@id/btnAggiungiCategoria"
+        app:layout_constraintTop_toTopOf="@id/btnAggiungiCategoria" />
+
+    <!-- FrameLayout visibile solo quando serve il fragment -->
     <FrameLayout
         android:id="@+id/fragment_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:layout_constraintTop_toBottomOf="@id/toolbar">
+        android:visibility="gone"
+        app:layout_constraintTop_toBottomOf="@id/toolbar"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-    <!-- Icona Trasporti -->
-
-            <!-- Testo Trasporti -->
-
-            <!-- Pulsante Aggiungi Spesa -->
-            <Button
-                android:id="@+id/btnAggiungiSpesa"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="16dp"
-                android:text="Aggiungi Spesa"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.498"
-                app:layout_constraintStart_toStartOf="parent" />
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recyclerViewSpese"
-                android:layout_width="401dp"
-                android:layout_height="580dp"
-                android:layout_margin="12dp"
-
-                app:layout_constraintBottom_toTopOf="@+id/btnAggiungiSpesa"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent" />
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
-    </FrameLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+
 

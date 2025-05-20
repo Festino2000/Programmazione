@@ -1,5 +1,6 @@
-package com.example.mobileapp
+package com.example.mobileapp.areaPersonale
 
+import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.content.Context
 import android.content.Intent
@@ -14,10 +15,17 @@ import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import java.util.Calendar
-import com.example.mobileapp.AreaPersonale.Spesa
-import com.example.mobileapp.AreaPersonale.SoloActivity
+import com.example.mobileapp.R
+
+private val PREFERENZE_CATEGORIE = "PreferenzeCategorie"
+private val KEY_CATEGORIE = "categorie"
 
 class AggiungiSpesaFragment : Fragment(R.layout.fragment_aggiungi_spesa) {
+
+    private lateinit var autoCompleteCategorie: AutoCompleteTextView
+    private val categorieList = mutableListOf(
+        "Alimentari", "Trasporti", "Intrattenimento", "Salute", "Aggiungi Categoria"
+    )
 
     private lateinit var callback: OnSpesaAggiuntaListener
     private lateinit var db: FirebaseFirestore
@@ -41,6 +49,20 @@ class AggiungiSpesaFragment : Fragment(R.layout.fragment_aggiungi_spesa) {
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.fragment_aggiungi_spesa, container, false)
+
+        autoCompleteCategorie = view.findViewById(R.id.categoriaSpesa)
+
+        caricaCategorie()
+
+        // Gestione della selezione nell'AutoCompleteTextView
+        autoCompleteCategorie.setOnItemClickListener { parent, _, position, _ ->
+            val categoriaSelezionata = parent.getItemAtPosition(position).toString()
+            if (categoriaSelezionata == "Aggiungi Categoria") {
+                mostraDialogAggiungiCategoria()
+            } else {
+                autoCompleteCategorie.setText(categoriaSelezionata)
+            }
+        }
 
         // Riferimenti agli elementi del layout
         val titoloSpesa = view.findViewById<EditText>(R.id.titoloSpesa)
@@ -125,7 +147,6 @@ class AggiungiSpesaFragment : Fragment(R.layout.fragment_aggiungi_spesa) {
                     // Reindirizza alla SoloActivity dopo l'aggiunta
                     val intent = Intent(requireContext(), SoloActivity::class.java)
                     startActivity(intent)
-
                 }
                 .addOnFailureListener { e ->
                     Toast.makeText(requireContext(), "Errore nel salvataggio su Firestore", Toast.LENGTH_SHORT).show()
@@ -134,6 +155,75 @@ class AggiungiSpesaFragment : Fragment(R.layout.fragment_aggiungi_spesa) {
         }
 
         return view
+    }
+    private fun salvaCategorie() {
+        val sharedPreferences = requireContext().getSharedPreferences(PREFERENZE_CATEGORIE, Context.MODE_PRIVATE)
+        val editor = sharedPreferences.edit()
+        // val categorieString = categorieList.joinToString(",")
+        editor.putStringSet(KEY_CATEGORIE, categorieList.toSet())
+        editor.apply()
+    }
+    private fun caricaCategorie() {
+        val sharedPreferences = requireContext().getSharedPreferences(PREFERENZE_CATEGORIE, Context.MODE_PRIVATE)
+        val categorieSalvate = sharedPreferences.getStringSet(KEY_CATEGORIE, null)
+        if (categorieSalvate != null) {
+            categorieList.clear()
+            categorieList.addAll(categorieSalvate)
+            if (!categorieList.contains("Aggiungi Categoria")) {
+                categorieList.add("Aggiungi Categoria")
+            }
+        } else {
+            // Categorie di default
+            categorieList.clear()
+            categorieList.addAll(listOf("Alimentari", "Trasporti", "Intrattenimento", "Salute", "Casa", "Altro", "Aggiungi Categoria"))
+        }
+        aggiornaAutoComplete()
+    }
+
+    // Metodo per aggiornare l'AutoCompleteTextView con le categorie
+    private fun aggiornaAutoComplete() {
+        val adapter = ArrayAdapter(
+            requireContext(),
+            android.R.layout.simple_dropdown_item_1line,
+            categorieList
+        )
+        autoCompleteCategorie.setAdapter(adapter)
+    }
+    // Mostra il dialog per aggiungere una nuova categoria
+    private fun mostraDialogAggiungiCategoria() {
+        val builder = AlertDialog.Builder(requireContext())
+        builder.setTitle("Nuova Categoria")
+
+        val input = EditText(requireContext()).apply {
+            hint = "Nome categoria"
+        }
+        builder.setView(input)
+
+        builder.setPositiveButton("Aggiungi") { dialogInterface, _ ->
+            val nuovaCategoria = input.text.toString().trim()
+            if (nuovaCategoria.isNotBlank()) {
+                if (!categorieList.contains(nuovaCategoria)) {
+                    // Aggiungi la nuova categoria prima di "Aggiungi Categoria"
+                    categorieList.add(categorieList.size - 1, nuovaCategoria)
+                    salvaCategorie()  // Salva le categorie aggiornate
+                    aggiornaAutoComplete()
+                    autoCompleteCategorie.setText("")  // Pulisce il campo per scegliere manualmente
+                    autoCompleteCategorie.showDropDown()  // Mostra il menu aggiornato
+                    Toast.makeText(requireContext(), "Categoria aggiunta: $nuovaCategoria", Toast.LENGTH_SHORT).show()
+                } else {
+                    Toast.makeText(requireContext(), "Categoria già esistente", Toast.LENGTH_SHORT).show()
+                }
+            } else {
+                Toast.makeText(requireContext(), "Il nome della categoria non può essere vuoto", Toast.LENGTH_SHORT).show()
+            }
+            dialogInterface.dismiss()
+        }
+
+        builder.setNegativeButton("Annulla") { dialogInterface, _ ->
+            dialogInterface.dismiss()
+        }
+
+        builder.show()
     }
 }
 

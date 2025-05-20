@@ -1,4 +1,4 @@
-package com.example.mobileapp.AreaPersonale
+package com.example.mobileapp.areaPersonale
 
 import android.view.LayoutInflater
 import android.view.View

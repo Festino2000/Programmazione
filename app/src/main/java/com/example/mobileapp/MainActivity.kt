@@ -4,8 +4,8 @@ import android.content.Intent
 import android.os.Bundle
 import android.widget.ImageButton
 import androidx.appcompat.app.AppCompatActivity
-import com.example.mobileapp.AreaGruppo.GruppoActivity
-import com.example.mobileapp.AreaPersonale.SoloActivity
+import com.example.mobileapp.areaGruppo.GruppoActivity
+import com.example.mobileapp.areaPersonale.SoloActivity
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

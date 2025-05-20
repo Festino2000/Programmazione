@@ -58,4 +58,3 @@
         android:layout_height="wrap_content"
         android:text="Conferma Spesa" />
 </LinearLayout>
-

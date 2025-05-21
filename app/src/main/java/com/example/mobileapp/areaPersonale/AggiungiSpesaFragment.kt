@@ -17,16 +17,10 @@ import com.google.firebase.firestore.FirebaseFirestore
 import java.util.Calendar
 import com.example.mobileapp.R
 
-private val PREFERENZE_CATEGORIE = "PreferenzeCategorie"
-private val KEY_CATEGORIE = "categorie"
-
 class AggiungiSpesaFragment : Fragment(R.layout.fragment_aggiungi_spesa) {
 
     private lateinit var autoCompleteCategorie: AutoCompleteTextView
-    private val categorieList = mutableListOf(
-        "Alimentari", "Trasporti", "Intrattenimento", "Salute", "Aggiungi Categoria"
-    )
-
+    private val categorieList = mutableListOf<String>()
     private lateinit var callback: OnSpesaAggiuntaListener
     private lateinit var db: FirebaseFirestore
 
@@ -38,7 +32,6 @@ class AggiungiSpesaFragment : Fragment(R.layout.fragment_aggiungi_spesa) {
         super.onAttach(context)
         if (context is OnSpesaAggiuntaListener) {
             callback = context
-            Log.d("AggiungiSpesaFragment", "Callback collegata correttamente")
         } else {
             throw RuntimeException("$context deve implementare OnSpesaAggiuntaListener")
         }
@@ -51,10 +44,8 @@ class AggiungiSpesaFragment : Fragment(R.layout.fragment_aggiungi_spesa) {
         val view = inflater.inflate(R.layout.fragment_aggiungi_spesa, container, false)
 
         autoCompleteCategorie = view.findViewById(R.id.categoriaSpesa)
-
         caricaCategorie()
 
-        // Gestione della selezione nell'AutoCompleteTextView
         autoCompleteCategorie.setOnItemClickListener { parent, _, position, _ ->
             val categoriaSelezionata = parent.getItemAtPosition(position).toString()
             if (categoriaSelezionata == "Aggiungi Categoria") {
@@ -64,7 +55,6 @@ class AggiungiSpesaFragment : Fragment(R.layout.fragment_aggiungi_spesa) {
             }
         }
 
-        // Riferimenti agli elementi del layout
         val titoloSpesa = view.findViewById<EditText>(R.id.titoloSpesa)
         val descrizioneSpesa = view.findViewById<EditText>(R.id.descrizioneSpesa)
         val dataSpesa = view.findViewById<EditText>(R.id.DataSelezionata)
@@ -72,12 +62,6 @@ class AggiungiSpesaFragment : Fragment(R.layout.fragment_aggiungi_spesa) {
         val categoriaSpesa = view.findViewById<AutoCompleteTextView>(R.id.categoriaSpesa)
         val btnConferma = view.findViewById<Button>(R.id.btnConfermaSpesa)
 
-        // Popola l'AutoCompleteTextView con le categorie
-        val categorie = resources.getStringArray(R.array.categorie_spesa)
-        val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, categorie)
-        categoriaSpesa.setAdapter(adapter)
-
-        // Mostra il menu a tendina al clic
         categoriaSpesa.setOnClickListener {
             categoriaSpesa.showDropDown()
         }
@@ -86,7 +70,6 @@ class AggiungiSpesaFragment : Fragment(R.layout.fragment_aggiungi_spesa) {
         var mese = 0
         var anno = 0
 
-        // Selezione della data tramite DatePickerDialog
         dataSpesa.setOnClickListener {
             val calendario = Calendar.getInstance()
             anno = calendario.get(Calendar.YEAR)
@@ -102,29 +85,20 @@ class AggiungiSpesaFragment : Fragment(R.layout.fragment_aggiungi_spesa) {
             }, anno, mese, giorno).show()
         }
 
-        // Azione al clic del pulsante "Conferma Spesa"
         btnConferma.setOnClickListener {
             val currentUser = FirebaseAuth.getInstance().currentUser
-            val uid = currentUser?.uid
+            val uid = currentUser?.uid ?: return@setOnClickListener
 
-            if (uid == null) {
-                Toast.makeText(requireContext(), "Utente non loggato", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
-
-            // Raccolta dei dati inseriti dall'utente
             val titolo = titoloSpesa.text.toString()
             val descrizione = descrizioneSpesa.text.toString()
             val importo = importoSpesa.text.toString().toFloatOrNull() ?: 0.0f
             val categoria = categoriaSpesa.text.toString()
 
-            // Verifica campi obbligatori
             if (titolo.isBlank() || importo == 0.0f) {
                 Toast.makeText(requireContext(), "Compila almeno il titolo e l'importo", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
-            // Creazione della mappa della nuova spesa
             val nuovaSpesa = hashMapOf(
                 "uid" to uid,
                 "titolo" to titolo,
@@ -137,14 +111,11 @@ class AggiungiSpesaFragment : Fragment(R.layout.fragment_aggiungi_spesa) {
                 "data" to Timestamp.now()
             )
 
-            // Salvataggio della spesa su Firestore
             db.collection("Spese")
                 .add(nuovaSpesa)
                 .addOnSuccessListener {
                     Toast.makeText(requireContext(), "Spesa Aggiunta Con Successo!", Toast.LENGTH_SHORT).show()
                     callback.onSpesaAggiunta(Spesa(titolo, descrizione, giorno, mese, anno, importo, categoria))
-
-                    // Reindirizza alla SoloActivity dopo l'aggiunta
                     val intent = Intent(requireContext(), SoloActivity::class.java)
                     startActivity(intent)
                 }
@@ -156,45 +127,47 @@ class AggiungiSpesaFragment : Fragment(R.layout.fragment_aggiungi_spesa) {
 
         return view
     }
-    private fun salvaCategorie() {
-        val sharedPreferences = requireContext().getSharedPreferences(PREFERENZE_CATEGORIE, Context.MODE_PRIVATE)
-        val editor = sharedPreferences.edit()
-        // val categorieString = categorieList.joinToString(",")
-        editor.putStringSet(KEY_CATEGORIE, categorieList.toSet())
-        editor.apply()
-    }
+
     private fun caricaCategorie() {
-        val sharedPreferences = requireContext().getSharedPreferences(PREFERENZE_CATEGORIE, Context.MODE_PRIVATE)
-        val categorieSalvate = sharedPreferences.getStringSet(KEY_CATEGORIE, null)
-        if (categorieSalvate != null) {
-            categorieList.clear()
-            categorieList.addAll(categorieSalvate)
-            if (!categorieList.contains("Aggiungi Categoria")) {
-                categorieList.add("Aggiungi Categoria")
+        val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return
+
+        categorieList.clear()
+        categorieList.addAll(listOf("Alimentari", "Trasporti", "Svago", "Abbigliamento", "Casa"))
+
+        db.collection("utenti")
+            .document(userId)
+            .collection("categorie")
+            .get()
+            .addOnSuccessListener { result ->
+                for (doc in result) {
+                    doc.getString("nome")?.let {
+                        if (!categorieList.contains(it)) {
+                            categorieList.add(it)
+                        }
+                    }
+                }
+                if (!categorieList.contains("Aggiungi Categoria")) {
+                    categorieList.add("Aggiungi Categoria")
+                }
+                aggiornaAutoComplete()
             }
-        } else {
-            // Categorie di default
-            categorieList.clear()
-            categorieList.addAll(listOf("Alimentari", "Trasporti", "Intrattenimento", "Salute", "Casa", "Altro", "Aggiungi Categoria"))
-        }
-        aggiornaAutoComplete()
+            .addOnFailureListener { e ->
+                Log.e("Firestore", "Errore nel caricamento categorie", e)
+            }
     }
 
-    // Metodo per aggiornare l'AutoCompleteTextView con le categorie
     private fun aggiornaAutoComplete() {
-        val adapter = ArrayAdapter(
-            requireContext(),
-            android.R.layout.simple_dropdown_item_1line,
-            categorieList
-        )
+        val ctx = autoCompleteCategorie.context
+        val adapter = ArrayAdapter(ctx, android.R.layout.simple_dropdown_item_1line, categorieList)
         autoCompleteCategorie.setAdapter(adapter)
     }
-    // Mostra il dialog per aggiungere una nuova categoria
+
     private fun mostraDialogAggiungiCategoria() {
-        val builder = AlertDialog.Builder(requireContext())
+        val ctx = autoCompleteCategorie.context
+        val builder = AlertDialog.Builder(ctx)
         builder.setTitle("Nuova Categoria")
 
-        val input = EditText(requireContext()).apply {
+        val input = EditText(ctx).apply {
             hint = "Nome categoria"
         }
         builder.setView(input)
@@ -202,19 +175,22 @@ class AggiungiSpesaFragment : Fragment(R.layout.fragment_aggiungi_spesa) {
         builder.setPositiveButton("Aggiungi") { dialogInterface, _ ->
             val nuovaCategoria = input.text.toString().trim()
             if (nuovaCategoria.isNotBlank()) {
-                if (!categorieList.contains(nuovaCategoria)) {
-                    // Aggiungi la nuova categoria prima di "Aggiungi Categoria"
-                    categorieList.add(categorieList.size - 1, nuovaCategoria)
-                    salvaCategorie()  // Salva le categorie aggiornate
-                    aggiornaAutoComplete()
-                    autoCompleteCategorie.setText("")  // Pulisce il campo per scegliere manualmente
-                    autoCompleteCategorie.showDropDown()  // Mostra il menu aggiornato
-                    Toast.makeText(requireContext(), "Categoria aggiunta: $nuovaCategoria", Toast.LENGTH_SHORT).show()
-                } else {
-                    Toast.makeText(requireContext(), "Categoria già esistente", Toast.LENGTH_SHORT).show()
-                }
+                val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return@setPositiveButton
+                val nuovaCategoriaMap = hashMapOf("nome" to nuovaCategoria)
+
+                db.collection("utenti")
+                    .document(userId)
+                    .collection("categorie")
+                    .add(nuovaCategoriaMap)
+                    .addOnSuccessListener {
+                        Toast.makeText(ctx, "Categoria aggiunta: $nuovaCategoria", Toast.LENGTH_SHORT).show()
+                        caricaCategorie()
+                    }
+                    .addOnFailureListener {
+                        Toast.makeText(ctx, "Errore nel salvataggio della categoria", Toast.LENGTH_SHORT).show()
+                    }
             } else {
-                Toast.makeText(requireContext(), "Il nome della categoria non può essere vuoto", Toast.LENGTH_SHORT).show()
+                Toast.makeText(ctx, "Il nome della categoria non può essere vuoto", Toast.LENGTH_SHORT).show()
             }
             dialogInterface.dismiss()
         }
@@ -222,8 +198,8 @@ class AggiungiSpesaFragment : Fragment(R.layout.fragment_aggiungi_spesa) {
         builder.setNegativeButton("Annulla") { dialogInterface, _ ->
             dialogInterface.dismiss()
         }
-
         builder.show()
     }
 }
+
 

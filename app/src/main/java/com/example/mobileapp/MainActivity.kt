@@ -6,11 +6,13 @@ import android.widget.ImageButton
 import androidx.appcompat.app.AppCompatActivity
 import com.example.mobileapp.areaGruppo.GruppoActivity
 import com.example.mobileapp.areaPersonale.SoloActivity
+import com.google.firebase.FirebaseApp
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        FirebaseApp.initializeApp(this)
 
         val soloButton = findViewById<ImageButton>(R.id.solo)
         val gruppoButton = findViewById<ImageButton>(R.id.gruppo)
@@ -21,7 +23,6 @@ class MainActivity : AppCompatActivity() {
         }
 
          gruppoButton.setOnClickListener {
-            // Toast.makeText(this, "Pulsante Gruppo premuto!", Toast.LENGTH_SHORT).show()
              val intent = Intent(this, GruppoActivity::class.java)
              startActivity(intent)
         }

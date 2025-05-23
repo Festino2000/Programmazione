@@ -10,6 +10,7 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.example.mobileapp.R
 import com.google.firebase.firestore.FirebaseFirestore
+import kotlin.random.Random
 
 class AggiungiGruppoFragment : Fragment() {
 
@@ -39,21 +40,70 @@ class AggiungiGruppoFragment : Fragment() {
         val descrizione = editTextDescrizione.text.toString().trim()
 
         if (titolo.isEmpty()) {
-            Toast.makeText(requireContext(), "Il titolo non può essere vuoto", Toast.LENGTH_SHORT).show()
+            Toast.makeText(requireContext(), "Il titolo non può essere vuoto", Toast.LENGTH_SHORT)
+                .show()
             return
         }
 
-        val gruppo = Gruppo(titolo, descrizione)
+        generaIDUnivoco { idUnico ->
+            if (idUnico == null) {
+                Toast.makeText(
+                    requireContext(),
+                    "Errore nella generazione dell'ID",
+                    Toast.LENGTH_SHORT
+                ).show()
+            } else {
+                val gruppo = Gruppo(titolo, descrizione, idUnico)
+                db.collection("Gruppi")
+                    .add(gruppo)
+                    .addOnSuccessListener {
+                        Toast.makeText(
+                            requireContext(),
+                            "Gruppo creato con successo",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        parentFragmentManager.popBackStack()
+                    }
+                    .addOnFailureListener {
+                        Toast.makeText(
+                            requireContext(),
+                            "Errore: ${it.message}",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+            }
+        }
+    }
 
-        db.collection("Gruppi")
-            .add(gruppo)
-            .addOnSuccessListener {
-                Toast.makeText(requireContext(), "Gruppo creato con successo", Toast.LENGTH_SHORT).show()
-                parentFragmentManager.popBackStack()
+    private fun generaIDUnivoco(callback: (String?) -> Unit) {
+        val tentativiMax = 10
+        var tentativi = 0
+
+        fun tenta() {
+            if (tentativi >= tentativiMax) {
+                callback(null)
+                return
             }
-            .addOnFailureListener {
-                Toast.makeText(requireContext(), "Errore: ${it.message}", Toast.LENGTH_SHORT).show()
-            }
+
+            val nuovoID = String.format("%06d", Random.nextInt(1, 100001))
+
+            db.collection("Gruppi")
+                .whereEqualTo("ID", nuovoID)
+                .get()
+                .addOnSuccessListener { documents ->
+                    if (documents.isEmpty) {
+                        callback(nuovoID)  // ID non esiste → OK
+                    } else {
+                        tentativi++
+                        tenta() // ID già usato → riprova
+                    }
+                }
+                .addOnFailureListener {
+                    callback(null)
+                }
+        }
+
+        tenta()
     }
 }
 

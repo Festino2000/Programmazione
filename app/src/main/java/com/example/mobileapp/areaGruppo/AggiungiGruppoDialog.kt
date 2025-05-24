@@ -20,6 +20,7 @@ class AggiungiGruppoDialog : DialogFragment() {
     private lateinit var editTextTitolo: EditText
     private lateinit var editTextDescrizione: EditText
     private lateinit var buttonConferma: Button
+    var listener: OnGruppoCreatoListener? = null
 
     private val db = FirebaseFirestore.getInstance()
 
@@ -28,7 +29,7 @@ class AggiungiGruppoDialog : DialogFragment() {
         val view = inflater.inflate(R.layout.dialog_aggiungi_gruppo, null)
 
 
-        editTextTitolo = view.findViewById(R.id.editTextTitolo)
+            editTextTitolo = view.findViewById(R.id.editTextTitolo)
             editTextDescrizione = view.findViewById(R.id.editTextDescrizione)
             buttonConferma = view.findViewById(R.id.buttonConferma)
             val dialog = AlertDialog.Builder(requireContext())
@@ -45,8 +46,7 @@ class AggiungiGruppoDialog : DialogFragment() {
         val descrizione = editTextDescrizione.text.toString().trim()
 
         if (titolo.isEmpty()) {
-            Toast.makeText(requireContext(), "Il titolo non può essere vuoto", Toast.LENGTH_SHORT)
-                .show()
+            Toast.makeText(requireContext(), "Il titolo non può essere vuoto", Toast.LENGTH_SHORT).show()
             return
         }
 
@@ -67,7 +67,8 @@ class AggiungiGruppoDialog : DialogFragment() {
                             "Gruppo creato con successo",
                             Toast.LENGTH_SHORT
                         ).show()
-                        parentFragmentManager.popBackStack()
+                        listener?.onGruppoCreato(titolo) // 🔥 Notifica la GruppoActivity
+                        dismiss() // Chiude il dialog
                     }
                     .addOnFailureListener {
                         Toast.makeText(
@@ -78,6 +79,7 @@ class AggiungiGruppoDialog : DialogFragment() {
                     }
             }
         }
+
     }
 
     private fun generaIDUnivoco(callback: (String?) -> Unit) {
@@ -109,6 +111,9 @@ class AggiungiGruppoDialog : DialogFragment() {
         }
 
         tenta()
+    }
+    interface OnGruppoCreatoListener {
+        fun onGruppoCreato(titolo: String)
     }
 }
 

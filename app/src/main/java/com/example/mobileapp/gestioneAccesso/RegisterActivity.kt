@@ -14,6 +14,7 @@ import com.google.android.gms.auth.api.identity.Identity
 import com.google.android.gms.auth.api.identity.SignInClient
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
+import com.google.firebase.firestore.FirebaseFirestore
 
 class RegisterActivity : AppCompatActivity() {
 
@@ -24,6 +25,7 @@ class RegisterActivity : AppCompatActivity() {
     private lateinit var buttonRegister: Button
     private lateinit var buttonGoogleSignIn: Button
     private lateinit var oneTapClient: SignInClient
+    private lateinit var editTextNickname: EditText
 
     private val googleSignInLauncher = registerForActivityResult(ActivityResultContracts.StartIntentSenderForResult()) { result ->
         if (result.resultCode == RESULT_OK) {
@@ -49,6 +51,7 @@ class RegisterActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_register)
 
+        val db = FirebaseFirestore.getInstance()
         auth = FirebaseAuth.getInstance()
         oneTapClient = Identity.getSignInClient(this)
 
@@ -57,21 +60,44 @@ class RegisterActivity : AppCompatActivity() {
         editTextConfirmPassword = findViewById(R.id.editTextConfirmPassword)
         buttonRegister = findViewById(R.id.buttonRegister)
         buttonGoogleSignIn = findViewById(R.id.buttonGoogleSignIn)
+        editTextNickname = findViewById(R.id.editTextNickname)
 
         buttonRegister.setOnClickListener {
             val email = editTextEmail.text.toString()
             val password = editTextPassword.text.toString()
             val confirmPassword = editTextConfirmPassword.text.toString()
+            val nickname = editTextNickname.text.toString()
 
-            if (email.isNotEmpty() && password.isNotEmpty() && confirmPassword.isNotEmpty()) {
+            if (email.isNotEmpty() && password.isNotEmpty() && confirmPassword.isNotEmpty() && nickname.isNotEmpty()) {
                 if (password == confirmPassword) {
                     auth.createUserWithEmailAndPassword(email, password)
                         .addOnCompleteListener(this) { task ->
                             if (task.isSuccessful) {
-                                val intent = Intent(this, MainActivity::class.java)
-                                startActivity(intent)
-                                finish()
-                            } else {
+                                val currentUser = auth.currentUser
+                                val uid = currentUser?.uid
+                                val email = currentUser?.email
+
+                                if (uid != null && email != null) {
+                                    val utente = hashMapOf(
+                                        "utenteID" to uid,
+                                        "nickname" to email // oppure puoi chiedere un nickname personalizzato
+                                    )
+
+                                    val db = FirebaseFirestore.getInstance()
+                                    db.collection("Utenti").document(uid)
+                                        .set(utente)
+                                        .addOnSuccessListener {
+                                            println("Utente salvato nel DB")
+                                            val intent = Intent(this, MainActivity::class.java)
+                                            startActivity(intent)
+                                            finish()
+                                        }
+                                        .addOnFailureListener {
+                                            println("Errore salvataggio utente: ${it.message}")
+                                        }
+                                }
+                            }
+                            else {
                                 println("Registrazione fallita: \${task.exception?.message}")
                             }
                         }

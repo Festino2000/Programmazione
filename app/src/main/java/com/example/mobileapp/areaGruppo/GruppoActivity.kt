@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.mobileapp.R
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.example.mobileapp.areaGruppo.AggiungiGruppoDialog.OnGruppoCreatoListener
 
 class GruppoActivity : AppCompatActivity() {
 
@@ -34,10 +35,17 @@ class GruppoActivity : AppCompatActivity() {
         }
         buttonAggiungiGruppo.setOnClickListener {
             val dialog = AggiungiGruppoDialog()
+            dialog.listener = object : OnGruppoCreatoListener {
+                override fun onGruppoCreato(titolo: String) {
+                    aggiungiNuovoGruppo(titolo)  // Aggiunge il gruppo alla lista
+                }
+            }
             dialog.show(supportFragmentManager, "AggiungiGruppoDialog")
+
             buttonEntraGruppo.visibility = View.GONE
             buttonAggiungiGruppo.visibility = View.GONE
         }
+
         touchSchermo.setOnTouchListener { v, event ->
             if (buttonEntraGruppo.isVisible || buttonAggiungiGruppo.isVisible) {
                 buttonEntraGruppo.visibility = View.GONE
@@ -53,6 +61,4 @@ class GruppoActivity : AppCompatActivity() {
         adapter.notifyItemInserted(gruppiList.size - 1)
         recyclerView.scrollToPosition(gruppiList.size - 1)  // Scorri all'ultimo elemento
     }
-
-
 }

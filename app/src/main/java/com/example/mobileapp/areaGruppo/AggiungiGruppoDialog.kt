@@ -12,6 +12,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import com.example.mobileapp.R
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlin.random.Random
 
@@ -50,6 +51,12 @@ class AggiungiGruppoDialog : DialogFragment() {
             return
         }
 
+        val currentUserUid = FirebaseAuth.getInstance().currentUser?.uid
+        if (currentUserUid == null) {
+            Toast.makeText(requireContext(), "Errore: utente non autenticato", Toast.LENGTH_SHORT).show()
+            return
+        }
+
         generaIDUnivoco { idUnico ->
             if (idUnico == null) {
                 Toast.makeText(
@@ -58,7 +65,13 @@ class AggiungiGruppoDialog : DialogFragment() {
                     Toast.LENGTH_SHORT
                 ).show()
             } else {
-                val gruppo = Gruppo(titolo, descrizione, idUnico)
+                val gruppo = Gruppo(
+                    titolo = titolo,
+                    descrizione = descrizione,
+                    idUnico = idUnico,
+                    utentiID = listOf(currentUserUid)
+                )
+
                 db.collection("Gruppi")
                     .add(gruppo)
                     .addOnSuccessListener {
@@ -67,8 +80,8 @@ class AggiungiGruppoDialog : DialogFragment() {
                             "Gruppo creato con successo",
                             Toast.LENGTH_SHORT
                         ).show()
-                        listener?.onGruppoCreato(titolo) // 🔥 Notifica la GruppoActivity
-                        dismiss() // Chiude il dialog
+                        listener?.onGruppoCreato(titolo)
+                        dismiss()
                     }
                     .addOnFailureListener {
                         Toast.makeText(
@@ -79,8 +92,8 @@ class AggiungiGruppoDialog : DialogFragment() {
                     }
             }
         }
-
     }
+
 
     private fun generaIDUnivoco(callback: (String?) -> Unit) {
         val tentativiMax = 10

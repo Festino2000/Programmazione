@@ -25,14 +25,17 @@ class GruppoActivity : AppCompatActivity() {
         recyclerView.layoutManager = LinearLayoutManager(this)
         adapter = GruppoAdapter(gruppiList)
         recyclerView.adapter = adapter
+
         val fab_button = findViewById<Button>(R.id.fabMenu)
         val buttonAggiungiGruppo = findViewById<Button>(R.id.fabAggiungiGruppo)
         val buttonEntraGruppo = findViewById<Button>(R.id.fabEntraGruppo)
         val touchSchermo = findViewById<View>(R.id.coordinatorLayout)
+
         fab_button.setOnClickListener{
             buttonEntraGruppo.visibility = View.VISIBLE
             buttonAggiungiGruppo.visibility = View.VISIBLE
         }
+
         buttonAggiungiGruppo.setOnClickListener {
             val dialog = AggiungiGruppoDialog()
             dialog.listener = object : OnGruppoCreatoListener {
@@ -41,7 +44,13 @@ class GruppoActivity : AppCompatActivity() {
                 }
             }
             dialog.show(supportFragmentManager, "AggiungiGruppoDialog")
+            buttonEntraGruppo.visibility = View.GONE
+            buttonAggiungiGruppo.visibility = View.GONE
+        }
 
+        buttonEntraGruppo.setOnClickListener {
+            val dialog = EntraGruppoDialog()
+            dialog.show(supportFragmentManager, "EntraGruppoDialog")
             buttonEntraGruppo.visibility = View.GONE
             buttonAggiungiGruppo.visibility = View.GONE
         }

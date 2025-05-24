@@ -9,5 +9,5 @@ data class SpesaCondivisa(
     val mese: Int,
     val anno: Int,
     val importo: Float,
-    val utentiCoinvolti: List<Utente>
+    //val utenteCoinvolto: String
 )

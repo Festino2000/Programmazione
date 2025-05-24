@@ -1,4 +1,4 @@
 package com.example.mobileapp.areaGruppo
 
-class SpeseCondiviseFragment {
+class SaldatiFragment {
 }

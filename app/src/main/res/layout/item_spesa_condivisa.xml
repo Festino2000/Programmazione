@@ -12,12 +12,12 @@
         android:layout_height="wrap_content"
         android:padding="12dp">
 
-        <!-- Titolo della spesa -->
+        <!-- Nome persona -->
         <TextView
-            android:id="@+id/textTitoloSpesa"
+            android:id="@+id/textPersona"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="Titolo della spesa"
+            android:text="Nome partecipante"
             android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
             android:textStyle="bold"
             app:layout_constraintTop_toTopOf="parent"
@@ -35,7 +35,7 @@
             android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
             android:textStyle="bold"
             android:textColor="@android:color/black"
-            app:layout_constraintTop_toTopOf="@id/textTitoloSpesa"
+            app:layout_constraintTop_toTopOf="@id/textPersona"
             app:layout_constraintEnd_toEndOf="parent" />
 
         <!-- Descrizione -->
@@ -43,14 +43,26 @@
             android:id="@+id/textDescrizioneSpesa"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="Mario ha pagato, condiviso con Luca"
+            android:text="Descrizione"
             android:textColor="@android:color/darker_gray"
             android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
-            app:layout_constraintTop_toBottomOf="@id/textTitoloSpesa"
+            app:layout_constraintTop_toBottomOf="@id/textPersona"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
 
-        <!-- Etichetta NON PAGATO -->
+        <!-- Data -->
+        <TextView
+            android:id="@+id/textDataSpesa"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="12/05/2025"
+            android:textSize="12sp"
+            android:textColor="@android:color/darker_gray"
+            app:layout_constraintTop_toBottomOf="@id/textDescrizioneSpesa"
+            app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginTop="4dp" />
+
+        <!-- Etichetta Stato -->
         <TextView
             android:id="@+id/textStatoPagamento"
             android:layout_width="wrap_content"
@@ -61,7 +73,7 @@
             android:paddingHorizontal="12dp"
             android:paddingVertical="4dp"
             android:textSize="12sp"
-            app:layout_constraintTop_toBottomOf="@id/textDescrizioneSpesa"
+            app:layout_constraintTop_toBottomOf="@id/textDataSpesa"
             app:layout_constraintStart_toStartOf="parent"
             android:layout_marginTop="8dp" />
 

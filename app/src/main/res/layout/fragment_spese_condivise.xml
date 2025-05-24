@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/coordinatorLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".areaGruppo.SchermataSpeseFragment">
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="16dp"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <!-- Saldo -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Il tuo saldo"
+                android:textStyle="bold"
+                android:textColor="@android:color/black"
+                android:textSize="16sp"/>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="4dp">
+
+                <TextView
+                    android:id="@+id/totaleDaRicevere"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="+50€"
+                    android:textColor="@android:color/holo_green_dark"
+                    android:textSize="16sp"
+                    android:layout_marginEnd="16dp"/>
+
+                <TextView
+                    android:id="@+id/totaleDaPagare"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="-30€"
+                    android:textColor="@android:color/holo_red_dark"
+                    android:textSize="16sp"/>
+            </LinearLayout>
+
+            <!-- Da pagare -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Da pagare"
+                android:textStyle="bold"
+                android:layout_marginTop="24dp"
+                android:textSize="16sp"/>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerViewDaPagare"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:nestedScrollingEnabled="false"
+                tools:listitem="@layout/item_spesa_condivisa"/>
+
+            <!-- Da ricevere -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Da ricevere"
+                android:textStyle="bold"
+                android:layout_marginTop="24dp"
+                android:textSize="16sp"/>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerViewDaRicevere"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:nestedScrollingEnabled="false"
+                tools:listitem="@layout/item_spesa_condivisa"/>
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+    <!-- FAB -->
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fabAggiungiSpesa"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:contentDescription="Aggiungi spesa"
+        android:src="@drawable/segno_piu"
+        app:backgroundTint="@color/purple_500"
+        app:tint="@android:color/white"
+        app:layout_anchorGravity="bottom|end"
+        app:layout_anchor="@id/coordinatorLayout"/>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

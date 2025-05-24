@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="24dp">
+
+    <EditText
+        android:id="@+id/editTextTitolo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Titolo del gruppo"
+        android:inputType="text"
+        android:importantForAutofill="yes"/>
+
+    <EditText
+        android:id="@+id/editTextDescrizione"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Descrizione del gruppo"
+        android:inputType="textMultiLine"
+        android:minLines="3"
+        android:gravity="top"
+        android:layout_marginTop="12dp"/>
+
+    <Button
+        android:id="@+id/buttonConferma"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Crea Gruppo"
+        android:layout_gravity="end"
+        android:layout_marginTop="16dp"/>
+</LinearLayout>

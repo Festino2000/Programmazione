@@ -1,46 +1,71 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
+<androidx.coordinatorlayout.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/coordinatorLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".areaGruppo.GruppoActivity">
 
-    <!-- RecyclerView per visualizzare i gruppi -->
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerViewGruppi"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_margin="16dp"
-        android:scrollbars="vertical"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/buttonAggiungiGruppo"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
-    <!-- Pulsante per aggiungere un nuovo gruppo -->
-    <Button
-        android:id="@+id/buttonAggiungiGruppo"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Aggiungi Gruppo"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        android:layout_marginBottom="16dp" />
+        <!-- RecyclerView -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerViewGruppi"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_margin="16dp"
+            android:scrollbars="vertical"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
 
-    <!-- FragmentContainerView per il form aggiunta gruppo -->
-    <androidx.fragment.app.FragmentContainerView
-        android:id="@+id/fragmentContainerView"
-        android:name="com.example.mobileapp.areaGruppo.AggiungiGruppoFragment"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:visibility="gone"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        <!-- FragmentContainerView -->
+        <FrameLayout
+            android:id="@+id/fragmentContainerView"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            tools:layout="@layout/dialog_aggiungi_gruppo" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <!-- Pulsanti secondari  -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/fabAggiungiGruppo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="16dp"
+            android:text="Aggiungi Gruppo"
+            android:visibility="gone"
+            app:layout_constraintBottom_toTopOf="@+id/fabMenu"
+            app:layout_constraintEnd_toEndOf="parent" />
 
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/fabEntraGruppo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="16dp"
+            android:text="Entra Gruppo"
+            android:visibility="gone"
+            app:layout_constraintBottom_toTopOf="@+id/fabAggiungiGruppo"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <!-- FAB principale -->
+        <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+            android:id="@+id/fabMenu"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            app:icon="@drawable/segno_piu"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

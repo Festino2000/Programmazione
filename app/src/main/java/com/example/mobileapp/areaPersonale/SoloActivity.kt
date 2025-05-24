@@ -22,7 +22,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.mobileapp.R
 import com.example.mobileapp.SpacingItemDecoration
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.google.android.material.slider.RangeSlider
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
@@ -78,12 +77,6 @@ class SoloActivity : AppCompatActivity(), AggiungiSpesaFragment.OnSpesaAggiuntaL
             .replace(R.id.fragment_container, fragment, "AGGIUNGI_SPESA_FRAGMENT")
             .addToBackStack(null)
             .commit()
-    }
-
-    fun chiudiFragment() {
-        btnAggiungiSpesa.visibility = View.VISIBLE
-        findViewById<FrameLayout>(R.id.fragment_container).visibility = View.GONE
-        supportFragmentManager.popBackStack()
     }
 
     override fun onSpesaAggiunta(spesa: Spesa) {
@@ -151,7 +144,7 @@ class SoloActivity : AppCompatActivity(), AggiungiSpesaFragment.OnSpesaAggiuntaL
             .setItems(opzioni) { _, which ->
                 when (which) {
                     0 -> mostraDialogoCategorie()
-                    1 -> filtraPerPrezzo()
+                    1 -> mostraDialogoPrezzo()
                     2 -> ordinaPerTitolo()
                     3 -> mostraDialogoIntervalloDate()
                 }
@@ -160,21 +153,6 @@ class SoloActivity : AppCompatActivity(), AggiungiSpesaFragment.OnSpesaAggiuntaL
             .show()
     }
 
-    // Dialogo per selezione intervallo prezzo
-    private fun mostraDialogoPrezzo() {
-        val view = layoutInflater.inflate(R.layout.dialog_range_slider, null)
-        val slider = view.findViewById<RangeSlider>(R.id.sliderPrezzo)
-
-        MaterialAlertDialogBuilder(this)
-            .setTitle("Seleziona intervallo di prezzo")
-            .setView(view)
-            .setPositiveButton("Applica") { _, _ ->
-                val valori = slider.values
-                filtraPerPrezzoPersonalizzato(valori[0], valori[1])
-            }
-            .setNegativeButton("Annulla", null)
-            .show()
-    }
 
     // Dialogo per selezione categoria
     private fun mostraDialogoCategorie() {
@@ -191,7 +169,10 @@ class SoloActivity : AppCompatActivity(), AggiungiSpesaFragment.OnSpesaAggiuntaL
 
                 MaterialAlertDialogBuilder(this)
                     .setTitle("Filtra per categoria")
-                    .setMultiChoiceItems(tutteLeCategorie.toTypedArray(), checkedItems) { _, which, isChecked ->
+                    .setMultiChoiceItems(
+                        tutteLeCategorie.toTypedArray(),
+                        checkedItems
+                    ) { _, which, isChecked ->
                         checkedItems[which] = isChecked
                     }
                     .setPositiveButton("Applica") { _, _ ->
@@ -202,9 +183,11 @@ class SoloActivity : AppCompatActivity(), AggiungiSpesaFragment.OnSpesaAggiuntaL
                     .show()
             }
             .addOnFailureListener {
-                Toast.makeText(this, "Errore nel caricamento delle categorie", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Errore nel caricamento delle categorie", Toast.LENGTH_SHORT)
+                    .show()
             }
-    }
+        }
+
 
     // Ordina per data all'interno di un intervallo selezionato
     private fun mostraDialogoOrdinamentoDate(inizio: Calendar, fine: Calendar) {
@@ -235,6 +218,33 @@ class SoloActivity : AppCompatActivity(), AggiungiSpesaFragment.OnSpesaAggiuntaL
         }, calendarInizio.get(Calendar.YEAR), calendarInizio.get(Calendar.MONTH), calendarInizio.get(Calendar.DAY_OF_MONTH)).show()
     }
 
+    // Dialogo per selezione intervallo prezzo con checkbox
+    private fun mostraDialogoPrezzo() {
+        val opzioni = arrayOf(
+            "Meno di 50€",
+            "Da 50€ a 100€",
+            "Più di 100€"
+        )
+        val checkedItems = booleanArrayOf(false, false, false)
+
+        MaterialAlertDialogBuilder(this)
+            .setTitle("Filtra per Prezzo")
+            .setMultiChoiceItems(opzioni, checkedItems) { _, which, isChecked ->
+                checkedItems[which] = isChecked
+            }
+            .setPositiveButton("Applica") { _, _ ->
+                val filtri = mutableListOf<Pair<Float, Float>>()
+
+                if (checkedItems[0]) filtri.add(0f to 50f)
+                if (checkedItems[1]) filtri.add(50f to 100f)  // correzione 1000f → 100f
+                if (checkedItems[2]) filtri.add(100f to Float.MAX_VALUE)
+
+                filtraPerPrezzo(filtri)
+            }
+            .setNegativeButton("Annulla", null)
+            .show()
+    }
+
     // Filtro per categorie selezionate
     private fun filtraPerCategorie(categorie: List<String>) {
         val spese = viewModel.spese.value ?: return
@@ -244,23 +254,23 @@ class SoloActivity : AppCompatActivity(), AggiungiSpesaFragment.OnSpesaAggiuntaL
             Toast.makeText(this, "Nessuna spesa trovata per le categorie selezionate", Toast.LENGTH_SHORT).show()
         }
     }
-
-    // Filtro per prezzo con range opzionale
-    private fun filtraPerPrezzo(min: Float = 0f, max: Float = Float.MAX_VALUE) {
+    private fun filtraPerPrezzo(rangeList: List<Pair<Float, Float>>) {
         val spese = viewModel.spese.value ?: return
-        adapter.submitList(spese.filter { it.importo in min..max })
+        val speseFiltrate = spese.filter { spesa ->
+            rangeList.any { (min, max) -> spesa.importo in min..max }
+        }
+
+        adapter.submitList(speseFiltrate)
+        if (speseFiltrate.isEmpty()) {
+            Toast.makeText(this, "Nessuna spesa trovata per i prezzi selezionati", Toast.LENGTH_SHORT).show()
+        }
+        filtroAttivo = true
     }
 
     // Ordina per titolo
     private fun ordinaPerTitolo() {
         val spese = viewModel.spese.value ?: return
         adapter.submitList(spese.sortedBy { it.titolo.lowercase() })
-    }
-
-    // Filtro personalizzato per range di prezzo
-    private fun filtraPerPrezzoPersonalizzato(min: Float, max: Float) {
-        val spese = viewModel.spese.value ?: return
-        adapter.submitList(spese.filter { it.importo in min..max })
     }
 
     // Filtro per data con ordinamento crescente/decrescente

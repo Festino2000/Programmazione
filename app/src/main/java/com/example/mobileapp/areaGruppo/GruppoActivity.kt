@@ -4,10 +4,11 @@ import android.os.Bundle
 import android.view.View
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.mobileapp.R
-import androidx.fragment.app.FragmentContainerView
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
 class GruppoActivity : AppCompatActivity() {
 
@@ -23,16 +24,27 @@ class GruppoActivity : AppCompatActivity() {
         recyclerView.layoutManager = LinearLayoutManager(this)
         adapter = GruppoAdapter(gruppiList)
         recyclerView.adapter = adapter
-
-        val buttonAggiungi = findViewById<Button>(R.id.buttonAggiungiGruppo)
-        buttonAggiungi.setOnClickListener {
-            val fragmentContainer = findViewById<FragmentContainerView>(R.id.fragmentContainerView)
-            fragmentContainer.visibility = View.VISIBLE
-
-            supportFragmentManager.beginTransaction()
-                .replace(R.id.fragmentContainerView, AggiungiGruppoFragment())
-                .addToBackStack(null)
-                .commit()
+        val fab_button = findViewById<Button>(R.id.fabMenu)
+        val buttonAggiungiGruppo = findViewById<Button>(R.id.fabAggiungiGruppo)
+        val buttonEntraGruppo = findViewById<Button>(R.id.fabEntraGruppo)
+        val touchSchermo = findViewById<View>(R.id.coordinatorLayout)
+        fab_button.setOnClickListener{
+            buttonEntraGruppo.visibility = View.VISIBLE
+            buttonAggiungiGruppo.visibility = View.VISIBLE
+        }
+        buttonAggiungiGruppo.setOnClickListener {
+            val dialog = AggiungiGruppoDialog()
+            dialog.show(supportFragmentManager, "AggiungiGruppoDialog")
+            buttonEntraGruppo.visibility = View.GONE
+            buttonAggiungiGruppo.visibility = View.GONE
+        }
+        touchSchermo.setOnTouchListener { v, event ->
+            if (buttonEntraGruppo.isVisible || buttonAggiungiGruppo.isVisible) {
+                buttonEntraGruppo.visibility = View.GONE
+                buttonAggiungiGruppo.visibility = View.GONE
+                v.performClick()
+            }
+            false
         }
     }
 

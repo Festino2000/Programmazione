@@ -33,12 +33,6 @@
         app:layout_constraintTop_toTopOf="@+id/toolbar"
         app:layout_constraintVertical_bias="0.973" />
     <!-- RecyclerView -->
-
-    <!-- Pulsante Aggiungi Spesa -->
-
-    <!-- FloatingActionButton per Aggiungi Categoria -->
-
-    <!-- Testo "+" sopra il FAB -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerViewSpese"
         android:layout_width="0dp"

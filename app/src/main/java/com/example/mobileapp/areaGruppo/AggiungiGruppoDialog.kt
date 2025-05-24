@@ -1,5 +1,6 @@
 package com.example.mobileapp.areaGruppo
 
+import android.app.Dialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -7,12 +8,14 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
+import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import com.example.mobileapp.R
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlin.random.Random
 
-class AggiungiGruppoFragment : Fragment() {
+class AggiungiGruppoDialog : DialogFragment() {
 
     private lateinit var editTextTitolo: EditText
     private lateinit var editTextDescrizione: EditText
@@ -20,20 +23,22 @@ class AggiungiGruppoFragment : Fragment() {
 
     private val db = FirebaseFirestore.getInstance()
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?,
-    ): View? {
-        val view = inflater.inflate(R.layout.fragment_aggiungi_gruppo, container, false)
+    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+        val inflater = LayoutInflater.from(requireContext())
+        val view = inflater.inflate(R.layout.dialog_aggiungi_gruppo, null)
+
 
         editTextTitolo = view.findViewById(R.id.editTextTitolo)
-        editTextDescrizione = view.findViewById(R.id.editTextDescrizione)
-        buttonConferma = view.findViewById(R.id.buttonConferma)
+            editTextDescrizione = view.findViewById(R.id.editTextDescrizione)
+            buttonConferma = view.findViewById(R.id.buttonConferma)
+            val dialog = AlertDialog.Builder(requireContext())
+            .setView(view)
+            .create()
 
-        buttonConferma.setOnClickListener { salvaGruppo() }
+            buttonConferma.setOnClickListener { salvaGruppo() }
 
-        return view
-    }
+            return dialog
+        }
 
     private fun salvaGruppo() {
         val titolo = editTextTitolo.text.toString().trim()

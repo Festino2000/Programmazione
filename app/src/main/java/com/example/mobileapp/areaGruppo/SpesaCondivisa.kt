@@ -1,7 +1,5 @@
 package com.example.mobileapp.areaGruppo
 
-import com.example.mobileapp.areaGruppo.Utente
-
 data class SpesaCondivisa(
     val titolo: String,
     val descrizione: String,
@@ -9,5 +7,5 @@ data class SpesaCondivisa(
     val mese: Int,
     val anno: Int,
     val importo: Float,
-    val utentiCoinvolti: List<Utente>
+    val idUtentiCoinvolti: List<String>
 )

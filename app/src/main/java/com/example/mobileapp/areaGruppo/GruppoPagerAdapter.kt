@@ -5,7 +5,7 @@ import com.example.mobileapp.areaGruppo.SaldatiFragment
 import com.example.mobileapp.areaGruppo.BilancioFragment
 import com.example.mobileapp.areaGruppo.SpesaCondivisaFragment
 
-class GruppoPagerAdapter(activity: FragmentActivity) : FragmentStateAdapter(activity) {
+class GruppoPagerAdapter(fragment: Fragment) : FragmentStateAdapter(fragment) {
     override fun getItemCount(): Int = 3
 
     override fun createFragment(position: Int): Fragment {
@@ -14,6 +14,6 @@ class GruppoPagerAdapter(activity: FragmentActivity) : FragmentStateAdapter(acti
             1 -> SaldatiFragment()
             2 -> BilancioFragment()
             else -> Fragment()
-        } as Fragment
+        }
     }
 }

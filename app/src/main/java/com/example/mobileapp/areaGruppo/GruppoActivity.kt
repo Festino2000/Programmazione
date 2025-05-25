@@ -34,14 +34,15 @@ class GruppoActivity : AppCompatActivity() {
         adapter = GruppoAdapter(gruppiList)
         recyclerView.adapter = adapter
 
-        /*val button = findViewById<Button>(R.id.button)
+        val button = findViewById<Button>(R.id.button)
         button.setOnClickListener {
+            Toast.makeText(this, "Click OK", Toast.LENGTH_SHORT).show()
             val fragment = SchermataSpeseFragment()
             supportFragmentManager.beginTransaction()
                 .replace(R.id.fragmentContainerView, fragment)
                 .addToBackStack(null)
                 .commit()
-        }*/
+        }
         val fab_button = findViewById<Button>(R.id.fabMenu)
         val buttonAggiungiGruppo = findViewById<Button>(R.id.fabAggiungiGruppo)
         val buttonEntraGruppo = findViewById<Button>(R.id.fabEntraGruppo)

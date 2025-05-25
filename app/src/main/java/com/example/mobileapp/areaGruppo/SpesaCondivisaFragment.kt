@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -11,7 +12,7 @@ import com.example.mobileapp.R
 import com.example.mobileapp.areaGruppo.SpesaCondivisaAdapter
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 
-class SpesaCondivisaFragment : Fragment() {
+class SpesaCondivisaFragment : Fragment(R.layout.fragment_spese_condivise) {
 
     private lateinit var recyclerViewDaPagare: RecyclerView
     private lateinit var recyclerViewDaRicevere: RecyclerView
@@ -19,14 +20,20 @@ class SpesaCondivisaFragment : Fragment() {
     private lateinit var adapterDaRicevere: SpesaCondivisaAdapter
     private lateinit var fabAggiungiSpesa: FloatingActionButton
 
-    override fun onCreateView(
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
+    ): View = TextView(requireContext()).apply {
+        text = "Spese"
+        textSize = 24f
+    }}
+    /*override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         return inflater.inflate(R.layout.fragment_spese_condivise, container, false)
-    }
+    }*/
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    /*override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         recyclerViewDaPagare = view.findViewById(R.id.recyclerViewDaPagare)
@@ -59,5 +66,5 @@ class SpesaCondivisaFragment : Fragment() {
         fabAggiungiSpesa.setOnClickListener {
             // TODO: Apri dialog o schermata per aggiungere una nuova spesa condivisa
         }
-    }
-}
+    }+/}
+}*/

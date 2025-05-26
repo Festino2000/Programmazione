@@ -34,7 +34,9 @@ class GruppoActivity : AppCompatActivity() {
 
         recyclerView = findViewById(R.id.recyclerViewGruppi)
         recyclerView.layoutManager = LinearLayoutManager(this)
-        adapter = GruppoAdapter(gruppiList)
+        adapter = GruppoAdapter(gruppiList){ gruppo ->
+            apriSchermataSpeseGruppo(gruppo)
+        }
         recyclerView.adapter = adapter
 
         val fabMenu = findViewById<ExtendedFloatingActionButton>(R.id.fabMenu)
@@ -50,8 +52,9 @@ class GruppoActivity : AppCompatActivity() {
         buttonAggiungiGruppo.setOnClickListener {
             val dialog = AggiungiGruppoDialog()
             dialog.listener = object : AggiungiGruppoDialog.OnGruppoCreatoListener {
-                override fun onGruppoCreato(titolo: String) {
+                override fun onGruppoCreato(gruppo: Gruppo) {
                     viewModel.caricaGruppiUtente()
+                    apriSchermataSpeseGruppo(gruppo)
                 }
             }
             dialog.show(supportFragmentManager, "AggiungiGruppoDialog")
@@ -84,11 +87,27 @@ class GruppoActivity : AppCompatActivity() {
 
         // Carica inizialmente i gruppi dell’utente
         viewModel.caricaGruppiUtente()
+        
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.menu_main, menu)
         return true
+    }
+    private fun apriSchermataSpeseGruppo(gruppo: Gruppo) {
+        val fragment = SchermataSpeseFragment()
+
+        // Passaggio dati al fragment (es. ID gruppo)
+        val bundle = Bundle().apply {
+            putString("idGruppo", gruppo.idUnico)
+            putString("titoloGruppo", gruppo.titolo)
+        }
+        fragment.arguments = bundle
+
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.fragmentContainerView, fragment)
+            .addToBackStack(null)
+            .commit()
     }
 }
 

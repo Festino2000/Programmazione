@@ -6,13 +6,22 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.mobileapp.R
 import com.example.mobileapp.areaGruppo.Gruppo
 
-class GruppoAdapter(private val gruppiList: List<Gruppo>) :
+class GruppoAdapter(
+    private val gruppiList: List<Gruppo>,
+    private val onGruppoClick: (Gruppo) -> Unit) :
     RecyclerView.Adapter<GruppoAdapter.GruppiViewHolder>() {
 
     inner class GruppiViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val titolo: TextView = itemView.findViewById(R.id.textViewTitoloGruppo)
         val descrizione: TextView = itemView.findViewById(R.id.textViewDescrizioneGruppo)
         val idUnico: TextView = itemView.findViewById(R.id.textViewIdGruppo)
+
+        init {
+            itemView.setOnClickListener {
+                val gruppo = gruppiList[adapterPosition]
+                onGruppoClick(gruppo)
+            }
+        }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): GruppiViewHolder {

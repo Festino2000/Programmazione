@@ -9,7 +9,7 @@ import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
-import androidx.core.view.isVisible
+import com.example.mobileapp.FabMenuController
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -22,13 +22,12 @@ class GruppoActivity : AppCompatActivity() {
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: GruppoAdapter
     private val gruppiList = mutableListOf<Gruppo>()
-
+    private lateinit var fabMenuController: FabMenuController
     private val viewModel: GruppoViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_gruppo)
-
         val toolbar = findViewById<Toolbar>(R.id.toolbar2)
         setSupportActionBar(toolbar)
 
@@ -44,12 +43,15 @@ class GruppoActivity : AppCompatActivity() {
         val buttonEntraGruppo = findViewById<MaterialButton>(R.id.fabEntraGruppo)
         val touchSchermo = findViewById<View>(R.id.coordinatorLayout)
 
-        fabMenu.setOnClickListener {
-            buttonAggiungiGruppo.visibility = View.VISIBLE
-            buttonEntraGruppo.visibility = View.VISIBLE
-        }
+        //serve ad inzializzare il fabMenuController
+        fabMenuController = FabMenuController(
+            fabMenu = fabMenu,
+            fabButtons = listOf(buttonAggiungiGruppo, buttonEntraGruppo),
+            rootView = touchSchermo
+        )
 
         buttonAggiungiGruppo.setOnClickListener {
+            fabMenuController.closeMenu()
             val dialog = AggiungiGruppoDialog()
             dialog.listener = object : AggiungiGruppoDialog.OnGruppoCreatoListener {
                 override fun onGruppoCreato(gruppo: Gruppo) {
@@ -58,25 +60,14 @@ class GruppoActivity : AppCompatActivity() {
                 }
             }
             dialog.show(supportFragmentManager, "AggiungiGruppoDialog")
-            buttonAggiungiGruppo.visibility = View.GONE
-            buttonEntraGruppo.visibility = View.GONE
         }
 
         buttonEntraGruppo.setOnClickListener {
+            fabMenuController.closeMenu()
             val dialog = EntraGruppoDialog()
             dialog.show(supportFragmentManager, "EntraGruppoDialog")
-            buttonAggiungiGruppo.visibility = View.GONE
-            buttonEntraGruppo.visibility = View.GONE
         }
 
-        touchSchermo.setOnTouchListener { v, _ ->
-            if (buttonAggiungiGruppo.isVisible || buttonEntraGruppo.isVisible) {
-                buttonAggiungiGruppo.visibility = View.GONE
-                buttonEntraGruppo.visibility = View.GONE
-                v.performClick()
-            }
-            false
-        }
 
         // Observer del ViewModel per aggiornare la lista
         viewModel.gruppiUtente.observe(this, Observer { lista ->

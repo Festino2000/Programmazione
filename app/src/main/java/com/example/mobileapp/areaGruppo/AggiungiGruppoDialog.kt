@@ -80,7 +80,7 @@ class AggiungiGruppoDialog : DialogFragment() {
                             "Gruppo creato con successo",
                             Toast.LENGTH_SHORT
                         ).show()
-                        listener?.onGruppoCreato(titolo)
+                        listener?.onGruppoCreato(gruppo)
                         dismiss()
                     }
                     .addOnFailureListener {
@@ -126,7 +126,7 @@ class AggiungiGruppoDialog : DialogFragment() {
         tenta()
     }
     interface OnGruppoCreatoListener {
-        fun onGruppoCreato(titolo: String)
+        fun onGruppoCreato(gruppo: Gruppo)
     }
 }
 

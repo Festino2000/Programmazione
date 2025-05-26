@@ -6,20 +6,14 @@
     android:id="@+id/coordinatorLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:clickable="true"
+    android:focusable="true"
+    android:focusableInTouchMode="true"
     tools:context=".areaGruppo.GruppoActivity">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-
-        <Button
-            android:id="@+id/button"
-            android:layout_width="80dp"
-            android:layout_height="81dp"
-            android:text="Button"
-            app:layout_constraintBottom_toBottomOf="@+id/fragmentContainerView"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
 
         <com.google.android.material.appbar.MaterialToolbar
             android:id="@+id/toolbar2"
@@ -36,8 +30,8 @@
         <!-- RecyclerView -->
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerViewGruppi"
-            android:layout_width="412dp"
-            android:layout_height="678dp"
+            android:layout_width="368dp"
+            android:layout_height="629dp"
             android:layout_margin="16dp"
             android:scrollbars="vertical"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -50,8 +44,11 @@
         <!-- Pulsanti secondari  -->
         <FrameLayout
             android:id="@+id/fragmentContainerView"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_width="414dp"
+            android:layout_height="675dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/recyclerViewGruppi"
+            tools:layout_editor_absoluteX="-2dp">
 
         </FrameLayout>
 
@@ -85,6 +82,7 @@
             android:layout_margin="16dp"
             app:icon="@drawable/segno_piu"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

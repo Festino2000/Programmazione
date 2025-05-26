@@ -1,110 +1,103 @@
 package com.example.mobileapp.areaGruppo
 
-import GruppoPagerAdapter
-import android.content.Intent
+import GruppoAdapter
 import android.os.Bundle
 import android.view.Menu
-import android.view.MenuItem
 import android.view.View
 import android.widget.Button
 import android.widget.Toast
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.isVisible
+import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.mobileapp.R
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.example.mobileapp.areaGruppo.AggiungiGruppoDialog.OnGruppoCreatoListener
-import com.example.mobileapp.areaPersonale.AggiungiSpesaFragment
+import com.google.android.material.button.MaterialButton
+import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
 
 class GruppoActivity : AppCompatActivity() {
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: GruppoAdapter
-    private val gruppiList = mutableListOf<String>()
+    private val gruppiList = mutableListOf<Gruppo>()
+
+    private val viewModel: GruppoViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_gruppo)
+
         val toolbar = findViewById<Toolbar>(R.id.toolbar2)
         setSupportActionBar(toolbar)
+
         recyclerView = findViewById(R.id.recyclerViewGruppi)
         recyclerView.layoutManager = LinearLayoutManager(this)
         adapter = GruppoAdapter(gruppiList)
         recyclerView.adapter = adapter
 
-        val button = findViewById<Button>(R.id.button)
-        button.setOnClickListener {
-            Toast.makeText(this, "Click OK", Toast.LENGTH_SHORT).show()
-            val fragment = SchermataSpeseFragment()
-            supportFragmentManager.beginTransaction()
-                .replace(R.id.fragmentContainerView, fragment)
-                .addToBackStack(null)
-                .commit()
-        }
-        val fab_button = findViewById<Button>(R.id.fabMenu)
-        val buttonAggiungiGruppo = findViewById<Button>(R.id.fabAggiungiGruppo)
-        val buttonEntraGruppo = findViewById<Button>(R.id.fabEntraGruppo)
+        val fabMenu = findViewById<ExtendedFloatingActionButton>(R.id.fabMenu)
+        val buttonAggiungiGruppo = findViewById<MaterialButton>(R.id.fabAggiungiGruppo)
+        val buttonEntraGruppo = findViewById<MaterialButton>(R.id.fabEntraGruppo)
         val touchSchermo = findViewById<View>(R.id.coordinatorLayout)
 
-        fab_button.setOnClickListener{
-            buttonEntraGruppo.visibility = View.VISIBLE
+        fabMenu.setOnClickListener {
             buttonAggiungiGruppo.visibility = View.VISIBLE
+            buttonEntraGruppo.visibility = View.VISIBLE
         }
 
         buttonAggiungiGruppo.setOnClickListener {
             val dialog = AggiungiGruppoDialog()
-            dialog.listener = object : OnGruppoCreatoListener {
+            dialog.listener = object : AggiungiGruppoDialog.OnGruppoCreatoListener {
                 override fun onGruppoCreato(titolo: String) {
-                    aggiungiNuovoGruppo(titolo)  // Aggiunge il gruppo alla lista
+                    viewModel.caricaGruppiUtente()
                 }
             }
             dialog.show(supportFragmentManager, "AggiungiGruppoDialog")
-            buttonEntraGruppo.visibility = View.GONE
             buttonAggiungiGruppo.visibility = View.GONE
+            buttonEntraGruppo.visibility = View.GONE
         }
 
         buttonEntraGruppo.setOnClickListener {
             val dialog = EntraGruppoDialog()
             dialog.show(supportFragmentManager, "EntraGruppoDialog")
-            buttonEntraGruppo.visibility = View.GONE
             buttonAggiungiGruppo.visibility = View.GONE
+            buttonEntraGruppo.visibility = View.GONE
         }
 
-        touchSchermo.setOnTouchListener { v, event ->
-            if (buttonEntraGruppo.isVisible || buttonAggiungiGruppo.isVisible) {
-                buttonEntraGruppo.visibility = View.GONE
+        touchSchermo.setOnTouchListener { v, _ ->
+            if (buttonAggiungiGruppo.isVisible || buttonEntraGruppo.isVisible) {
                 buttonAggiungiGruppo.visibility = View.GONE
+                buttonEntraGruppo.visibility = View.GONE
                 v.performClick()
             }
             false
         }
-    }
-    private fun aggiungiNuovoGruppo(nome: String) {
-        gruppiList.add(nome)
-        adapter.notifyItemInserted(gruppiList.size - 1)
-        recyclerView.scrollToPosition(gruppiList.size - 1)  // Scorri all'ultimo elemento
 
+        // Observer del ViewModel per aggiornare la lista
+        viewModel.gruppiUtente.observe(this, Observer { lista ->
+            gruppiList.clear()
+            gruppiList.addAll(lista)
+            adapter.notifyDataSetChanged()
+        })
+
+        // Carica inizialmente i gruppi dell’utente
+        viewModel.caricaGruppiUtente()
     }
+
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.menu_main, menu)
         return true
     }
-    /*override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId) {
-            R.id.action_search -> {
-                // Azione per la ricerca
-                Toast.makeText(this, "Ricerca cliccata", Toast.LENGTH_SHORT).show()
-                true
-            }
-            R.id.action_settings -> {
-                // Azione per le impostazioni
-                Toast.makeText(this, "Impostazioni cliccate", Toast.LENGTH_SHORT).show()
-                true
-            }
-            else -> super.onOptionsItemSelected(item)
-        }
-
-    }*/
 }
+
+/*val button = findViewById<Button>(R.id.button)
+button.setOnClickListener {
+    Toast.makeText(this, "Click OK", Toast.LENGTH_SHORT).show()
+    val fragment = SchermataSpeseFragment()
+    supportFragmentManager.beginTransaction()
+        .replace(R.id.fragmentContainerView, fragment)
+        .addToBackStack(null)
+        .commit()
+}*/

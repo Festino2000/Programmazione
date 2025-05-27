@@ -51,36 +51,38 @@ class SpesaCondivisaFragment : Fragment(R.layout.fragment_spese_condivise) {
             .get()
             .addOnSuccessListener { result ->
                 val document = result.documents.firstOrNull()
+                val utentiId = document?.get("utentiID") as? List<String> ?: emptyList()
                 if (document == null) {
                     Toast.makeText(requireContext(), "Gruppo non trovato", Toast.LENGTH_SHORT).show()
                     return@addOnSuccessListener
                 }
                 idGruppoFirestore = document.id
-                adapterDaPagare = SpesaCondivisaAdapter(idGruppoFirestore)
-                adapterDaRicevere = SpesaCondivisaAdapter(idGruppoFirestore)
+                FirebaseFirestore.getInstance().collection("Utenti")
+                    .whereIn("utenteID", utentiId)
+                    .get()
+                    .addOnSuccessListener { utentiDocs ->
+                        val mioId = FirebaseAuth.getInstance().currentUser?.uid
+                        val listaUtenti = utentiDocs.mapNotNull {
+                            val id = it.getString("utenteID")
+                            val nick = it.getString("nickname")
+                            if (id != null && nick != null && id != mioId) Utente(id, nick) else null
 
-                recyclerViewDaPagare.adapter = adapterDaPagare
-                recyclerViewDaRicevere.adapter = adapterDaRicevere
-                caricaSpese(idGruppoFirestore, view)
+                        }
+                        val mappaUtenti = utentiDocs.mapNotNull {
+                            val id = it.getString("utenteID")
+                            val nick = it.getString("nickname")
+                            if (id != null && nick != null) id to nick else null
+                        }.toMap()
+
+                        adapterDaPagare = SpesaCondivisaAdapter(idGruppoFirestore, mappaUtenti)
+                        adapterDaRicevere = SpesaCondivisaAdapter(idGruppoFirestore, mappaUtenti)
+
+                        recyclerViewDaPagare.adapter = adapterDaPagare
+                        recyclerViewDaRicevere.adapter = adapterDaRicevere
+                        caricaSpese(idGruppoFirestore, view)
+
 
         fabAggiungiSpesa.setOnClickListener {
-            val utentiID = document?.get("utentiID") as? List<String> ?: emptyList()
-
-            FirebaseFirestore.getInstance().collection("Utenti")
-                .whereIn("utenteID", utentiID)
-                .get()
-                .addOnSuccessListener { utentiDocs ->
-                    val mioId = FirebaseAuth.getInstance().currentUser?.uid
-                    val listaUtenti = utentiDocs.mapNotNull {
-                        val id = it.getString("utenteID")
-                        val nick = it.getString("nickname")
-                        if (id != null && nick != null && id != mioId) Utente(id, nick) else null
-
-                    /*val listaUtenti = utentiDocs.mapNotNull {
-                        val id = it.getString("utenteID")
-                        val nick = it.getString("nickname")
-                        if (id != null && nick != null) Utente(id, nick) else null*/
-                    }
 
                     val dialog = AggiungiSpesaDialog(listaUtenti) { nuovaSpesa ->
                         val mioId = FirebaseAuth.getInstance().currentUser?.uid ?: return@AggiungiSpesaDialog
@@ -126,8 +128,8 @@ class SpesaCondivisaFragment : Fragment(R.layout.fragment_spese_condivise) {
                 listaSpese.addAll(speseCaricate)
 
                 // Aggiorna RecyclerView e Totali
-                adapterDaRicevere.submitList(listaSpese.filter { it.idUtentiCoinvolti.contains(mioId) })
-                adapterDaPagare.submitList(listaSpese.filter { !it.idUtentiCoinvolti.contains(mioId) })
+                adapterDaPagare.submitList(listaSpese.filter { it.idUtentiCoinvolti.contains(mioId) })
+                adapterDaRicevere.submitList(listaSpese.filter { !it.idUtentiCoinvolti.contains(mioId) })
 
                 aggiornaTotali(view, listaSpese)
             }
@@ -139,10 +141,11 @@ class SpesaCondivisaFragment : Fragment(R.layout.fragment_spese_condivise) {
         var totaleRicevere = 0f
 
         for (spesa in spese) {
+            val numQuote = spesa.idUtentiCoinvolti.size + 1
             if (spesa.idUtentiCoinvolti.contains(mioId)) {
-                totalePagare += spesa.importo / spesa.idUtentiCoinvolti.size
+                totalePagare += spesa.importo / (numQuote)
             } else {
-                totaleRicevere += spesa.importo
+                totaleRicevere += ((spesa.importo / numQuote) * spesa.idUtentiCoinvolti.size)
             }
         }
 

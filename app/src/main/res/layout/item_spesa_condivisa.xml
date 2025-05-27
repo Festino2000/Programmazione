@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="8dp"
@@ -37,6 +38,17 @@
             android:textColor="@android:color/black"
             app:layout_constraintTop_toTopOf="@id/textPersona"
             app:layout_constraintEnd_toEndOf="parent" />
+        <TextView
+            android:id="@+id/textQuotaSpesa"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Quota: 0€"
+            android:textSize="12sp"
+            android:textColor="@android:color/darker_gray"
+            app:layout_constraintTop_toBottomOf="@id/textImportoSpesa"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginTop="4dp"/>
+
 
         <!-- Descrizione -->
         <TextView
@@ -62,6 +74,17 @@
             app:layout_constraintStart_toStartOf="parent"
             android:layout_marginTop="4dp" />
 
+        <LinearLayout
+            android:id="@+id/layoutPartecipanti"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:orientation="vertical"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/textStatoPagamento" />
+
         <!-- Etichetta Stato -->
         <TextView
             android:id="@+id/textStatoPagamento"
@@ -76,6 +99,17 @@
             app:layout_constraintTop_toBottomOf="@id/textDataSpesa"
             app:layout_constraintStart_toStartOf="parent"
             android:layout_marginTop="8dp" />
-
+        <!-- Bottone di conferma (solo per creatore) -->
+        <Button
+            android:id="@+id/buttonConfermaRicezione"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="88dp"
+            android:layout_marginTop="4dp"
+            android:text="CONFERMA RICEZIONE"
+            android:textSize="12sp"
+            android:visibility="gone"
+            app:layout_constraintStart_toEndOf="@id/textStatoPagamento"
+            app:layout_constraintTop_toTopOf="@id/textStatoPagamento" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.cardview.widget.CardView>

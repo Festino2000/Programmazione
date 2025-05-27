@@ -65,14 +65,26 @@ class AggiungiSpesaDialog(
                 val titolo = editTitolo.text.toString()
                 val descrizione = editDescrizione.text.toString()
                 val importo = editImporto.text.toString().toFloatOrNull() ?: 0f
-                val utentiSelezionati = adapter.getUtentiSelezionati().map { it.utenteID }.toMutableList()
-                val mioId = FirebaseAuth.getInstance().currentUser?.uid
-                if (mioId != null && !utentiSelezionati.contains(mioId)) {
-                    utentiSelezionati.add(mioId)
-                }
+
+                val mioId = FirebaseAuth.getInstance().currentUser?.uid ?: return@setPositiveButton
+
+                val utentiSelezionati = adapter.getUtentiSelezionati()
+                    .map { it.utenteID }
+                    .filter { it != mioId } // ✅ Rimuove il creatore dalla lista
 
                 if (titolo.isNotBlank() && importo > 0 && utentiSelezionati.isNotEmpty()) {
-                    val spesa = SpesaCondivisa(titolo, descrizione, giorno, mese, anno, importo, utentiSelezionati)
+                    val spesa = SpesaCondivisa(
+                        titolo = titolo,
+                        descrizione = descrizione,
+                        giorno = giorno,
+                        mese = mese,
+                        anno = anno,
+                        importo = importo,
+                        idUtentiCoinvolti = utentiSelezionati,
+                        creatoreID = mioId,
+                        pagamentiEffettuati = mutableListOf(),
+                        pagamentiConfermati = mutableListOf()
+                    )
                     onSpesaAggiunta(spesa)
                 } else {
                     Toast.makeText(requireContext(), "Compila tutti i campi obbligatori", Toast.LENGTH_SHORT).show()

@@ -11,6 +11,7 @@ import androidx.fragment.app.DialogFragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.mobileapp.R
+import com.google.firebase.auth.FirebaseAuth
 import java.util.*
 
 class AggiungiSpesaDialog(
@@ -64,7 +65,11 @@ class AggiungiSpesaDialog(
                 val titolo = editTitolo.text.toString()
                 val descrizione = editDescrizione.text.toString()
                 val importo = editImporto.text.toString().toFloatOrNull() ?: 0f
-                val utentiSelezionati = adapter.getUtentiSelezionati().map { it.utenteID }
+                val utentiSelezionati = adapter.getUtentiSelezionati().map { it.utenteID }.toMutableList()
+                val mioId = FirebaseAuth.getInstance().currentUser?.uid
+                if (mioId != null && !utentiSelezionati.contains(mioId)) {
+                    utentiSelezionati.add(mioId)
+                }
 
                 if (titolo.isNotBlank() && importo > 0 && utentiSelezionati.isNotEmpty()) {
                     val spesa = SpesaCondivisa(titolo, descrizione, giorno, mese, anno, importo, utentiSelezionati)

@@ -94,7 +94,6 @@ class AggiungiGruppoDialog : DialogFragment() {
         }
     }
 
-
     private fun generaIDUnivoco(callback: (String?) -> Unit) {
         val tentativiMax = 10
         var tentativi = 0

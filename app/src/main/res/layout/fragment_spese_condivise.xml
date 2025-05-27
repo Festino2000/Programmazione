@@ -87,16 +87,17 @@
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 
-    <!-- FAB -->
+    <!-- FAB rigenerato e collegato -->
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fabAggiungiSpesa"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
         android:layout_margin="16dp"
         android:contentDescription="Aggiungi spesa"
         android:src="@drawable/segno_piu"
         app:backgroundTint="@color/purple_500"
-        app:tint="@android:color/white"
-        app:layout_anchorGravity="bottom|end"
-        app:layout_anchor="@id/coordinatorLayout"/>
+        app:tint="@android:color/white" />
+
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
+

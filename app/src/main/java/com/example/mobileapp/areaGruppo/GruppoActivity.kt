@@ -33,7 +33,7 @@ class GruppoActivity : AppCompatActivity() {
 
         recyclerView = findViewById(R.id.recyclerViewGruppi)
         recyclerView.layoutManager = LinearLayoutManager(this)
-        adapter = GruppoAdapter(gruppiList){ gruppo ->
+        adapter = GruppoAdapter(gruppiList) { gruppo ->
             apriSchermataSpeseGruppo(gruppo)
         }
         recyclerView.adapter = adapter
@@ -78,7 +78,16 @@ class GruppoActivity : AppCompatActivity() {
 
         // Carica inizialmente i gruppi dell’utente
         viewModel.caricaGruppiUtente()
-        
+
+        /*val button = findViewById<Button>(R.id.button)
+        button.setOnClickListener {
+            Toast.makeText(this, "Click OK", Toast.LENGTH_SHORT).show()
+            val fragment = SchermataSpeseFragment()
+            supportFragmentManager.beginTransaction()
+                .replace(R.id.fragmentContainerView, fragment)
+                .addToBackStack(null)
+                .commit()
+        }*/
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -101,13 +110,3 @@ class GruppoActivity : AppCompatActivity() {
             .commit()
     }
 }
-
-/*val button = findViewById<Button>(R.id.button)
-button.setOnClickListener {
-    Toast.makeText(this, "Click OK", Toast.LENGTH_SHORT).show()
-    val fragment = SchermataSpeseFragment()
-    supportFragmentManager.beginTransaction()
-        .replace(R.id.fragmentContainerView, fragment)
-        .addToBackStack(null)
-        .commit()
-}*/

@@ -19,6 +19,13 @@ class EntraGruppoDialog : DialogFragment() {
     private lateinit var buttonEntra: Button
     private val db = FirebaseFirestore.getInstance()
 
+    // Interfaccia per restituire il gruppo selezionato
+    interface OnGruppoEntratoListener {
+        fun onGruppoEntrato(nomeGruppo: String)
+    }
+
+    var listener: OnGruppoEntratoListener? = null
+
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val view = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_entra_gruppo, null)
         editTextIdGruppo = view.findViewById(R.id.editTextIdGruppo)
@@ -47,16 +54,19 @@ class EntraGruppoDialog : DialogFragment() {
             return
         }
 
-        // Cerca il gruppo con quell'ID
         db.collection("Gruppi")
             .whereEqualTo("idUnico", idUnico)
             .get()
             .addOnSuccessListener { documents ->
                 if (!documents.isEmpty) {
-                    val gruppoDoc = documents.documents[0].reference
+                    val doc = documents.documents[0]
+                    val gruppoDoc = doc.reference
+                    val nomeGruppo = doc.getString("nome") ?: "Gruppo"
+
                     gruppoDoc.update("utentiID", FieldValue.arrayUnion(currentUserUid))
                         .addOnSuccessListener {
                             Toast.makeText(requireContext(), "Entrato nel gruppo!", Toast.LENGTH_SHORT).show()
+                            listener?.onGruppoEntrato(nomeGruppo) // Chiama listener
                             dismiss()
                         }
                         .addOnFailureListener {

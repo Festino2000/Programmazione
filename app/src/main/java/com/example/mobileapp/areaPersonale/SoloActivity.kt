@@ -113,6 +113,10 @@ class SoloActivity : AppCompatActivity(), AggiungiSpesaFragment.OnSpesaAggiuntaL
                 mostraDialogFiltro()
                 true
             }
+            R.id.action_stats -> {
+                mostraPopupStatistiche()
+                true
+            }
             else -> super.onOptionsItemSelected(item)
         }
     }
@@ -295,5 +299,52 @@ class SoloActivity : AppCompatActivity(), AggiungiSpesaFragment.OnSpesaAggiuntaL
         if (speseFiltrate.isEmpty()) {
             Toast.makeText(this, "Nessuna spesa trovata in questo intervallo", Toast.LENGTH_SHORT).show()
         }
+    }
+    private fun mostraPopupStatistiche() {
+        val spese = viewModel.spese.value ?: return
+
+        // Totale complessivo
+        var totaleComplessivo = 0.0
+        for (spesa in spese) {
+            totaleComplessivo += spesa.importo
+        }
+
+        // Totale per categoria
+        val totalePerCategoria = mutableMapOf<String, Double>()
+        for (spesa in spese) {
+            val categoria = spesa.categoria
+            totalePerCategoria[categoria] = totalePerCategoria.getOrDefault(categoria, 0.0) + spesa.importo
+        }
+
+        // Totale ultimi 3 mesi
+        val oggi = Calendar.getInstance()
+        val treMesiFa = Calendar.getInstance().apply { add(Calendar.MONTH, -3) }
+        var totaleUltimi3Mesi = 0.0
+
+        for (spesa in spese) {
+            val dataSpesa = Calendar.getInstance().apply {
+                set(spesa.anno, spesa.mese - 1, spesa.giorno)
+            }
+            if (dataSpesa >= treMesiFa && dataSpesa <= oggi) {
+                totaleUltimi3Mesi += spesa.importo
+            }
+        }
+
+        // Costruzione del messaggio
+        val sb = StringBuilder()
+        sb.append("Statistiche Spese\n\n")
+        sb.append("Totale complessivo: €%.2f\n".format(totaleComplessivo))
+        sb.append("Totale ultimi 3 mesi: €%.2f\n\n".format(totaleUltimi3Mesi))
+        sb.append("Totale per categoria:\n")
+        for ((categoria, totale) in totalePerCategoria) {
+            sb.append("• $categoria: €%.2f\n".format(totale))
+        }
+
+        // Mostra AlertDialog
+        AlertDialog.Builder(this)
+            .setTitle("Statistiche")
+            .setMessage(sb.toString())
+            .setPositiveButton("OK", null)
+            .show()
     }
 }

@@ -49,19 +49,17 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/toolbar2" />
 
-        <!-- FragmentContainerView -->
-
-        <!-- Pulsanti secondari  -->
-        <FrameLayout
-            android:id="@+id/fragmentContainerView"
-            android:layout_width="414dp"
-            android:layout_height="675dp"
+        <!-- FAB principale -->
+        <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+            android:id="@+id/fabMenu"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            app:icon="@drawable/segno_piu"
+            android:layout_gravity="bottom|end"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/recyclerViewGruppi"
-            tools:layout_editor_absoluteX="-2dp">
-
-        </FrameLayout>
-
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
         <com.google.android.material.button.MaterialButton
             android:id="@+id/fabAggiungiGruppo"
             android:layout_width="wrap_content"
@@ -83,16 +81,18 @@
             android:visibility="gone"
             app:layout_constraintBottom_toTopOf="@+id/fabAggiungiGruppo"
             app:layout_constraintEnd_toEndOf="parent" />
+        <!-- FragmentContainerView -->
 
-        <!-- FAB principale -->
-        <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
-            android:id="@+id/fabMenu"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="16dp"
-            app:icon="@drawable/segno_piu"
+        <!-- Pulsanti secondari  -->
+        <FrameLayout
+            android:id="@+id/fragmentContainerView"
+            android:layout_width="414dp"
+            android:layout_height="675dp"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintTop_toTopOf="@+id/recyclerViewGruppi"
+            tools:layout_editor_absoluteX="-2dp">
+
+        </FrameLayout>
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

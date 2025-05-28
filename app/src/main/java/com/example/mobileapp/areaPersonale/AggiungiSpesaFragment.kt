@@ -176,7 +176,10 @@ class AggiungiSpesaFragment : Fragment(R.layout.fragment_aggiungi_spesa) {
         builder.setView(input)
 
         builder.setPositiveButton("Aggiungi") { dialogInterface, _ ->
-            val nuovaCategoria = input.text.toString().trim()
+            val nuovaCategoria = input.text.toString()
+                .trim()
+                .replaceFirstChar { it.uppercaseChar() }
+
             if (nuovaCategoria.isNotBlank()) {
                 val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return@setPositiveButton
                 val nuovaCategoriaMap = hashMapOf("nome" to nuovaCategoria)
@@ -195,12 +198,14 @@ class AggiungiSpesaFragment : Fragment(R.layout.fragment_aggiungi_spesa) {
             } else {
                 Toast.makeText(ctx, "Il nome della categoria non può essere vuoto", Toast.LENGTH_SHORT).show()
             }
+
             dialogInterface.dismiss()
         }
 
         builder.setNegativeButton("Annulla") { dialogInterface, _ ->
             dialogInterface.dismiss()
         }
+
         builder.show()
     }
 }

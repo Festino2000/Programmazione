@@ -95,8 +95,8 @@ class SpesaCondivisaFragment : Fragment(R.layout.fragment_spese_condivise) {
                         listaSpese.add(spesaConAutore)
                         aggiornaTotali(view, listaSpese)
 
-                        adapterDaRicevere.submitList(listaSpese.filter { it.idUtentiCoinvolti.contains(mioId) })
-                        adapterDaPagare.submitList(listaSpese.filter { !it.idUtentiCoinvolti.contains(mioId) })
+                        adapterDaRicevere.submitList(listaSpese.filter {it.creatoreID == mioId})
+                        adapterDaPagare.submitList(listaSpese.filter { it.idUtentiCoinvolti.contains(mioId)  })
 
                         // Facoltativo: salvataggio su Firestore
                         FirebaseFirestore.getInstance()
@@ -127,11 +127,22 @@ class SpesaCondivisaFragment : Fragment(R.layout.fragment_spese_condivise) {
                 listaSpese.clear()
                 listaSpese.addAll(speseCaricate)
 
-                // Aggiorna RecyclerView e Totali
-                adapterDaPagare.submitList(listaSpese.filter { it.idUtentiCoinvolti.contains(mioId) })
-                adapterDaRicevere.submitList(listaSpese.filter { !it.idUtentiCoinvolti.contains(mioId) })
+                val speseNonSaldate = listaSpese.filterNot { spesa ->
+                    spesa.pagamentiConfermati.containsAll(spesa.idUtentiCoinvolti)
+                }
 
-                aggiornaTotali(view, listaSpese)
+                // Mostra solo le spese rilevanti
+                adapterDaPagare.submitList(
+                    speseNonSaldate.filter {
+                        it.idUtentiCoinvolti.contains(mioId) && it.creatoreID != mioId
+                    }
+                )
+
+                adapterDaRicevere.submitList(
+                    speseNonSaldate.filter { it.creatoreID == mioId }
+                )
+
+                aggiornaTotali(view, speseNonSaldate)
             }
     }
 
@@ -142,6 +153,8 @@ class SpesaCondivisaFragment : Fragment(R.layout.fragment_spese_condivise) {
 
         for (spesa in spese) {
             val numQuote = spesa.idUtentiCoinvolti.size + 1
+            val tuttiPagato = spesa.pagamentiConfermati.containsAll(spesa.idUtentiCoinvolti)
+            if (tuttiPagato) continue
             if (spesa.idUtentiCoinvolti.contains(mioId)) {
                 totalePagare += spesa.importo / (numQuote)
             } else {

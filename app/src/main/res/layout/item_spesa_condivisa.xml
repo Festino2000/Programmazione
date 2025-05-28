@@ -51,18 +51,20 @@
 
 
         <!-- Descrizione -->
-        <TextView
-            android:id="@+id/textDescrizioneSpesa"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:text="Descrizione"
-            android:textColor="@android:color/darker_gray"
-            android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
-            app:layout_constraintTop_toBottomOf="@id/textPersona"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
 
         <!-- Data -->
+        <TextView
+            android:id="@+id/textDescrizioneSpesa"
+            android:layout_width="314dp"
+            android:layout_height="22dp"
+            android:text="Descrizione"
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
+            android:textColor="@android:color/darker_gray"
+            app:layout_constraintEnd_toStartOf="@+id/textQuotaSpesa"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/textPersona" />
+
         <TextView
             android:id="@+id/textDataSpesa"
             android:layout_width="wrap_content"

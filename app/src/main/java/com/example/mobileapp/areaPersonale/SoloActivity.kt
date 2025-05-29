@@ -337,7 +337,7 @@ class SoloActivity : AppCompatActivity(), AggiungiSpesaFragment.OnSpesaAggiuntaL
         sb.append("Totale ultimi 3 mesi: €%.2f\n\n".format(totaleUltimi3Mesi))
         sb.append("Totale per categoria:\n")
         for ((categoria, totale) in totalePerCategoria) {
-            sb.append("• $categoria: €%.2f\n".format(totale))
+            sb.append("$categoria: €%.2f\n".format(totale))
         }
 
         // Mostra AlertDialog

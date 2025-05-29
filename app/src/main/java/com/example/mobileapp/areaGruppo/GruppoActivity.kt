@@ -97,7 +97,7 @@ class GruppoActivity : AppCompatActivity() {
     private fun apriSchermataSpeseGruppo(gruppo: Gruppo) {
         val fragment = SchermataSpeseFragment()
 
-        // Passaggio dati al fragment (es. ID gruppo)
+        // Passaggio dati al fragment
         val bundle = Bundle().apply {
             putString("idGruppo", gruppo.idUnico)
             putString("titoloGruppo", gruppo.titolo)

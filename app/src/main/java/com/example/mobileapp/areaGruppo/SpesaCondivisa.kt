@@ -11,5 +11,6 @@ data class SpesaCondivisa(
     var creatoreID: String = "",
     var pagamentiEffettuati: MutableList<String> = mutableListOf(),
     var pagamentiConfermati: MutableList<String> = mutableListOf(),
-    var idDocumento: String? = null // Serve per aggiornare Firestore
+    var idDocumento: String? = null, // Serve per aggiornare Firestore
+    var notificaMostrata: Boolean = false
 )

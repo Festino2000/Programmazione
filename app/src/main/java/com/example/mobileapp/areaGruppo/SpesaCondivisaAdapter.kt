@@ -1,5 +1,6 @@
 package com.example.mobileapp.areaGruppo
 
+import android.app.AlertDialog
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -57,7 +58,6 @@ class SpesaCondivisaAdapter(private val gruppoId: String, private val mappaUtent
             textDescrizione.text = spesa.descrizione
             textData.text = String.format("%02d/%02d/%04d", spesa.giorno, spesa.mese, spesa.anno)
 
-            val pendenti = spesa.pagamentiEffettuati.filterNot { spesa.pagamentiConfermati.contains(it) }
 
             buttonConferma.visibility = View.GONE
             textStato.visibility = View.VISIBLE
@@ -65,8 +65,18 @@ class SpesaCondivisaAdapter(private val gruppoId: String, private val mappaUtent
 
             // Creatore della spesa
             if (mioId == spesa.creatoreID) {
+                val pendenti = spesa.pagamentiEffettuati.filterNot { spesa.pagamentiConfermati.contains(it) }
                 layoutPartecipanti.visibility = View.VISIBLE
 
+                if(pendenti.isNotEmpty() && !spesa.notificaMostrata){
+                    AlertDialog.Builder(itemView.context)
+                        .setTitle("Nuovo pagamento ricevuto")
+                        .setMessage("Uno o più partecipanti hanno segnalato di aver pagato. Puoi ora confermare la ricezione.")
+                        .setPositiveButton("OK", null)
+                        .show()
+
+                    spesa.notificaMostrata = true
+                }
                 for (idUtente in spesa.idUtentiCoinvolti) {
                     val riga = LinearLayout(context).apply {
                         orientation = LinearLayout.HORIZONTAL
@@ -119,7 +129,7 @@ class SpesaCondivisaAdapter(private val gruppoId: String, private val mappaUtent
                 }
 
             } else if (spesa.idUtentiCoinvolti.contains(mioId)) {
-                // 👥 Partecipante della spesa
+                // Partecipante della spesa
                 layoutPartecipanti.visibility = View.GONE
                 when {
                     spesa.pagamentiConfermati.contains(mioId) -> {
@@ -136,6 +146,11 @@ class SpesaCondivisaAdapter(private val gruppoId: String, private val mappaUtent
                         textStato.setOnClickListener {
                             spesa.pagamentiEffettuati.add(mioId)
                             aggiornaSuFirestore(spesa)
+                            AlertDialog.Builder(itemView.context)
+                                .setTitle("Pagamento Inviato")
+                                .setMessage("Hai notificato il creatore che hai effettuato il pagamento.")
+                                .setPositiveButton("OK", null)
+                                .show()
                             notifyItemChanged(adapterPosition)
                         }
                     }

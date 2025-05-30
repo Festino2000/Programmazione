@@ -10,7 +10,10 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.mobileapp.R
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
-class SpeseAdapter : ListAdapter<Spesa, SpeseAdapter.SpesaViewHolder>(SpesaDiffCallback()) {
+class SpeseAdapter(
+    private val onModificaSpesa: (Spesa) -> Unit,
+    private val onEliminaSpesa: (Spesa) -> Unit
+) : ListAdapter<Spesa, SpeseAdapter.SpesaViewHolder>(SpesaDiffCallback()) {
 
     class SpesaViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val titolo: TextView = itemView.findViewById(R.id.titoloSpesa)
@@ -34,7 +37,6 @@ class SpeseAdapter : ListAdapter<Spesa, SpeseAdapter.SpesaViewHolder>(SpesaDiffC
         holder.bind(spesa)
 
         holder.itemView.setOnClickListener {
-            // Mostra un pop-up con le informazioni complete
             MaterialAlertDialogBuilder(holder.itemView.context)
                 .setTitle("Dettagli Spesa")
                 .setMessage(
@@ -44,14 +46,23 @@ class SpeseAdapter : ListAdapter<Spesa, SpeseAdapter.SpesaViewHolder>(SpesaDiffC
                             "Importo: €${spesa.importo}\n" +
                             "Categoria: ${spesa.categoria}"
                 )
-                .setPositiveButton("OK") { dialog, _ -> dialog.dismiss() }
+                .setPositiveButton("OK", null)
+                .setNeutralButton("Modifica") { _, _ ->
+                    onModificaSpesa(spesa)
+                }
+                .setNegativeButton("Elimina") { _, _ ->
+                    onEliminaSpesa(spesa)
+                }
                 .show()
         }
     }
 
     class SpesaDiffCallback : DiffUtil.ItemCallback<Spesa>() {
         override fun areItemsTheSame(oldItem: Spesa, newItem: Spesa): Boolean {
-            return oldItem.titolo == newItem.titolo && oldItem.anno == newItem.anno && oldItem.mese == newItem.mese && oldItem.giorno == newItem.giorno
+            return oldItem.titolo == newItem.titolo &&
+                    oldItem.anno == newItem.anno &&
+                    oldItem.mese == newItem.mese &&
+                    oldItem.giorno == newItem.giorno
         }
 
         override fun areContentsTheSame(oldItem: Spesa, newItem: Spesa): Boolean {

@@ -7,7 +7,8 @@ data class Spesa(
     val mese: Int = 0,
     val anno: Int = 0,
     val importo: Float = 0.0f,
-    val categoria: String = ""
+    val categoria: String = "",
+    val id: String = "" // ID del documento Firestore (non visibile all'utente)
 ) {
     // Formatta la data come stringa leggibile
     fun getData(): String {

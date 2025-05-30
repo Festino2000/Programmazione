@@ -45,7 +45,10 @@ class SoloActivity : AppCompatActivity(), AggiungiSpesaFragment.OnSpesaAggiuntaL
 
         // Setup della RecyclerView con layout a griglia e decorazione per il margine tra gli item
         val recyclerView = findViewById<RecyclerView>(R.id.recyclerViewSpese)
-        adapter = SpeseAdapter()
+        adapter = SpeseAdapter(
+            onModificaSpesa = { spesa -> apriModificaSpesaFragment(spesa) },
+            onEliminaSpesa = { spesa -> mostraDialogConfermaEliminazione(spesa) }
+        )
         recyclerView.layoutManager = GridLayoutManager(this, 2)
         recyclerView.adapter = adapter
 
@@ -345,6 +348,55 @@ class SoloActivity : AppCompatActivity(), AggiungiSpesaFragment.OnSpesaAggiuntaL
             .setTitle("Statistiche")
             .setMessage(sb.toString())
             .setPositiveButton("OK", null)
+            .show()
+    }
+    private fun apriModificaSpesaFragment(spesa: Spesa) {
+        btnAggiungiSpesa.visibility = View.GONE
+        findViewById<FrameLayout>(R.id.fragment_container).visibility = View.VISIBLE
+
+        val fragment = AggiungiSpesaFragment()
+
+        // Passa la spesa come argomento
+        val bundle = Bundle().apply {
+            putString("titolo", spesa.titolo)
+            putString("descrizione", spesa.descrizione)
+            putInt("giorno", spesa.giorno)
+            putInt("mese", spesa.mese)
+            putInt("anno", spesa.anno)
+            putFloat("importo", spesa.importo)
+            putString("categoria", spesa.categoria)
+            putString("documentId", spesa.id) // se hai salvato anche l'id del documento
+        }
+
+        fragment.arguments = bundle
+
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.fragment_container, fragment)
+            .addToBackStack(null)
+            .commit()
+    }
+    private fun mostraDialogConfermaEliminazione(spesa: Spesa) {
+        AlertDialog.Builder(this)
+            .setTitle("Conferma eliminazione")
+            .setMessage("Sei sicuro di voler eliminare questa spesa?")
+            .setPositiveButton("Sì") { _, _ ->
+                db.collection("Spese")
+                    .whereEqualTo("titolo", spesa.titolo)
+                    .whereEqualTo("descrizione", spesa.descrizione)
+                    .whereEqualTo("importo", spesa.importo)
+                    .whereEqualTo("giorno", spesa.giorno)
+                    .whereEqualTo("mese", spesa.mese)
+                    .whereEqualTo("anno", spesa.anno)
+                    .get()
+                    .addOnSuccessListener { documents ->
+                        for (document in documents) {
+                            db.collection("Spese").document(document.id).delete()
+                        }
+                        Toast.makeText(this, "Spesa eliminata!", Toast.LENGTH_SHORT).show()
+                        viewModel.caricaTutteLeSpese()
+                    }
+            }
+            .setNegativeButton("Annulla", null)
             .show()
     }
 }

@@ -10,15 +10,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
-import androidx.core.content.ContentProviderCompat.requireContext
-import androidx.core.content.ContextCompat.startActivity
 import androidx.fragment.app.Fragment
-import com.example.mobileapp.areaPersonale.SoloActivity
+import com.example.mobileapp.R
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
-import java.util.Calendar
-import com.example.mobileapp.R
+import java.util.*
 
 class AggiungiSpesaFragment : Fragment(R.layout.fragment_aggiungi_spesa) {
 
@@ -49,15 +46,6 @@ class AggiungiSpesaFragment : Fragment(R.layout.fragment_aggiungi_spesa) {
         autoCompleteCategorie = view.findViewById(R.id.categoriaSpesa)
         caricaCategorie()
 
-        autoCompleteCategorie.setOnItemClickListener { parent, _, position, _ ->
-            val categoriaSelezionata = parent.getItemAtPosition(position).toString()
-            if (categoriaSelezionata == "Aggiungi Categoria") {
-                mostraDialogAggiungiCategoria()
-            } else {
-                autoCompleteCategorie.setText(categoriaSelezionata)
-            }
-        }
-
         val titoloSpesa = view.findViewById<EditText>(R.id.titoloSpesa)
         val descrizioneSpesa = view.findViewById<EditText>(R.id.descrizioneSpesa)
         val dataSpesa = view.findViewById<EditText>(R.id.DataSelezionata)
@@ -65,9 +53,7 @@ class AggiungiSpesaFragment : Fragment(R.layout.fragment_aggiungi_spesa) {
         val categoriaSpesa = view.findViewById<AutoCompleteTextView>(R.id.categoriaSpesa)
         val btnConferma = view.findViewById<Button>(R.id.btnConfermaSpesa)
 
-        categoriaSpesa.setOnClickListener {
-            categoriaSpesa.showDropDown()
-        }
+        categoriaSpesa.setOnClickListener { categoriaSpesa.showDropDown() }
 
         var giorno = 0
         var mese = 0
@@ -88,6 +74,24 @@ class AggiungiSpesaFragment : Fragment(R.layout.fragment_aggiungi_spesa) {
             }, anno, mese, giorno).show()
         }
 
+        // PRECOMPILAZIONE CAMPI se arrivi da modifica
+        arguments?.let { args ->
+            titoloSpesa.setText(args.getString("titolo", ""))
+            descrizioneSpesa.setText(args.getString("descrizione", ""))
+            importoSpesa.setText(args.getFloat("importo", 0f).toString())
+            autoCompleteCategorie.setText(args.getString("categoria", ""), false)
+
+            giorno = args.getInt("giorno", 0)
+            mese = args.getInt("mese", 0)
+            anno = args.getInt("anno", 0)
+
+            if (giorno != 0 && mese != 0 && anno != 0) {
+                val dataFormattata = "$giorno/$mese/$anno"
+                dataSpesa.setText(dataFormattata)
+            }
+        }
+
+        // CLICK BOTTONE CONFERMA
         btnConferma.setOnClickListener {
             val currentUser = FirebaseAuth.getInstance().currentUser
             val uid = currentUser?.uid ?: return@setOnClickListener
@@ -102,7 +106,7 @@ class AggiungiSpesaFragment : Fragment(R.layout.fragment_aggiungi_spesa) {
                 return@setOnClickListener
             }
 
-            val nuovaSpesa = hashMapOf(
+            val spesaData = hashMapOf(
                 "uid" to uid,
                 "titolo" to titolo,
                 "descrizione" to descrizione,
@@ -114,18 +118,32 @@ class AggiungiSpesaFragment : Fragment(R.layout.fragment_aggiungi_spesa) {
                 "data" to Timestamp.now()
             )
 
-            db.collection("Spese")
-                .add(nuovaSpesa)
-                .addOnSuccessListener {
-                    Toast.makeText(requireContext(), "Spesa Aggiunta Con Successo!", Toast.LENGTH_SHORT).show()
-                    callback.onSpesaAggiunta(Spesa(titolo, descrizione, giorno, mese, anno, importo, categoria))
-                    val intent = Intent(requireContext(), SoloActivity::class.java)
-                    startActivity(intent)
-                }
-                .addOnFailureListener { e ->
-                    Toast.makeText(requireContext(), "Errore nel salvataggio su Firestore", Toast.LENGTH_SHORT).show()
-                    Log.e("AggiungiSpesaFragment", "Errore nel salvataggio su Firestore", e)
-                }
+            val documentId = arguments?.getString("documentId")
+            if (documentId != null) {
+                // MODIFICA
+                db.collection("Spese").document(documentId)
+                    .set(spesaData)
+                    .addOnSuccessListener {
+                        Toast.makeText(requireContext(), "Spesa modificata con successo!", Toast.LENGTH_SHORT).show()
+                        startActivity(Intent(requireContext(), SoloActivity::class.java))
+                    }
+                    .addOnFailureListener {
+                        Toast.makeText(requireContext(), "Errore nella modifica", Toast.LENGTH_SHORT).show()
+                    }
+            } else {
+                // NUOVA SPESA
+                db.collection("Spese")
+                    .add(spesaData)
+                    .addOnSuccessListener {
+                        Toast.makeText(requireContext(), "Spesa aggiunta con successo!", Toast.LENGTH_SHORT).show()
+                        callback.onSpesaAggiunta(Spesa(titolo, descrizione, giorno, mese, anno, importo, categoria))
+                        startActivity(Intent(requireContext(), SoloActivity::class.java))
+                    }
+                    .addOnFailureListener { e ->
+                        Toast.makeText(requireContext(), "Errore nel salvataggio su Firestore", Toast.LENGTH_SHORT).show()
+                        Log.e("AggiungiSpesaFragment", "Errore nel salvataggio su Firestore", e)
+                    }
+            }
         }
 
         return view
@@ -209,5 +227,6 @@ class AggiungiSpesaFragment : Fragment(R.layout.fragment_aggiungi_spesa) {
         builder.show()
     }
 }
+
 
 

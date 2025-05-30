@@ -106,7 +106,7 @@ class AggiungiSpesaFragment : Fragment(R.layout.fragment_aggiungi_spesa) {
                 return@setOnClickListener
             }
 
-            val spesaData = hashMapOf(
+            val spesaMap = hashMapOf(
                 "uid" to uid,
                 "titolo" to titolo,
                 "descrizione" to descrizione,
@@ -119,25 +119,29 @@ class AggiungiSpesaFragment : Fragment(R.layout.fragment_aggiungi_spesa) {
             )
 
             val documentId = arguments?.getString("documentId")
-            if (documentId != null) {
-                // MODIFICA
+
+            if (!documentId.isNullOrBlank()) {
+                // Modifica esistente
                 db.collection("Spese").document(documentId)
-                    .set(spesaData)
+                    .set(spesaMap)
                     .addOnSuccessListener {
                         Toast.makeText(requireContext(), "Spesa modificata con successo!", Toast.LENGTH_SHORT).show()
-                        startActivity(Intent(requireContext(), SoloActivity::class.java))
+                        callback.onSpesaAggiunta(Spesa(titolo, descrizione, giorno, mese, anno, importo, categoria, documentId))
+                        val intent = Intent(requireContext(), SoloActivity::class.java)
+                        startActivity(intent)
                     }
                     .addOnFailureListener {
-                        Toast.makeText(requireContext(), "Errore nella modifica", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(requireContext(), "Errore nella modifica della spesa", Toast.LENGTH_SHORT).show()
                     }
             } else {
-                // NUOVA SPESA
+                // Aggiunta nuova spesa
                 db.collection("Spese")
-                    .add(spesaData)
-                    .addOnSuccessListener {
-                        Toast.makeText(requireContext(), "Spesa aggiunta con successo!", Toast.LENGTH_SHORT).show()
-                        callback.onSpesaAggiunta(Spesa(titolo, descrizione, giorno, mese, anno, importo, categoria))
-                        startActivity(Intent(requireContext(), SoloActivity::class.java))
+                    .add(spesaMap)
+                    .addOnSuccessListener { docRef ->
+                        Toast.makeText(requireContext(), "Spesa Aggiunta Con Successo!", Toast.LENGTH_SHORT).show()
+                        callback.onSpesaAggiunta(Spesa(titolo, descrizione, giorno, mese, anno, importo, categoria, docRef.id))
+                        val intent = Intent(requireContext(), SoloActivity::class.java)
+                        startActivity(intent)
                     }
                     .addOnFailureListener { e ->
                         Toast.makeText(requireContext(), "Errore nel salvataggio su Firestore", Toast.LENGTH_SHORT).show()

@@ -39,7 +39,8 @@ class SpeseViewModel : ViewModel() {
                         mese = (document.getLong("mese") ?: 0).toInt(),
                         anno = (document.getLong("anno") ?: 0).toInt(),
                         importo = (document.getDouble("importo") ?: 0.0).toFloat(),
-                        categoria = document.getString("categoria") ?: ""
+                        categoria = document.getString("categoria") ?: "",
+                        id = document.id
                     )
                     listaSpese.add(spesa)
                 }

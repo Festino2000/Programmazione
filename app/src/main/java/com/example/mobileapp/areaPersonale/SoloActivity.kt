@@ -306,42 +306,55 @@ class SoloActivity : AppCompatActivity(), AggiungiSpesaFragment.OnSpesaAggiuntaL
     private fun mostraPopupStatistiche() {
         val spese = viewModel.spese.value ?: return
 
+        if (spese.isEmpty()) return
+
         // Totale complessivo
         var totaleComplessivo = 0.0
-        for (spesa in spese) {
-            totaleComplessivo += spesa.importo
-        }
+        val mesiUnici = mutableSetOf<Pair<Int, Int>>() // (anno, mese)
 
         // Totale per categoria
         val totalePerCategoria = mutableMapOf<String, Double>()
+
+        // Spesa max/min
+        var spesaMax = spese.first()
+        var spesaMin = spese.first()
+
         for (spesa in spese) {
+            totaleComplessivo += spesa.importo
+
+            // Categorie
             val categoria = spesa.categoria
             totalePerCategoria[categoria] = totalePerCategoria.getOrDefault(categoria, 0.0) + spesa.importo
+
+            // Mesi unici (per media mensile)
+            mesiUnici.add(Pair(spesa.anno, spesa.mese))
+
+            // Max / Min
+            if (spesa.importo > spesaMax.importo) spesaMax = spesa
+            if (spesa.importo < spesaMin.importo) spesaMin = spesa
         }
 
-        // Totale ultimi 3 mesi
-        val oggi = Calendar.getInstance()
-        val treMesiFa = Calendar.getInstance().apply { add(Calendar.MONTH, -3) }
-        var totaleUltimi3Mesi = 0.0
+        // Calcolo media mensile
+        val mediaMensile = if (mesiUnici.isNotEmpty()) totaleComplessivo / mesiUnici.size else 0.0
 
-        for (spesa in spese) {
-            val dataSpesa = Calendar.getInstance().apply {
-                set(spesa.anno, spesa.mese - 1, spesa.giorno)
-            }
-            if (dataSpesa >= treMesiFa && dataSpesa <= oggi) {
-                totaleUltimi3Mesi += spesa.importo
-            }
-        }
+        // Top 3 categorie
+        val top3Categorie = totalePerCategoria.entries
+            .sortedByDescending { it.value }
+            .take(3)
 
         // Costruzione del messaggio
         val sb = StringBuilder()
         sb.append("Statistiche Spese\n\n")
         sb.append("Totale complessivo: €%.2f\n".format(totaleComplessivo))
-        sb.append("Totale ultimi 3 mesi: €%.2f\n\n".format(totaleUltimi3Mesi))
-        sb.append("Totale per categoria:\n")
-        for ((categoria, totale) in totalePerCategoria) {
+        sb.append("Media mensile: €%.2f\n\n".format(mediaMensile))
+
+        sb.append("Top 3 categorie:\n")
+        for ((categoria, totale) in top3Categorie) {
             sb.append("$categoria: €%.2f\n".format(totale))
         }
+
+        sb.append("\nSpesa più alta: ${spesaMax.titolo} - €%.2f\n".format(spesaMax.importo))
+        sb.append("Spesa più bassa: ${spesaMin.titolo} - €%.2f\n".format(spesaMin.importo))
 
         // Mostra AlertDialog
         AlertDialog.Builder(this)
@@ -350,6 +363,7 @@ class SoloActivity : AppCompatActivity(), AggiungiSpesaFragment.OnSpesaAggiuntaL
             .setPositiveButton("OK", null)
             .show()
     }
+
     private fun apriModificaSpesaFragment(spesa: Spesa) {
         btnAggiungiSpesa.visibility = View.GONE
         findViewById<FrameLayout>(R.id.fragment_container).visibility = View.VISIBLE

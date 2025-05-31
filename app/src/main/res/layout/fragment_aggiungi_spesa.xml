@@ -5,19 +5,27 @@
     android:orientation="vertical"
     android:padding="16dp"
     android:layout_marginTop="50dp"
-    android:background="@android:color/white">
+    android:background="@color/colorBackground">
 
     <EditText
         android:id="@+id/titoloSpesa"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Titolo" />
+        android:hint="Titolo"
+        android:textColor="@color/colorOnBackground"
+        android:backgroundTint="@color/colorOnBackground"
+        android:textColorHint="@color/colorOnBackground"
+        />
 
     <EditText
         android:id="@+id/descrizioneSpesa"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Descrizione" />
+        android:hint="Descrizione"
+        android:textColor="@color/colorOnBackground"
+        android:backgroundTint="@color/colorOnBackground"
+        android:textColorHint="@color/colorOnBackground"
+        />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -31,8 +39,11 @@
             android:hint="Data"
             android:inputType="none"
             android:focusable="false"
-            android:clickable="true" />
-
+            android:clickable="true"
+            android:textColor="@color/colorOnBackground"
+            android:backgroundTint="@color/colorOnBackground"
+            android:textColorHint="@color/colorOnBackground"
+            />
     </LinearLayout>
 
     <EditText
@@ -40,7 +51,11 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Importo"
-        android:inputType="numberDecimal" />
+        android:inputType="numberDecimal"
+        android:textColor="@color/colorOnBackground"
+        android:backgroundTint="@color/colorOnBackground"
+        android:textColorHint="@color/colorOnBackground"
+        />
 
     <AutoCompleteTextView
         android:id="@+id/categoriaSpesa"
@@ -50,11 +65,17 @@
         android:inputType="none"
         android:focusable="false"
         android:clickable="true"
-        android:padding="8dp" />
+        android:padding="8dp"
+        android:textColor="@color/colorOnBackground"
+        android:backgroundTint="@color/colorOnBackground"
+        android:textColorHint="@color/colorOnBackground"
+        />
 
     <Button
         android:id="@+id/btnConfermaSpesa"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Conferma Spesa" />
+        android:text="Conferma Spesa"
+        android:textColor="@color/colorOnPrimary"
+        android:backgroundTint="@color/colorPrimary" />
 </LinearLayout>

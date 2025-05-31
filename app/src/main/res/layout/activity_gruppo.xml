@@ -86,13 +86,13 @@
         <!-- Pulsanti secondari  -->
         <FrameLayout
             android:id="@+id/fragmentContainerView"
-            android:layout_width="414dp"
+            android:layout_width="0dp"
             android:layout_height="675dp"
-            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toTopOf="@+id/recyclerViewGruppi"
-            tools:layout_editor_absoluteX="-2dp">
-
-        </FrameLayout>
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" >
+    </FrameLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

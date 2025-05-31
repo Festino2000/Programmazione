@@ -63,7 +63,8 @@
                 android:text="Da pagare"
                 android:textStyle="bold"
                 android:layout_marginTop="24dp"
-                android:textSize="16sp"/>
+                android:textSize="16sp"
+                android:textColor="@color/da_spostare_text_color"/>
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recyclerViewDaPagare"
@@ -79,7 +80,8 @@
                 android:text="Da ricevere"
                 android:textStyle="bold"
                 android:layout_marginTop="24dp"
-                android:textSize="16sp"/>
+                android:textSize="16sp"
+                android:textColor="@color/da_spostare_text_color"/>
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recyclerViewDaRicevere"

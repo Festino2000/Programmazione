@@ -18,4 +18,6 @@
     <color name="tab_selected_color">#BB86FC</color>
     <color name="tab_default_color">#808080</color> <!-- Grigio neutro -->
     <color name="bilancio_text_color">#808080</color> <!-- Grigio leggibile sul bianco -->
+    <color name="da_spostare_text_color">#AAAAAA</color>
+
 </resources>

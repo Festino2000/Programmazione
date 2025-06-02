@@ -20,7 +20,8 @@
         <!-- Attività principale (LoginActivity) -->
         <activity
             android:name=".gestioneAccesso.LoginActivity"
-            android:exported="true">
+            android:exported="true"
+            android:windowSoftInputMode="adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -30,7 +31,8 @@
         <!-- Attività di Registrazione (RegisterActivity) -->
         <activity
             android:name=".gestioneAccesso.RegisterActivity"
-            android:exported="true" />
+            android:exported="true"
+            android:windowSoftInputMode="adjustResize"/>
 
         <!-- Attività principale dopo il login (MainActivity) -->
         <activity

@@ -10,11 +10,7 @@
         app:showAsAction="always|collapseActionView"
         app:actionViewClass="androidx.appcompat.widget.SearchView" />
 
-    <item
-        android:id="@+id/filtro"
-        android:icon="@android:drawable/ic_menu_sort_by_size"
-        android:title="Filtra"
-        app:showAsAction="ifRoom" />
+
 
     <item
         android:id="@+id/membri"

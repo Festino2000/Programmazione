@@ -30,7 +30,7 @@
                 android:background="@color/purple_500"
                 android:title="Gruppi"
                 android:titleTextColor="@android:color/white"
-                app:titleCentered="true"
+                app:titleCentered="false"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"/>

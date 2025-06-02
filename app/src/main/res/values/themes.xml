@@ -1,4 +1,8 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <style name="Theme.Mobile.Introduzione" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="android:windowBackground">@drawable/schermata_introduttiva</item>
+        <item name="android:windowFullscreen">true</item>
+    </style>
     <!-- Tema dell'applicazione senza ActionBar -->
     <style name="Theme.MobileApp" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <!-- Primary brand color. -->
@@ -15,5 +19,6 @@
         <!-- Disabilita l'ActionBar predefinita -->
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
+        <item name="android:windowFullscreen">true</item>
     </style>
 </resources>

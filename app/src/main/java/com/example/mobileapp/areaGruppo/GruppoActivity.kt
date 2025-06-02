@@ -111,6 +111,12 @@ class GruppoActivity : AppCompatActivity() {
         val fragment = SchermataSpeseFragment()
         supportFragmentManager.addOnBackStackChangedListener {
             val fab = findViewById<ExtendedFloatingActionButton>(R.id.fabMenu)
+            val fabAggiungi = findViewById<MaterialButton>(R.id.fabAggiungiGruppo)
+            val fabEntra = findViewById<MaterialButton>(R.id.fabEntraGruppo)
+
+            val inHome = supportFragmentManager.backStackEntryCount == 0
+            fabAggiungi.visibility = if (inHome) View.VISIBLE else View.GONE
+            fabEntra.visibility = if (inHome) View.VISIBLE else View.GONE
             fab.visibility = if (supportFragmentManager.backStackEntryCount == 0) View.VISIBLE else View.GONE
         }
 

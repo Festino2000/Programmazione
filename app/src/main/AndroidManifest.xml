@@ -11,21 +11,29 @@
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
         android:icon="@mipmap/ic_launcher"
-        android:label="@string/app_name"
+        android:label="Payment Organiser"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.MobileApp"
         tools:targetApi="31">
 
-        <!-- Attività principale (LoginActivity) -->
+
+        <!--Attività principale -->
         <activity
-            android:name=".gestioneAccesso.LoginActivity"
+            android:name=".IntroduzioneActivity"
             android:exported="true"
-            android:windowSoftInputMode="adjustResize">
+            android:theme="@style/Theme.Mobile.Introduzione">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+
+        <!-- Attività di login (LoginActivity) -->
+        <activity
+            android:name=".gestioneAccesso.LoginActivity"
+            android:exported="true"
+            android:windowSoftInputMode="adjustResize">
         </activity>
 
         <!-- Attività di Registrazione (RegisterActivity) -->

@@ -1,10 +1,10 @@
 package com.example.mobileapp.areaGruppo
 
-import GruppoAdapter
 import android.os.Bundle
 import android.view.Menu
 import android.view.View
 import android.widget.Button
+import androidx.appcompat.widget.SearchView
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -21,7 +21,7 @@ class GruppoActivity : AppCompatActivity() {
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: GruppoAdapter
-    private val gruppiList = mutableListOf<Gruppo>()
+    private var listaCompleta: List<Gruppo> = emptyList()
     private lateinit var fabMenuController: FabMenuController
     private val viewModel: GruppoViewModel by viewModels()
 
@@ -33,7 +33,7 @@ class GruppoActivity : AppCompatActivity() {
 
         recyclerView = findViewById(R.id.recyclerViewGruppi)
         recyclerView.layoutManager = LinearLayoutManager(this)
-        adapter = GruppoAdapter(gruppiList) { gruppo ->
+        adapter = GruppoAdapter { gruppo ->
             apriSchermataSpeseGruppo(gruppo)
         }
         recyclerView.adapter = adapter
@@ -71,9 +71,8 @@ class GruppoActivity : AppCompatActivity() {
 
         // Observer del ViewModel per aggiornare la lista
         viewModel.gruppiUtente.observe(this, Observer { lista ->
-            gruppiList.clear()
-            gruppiList.addAll(lista)
-            adapter.notifyDataSetChanged()
+            listaCompleta = lista
+            adapter.submitList(lista)
         })
 
         // Carica inizialmente i gruppi dell’utente
@@ -91,11 +90,29 @@ class GruppoActivity : AppCompatActivity() {
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menuInflater.inflate(R.menu.menu_main, menu)
+        menuInflater.inflate(R.menu.menu_main_gruppo_activity, menu)
+        val searchItem = menu.findItem(R.id.ricerca)
+        val searchView = searchItem.actionView as androidx.appcompat.widget.SearchView
+        searchView.queryHint = "Cerca gruppo"
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                return true
+            }
+            override fun onQueryTextChange(newText: String?): Boolean {
+                filtraGruppi(newText.orEmpty())
+                return true
+            }
+        })
+
         return true
-    }
+
+        }
     private fun apriSchermataSpeseGruppo(gruppo: Gruppo) {
         val fragment = SchermataSpeseFragment()
+        supportFragmentManager.addOnBackStackChangedListener {
+            val fab = findViewById<ExtendedFloatingActionButton>(R.id.fabMenu)
+            fab.visibility = if (supportFragmentManager.backStackEntryCount == 0) View.VISIBLE else View.GONE
+        }
 
         // Passaggio dati al fragment
         val bundle = Bundle().apply {
@@ -104,9 +121,17 @@ class GruppoActivity : AppCompatActivity() {
         }
         fragment.arguments = bundle
 
+        invalidateOptionsMenu()
+
         supportFragmentManager.beginTransaction()
             .replace(R.id.fragmentContainerView, fragment)
             .addToBackStack(null)
             .commit()
+    }
+    private fun filtraGruppi(query: String) {
+        val gruppiFiltrati = listaCompleta.filter {
+            it.titolo.contains(query, ignoreCase = true)
+        }
+        adapter.submitList(gruppiFiltrati)
     }
 }

@@ -9,30 +9,6 @@
     android:focusableInTouchMode="true"
     android:background="@android:color/white">
 
-    <!-- AppBar con Toolbar e TabLayout -->
-    <com.google.android.material.appbar.AppBarLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:theme="@style/ThemeOverlay.MaterialComponents.Dark.ActionBar">
-
-        <com.google.android.material.appbar.MaterialToolbar
-            android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="@color/purple_500"
-            android:title="Gruppo"
-            android:titleTextColor="@android:color/white"
-            app:titleCentered="true" />
-
-        <com.google.android.material.tabs.TabLayout
-            android:id="@+id/tabLayout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:tabTextColor="@color/tab_default_color"
-            app:tabSelectedTextColor="@color/tab_selected_color"
-            app:tabIndicatorColor="@color/tab_selected_color" />
-    </com.google.android.material.appbar.AppBarLayout>
-    <!-- ViewPager2 sotto l'AppBar -->
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/viewPager"
         android:layout_width="match_parent"

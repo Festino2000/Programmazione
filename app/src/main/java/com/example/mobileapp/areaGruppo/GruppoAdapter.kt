@@ -1,15 +1,17 @@
+package com.example.mobileapp.areaGruppo
+
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.mobileapp.R
-import com.example.mobileapp.areaGruppo.Gruppo
 
 class GruppoAdapter(
-    private val gruppiList: List<Gruppo>,
-    private val onGruppoClick: (Gruppo) -> Unit) :
-    RecyclerView.Adapter<GruppoAdapter.GruppiViewHolder>() {
+    private val onGruppoClick: (Gruppo) -> Unit
+) : ListAdapter<Gruppo, GruppoAdapter.GruppiViewHolder>(GruppoDiffCallback()) {
 
     inner class GruppiViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val titolo: TextView = itemView.findViewById(R.id.textViewTitoloGruppo)
@@ -18,7 +20,7 @@ class GruppoAdapter(
 
         init {
             itemView.setOnClickListener {
-                val gruppo = gruppiList[adapterPosition]
+                val gruppo = getItem(adapterPosition)
                 onGruppoClick(gruppo)
             }
         }
@@ -31,11 +33,19 @@ class GruppoAdapter(
     }
 
     override fun onBindViewHolder(holder: GruppiViewHolder, position: Int) {
-        val gruppo = gruppiList[position]
+        val gruppo = getItem(position)
         holder.titolo.text = gruppo.titolo
         holder.descrizione.text = gruppo.descrizione
         holder.idUnico.text = "ID: ${gruppo.idUnico}"
     }
+}
 
-    override fun getItemCount(): Int = gruppiList.size
+class GruppoDiffCallback : DiffUtil.ItemCallback<Gruppo>() {
+    override fun areItemsTheSame(oldItem: Gruppo, newItem: Gruppo): Boolean {
+        return oldItem.idUnico == newItem.idUnico
+    }
+
+    override fun areContentsTheSame(oldItem: Gruppo, newItem: Gruppo): Boolean {
+        return oldItem == newItem
+    }
 }

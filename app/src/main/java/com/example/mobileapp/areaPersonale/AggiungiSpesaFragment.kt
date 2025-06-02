@@ -156,24 +156,24 @@ class AggiungiSpesaFragment : Fragment(R.layout.fragment_aggiungi_spesa) {
     private fun caricaCategorie() {
         val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return
 
+        // Pulisce la lista e aggiunge categorie predefinite
         categorieList.clear()
         categorieList.addAll(listOf("Alimentari", "Trasporti", "Svago", "Abbigliamento", "Casa"))
 
-        db.collection("utenti")
+        // Carica categorie personalizzate dal database
+        db.collection("Utenti")
             .document(userId)
             .collection("categorie")
             .get()
             .addOnSuccessListener { result ->
                 for (doc in result) {
-                    doc.getString("nome")?.let {
-                        if (!categorieList.contains(it)) {
-                            categorieList.add(it)
-                        }
+                    val titolo = doc.getString("titolo")?.trim()
+                    if (!titolo.isNullOrBlank() && !categorieList.contains(titolo)) {
+                        categorieList.add(titolo)
                     }
                 }
-                if (!categorieList.contains("Aggiungi Categoria")) {
-                    categorieList.add("Aggiungi Categoria")
-                }
+
+                // aggiorna dropdown con lista visiva (include "Aggiungi Categoria")
                 aggiornaAutoComplete()
             }
             .addOnFailureListener { e ->
@@ -183,8 +183,24 @@ class AggiungiSpesaFragment : Fragment(R.layout.fragment_aggiungi_spesa) {
 
     private fun aggiornaAutoComplete() {
         val ctx = autoCompleteCategorie.context
-        val adapter = ArrayAdapter(ctx, android.R.layout.simple_dropdown_item_1line, categorieList)
+
+        // Crea una lista solo per il menu a tendina
+        val dropdownList = categorieList.toMutableList()
+
+        if (!dropdownList.contains("Aggiungi Categoria")) {
+            dropdownList.add("Aggiungi Categoria")
+        }
+
+        val adapter = ArrayAdapter(ctx, android.R.layout.simple_dropdown_item_1line, dropdownList)
         autoCompleteCategorie.setAdapter(adapter)
+
+        autoCompleteCategorie.setOnItemClickListener { parent, _, position, _ ->
+            val categoriaSelezionata = parent.getItemAtPosition(position).toString()
+            if (categoriaSelezionata == "Aggiungi Categoria") {
+                mostraDialogAggiungiCategoria()
+                autoCompleteCategorie.setText("") // evita selezione involontaria
+            }
+        }
     }
 
     private fun mostraDialogAggiungiCategoria() {
@@ -204,15 +220,16 @@ class AggiungiSpesaFragment : Fragment(R.layout.fragment_aggiungi_spesa) {
 
             if (nuovaCategoria.isNotBlank()) {
                 val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return@setPositiveButton
-                val nuovaCategoriaMap = hashMapOf("nome" to nuovaCategoria)
+                val nuovaCategoriaMap = hashMapOf("titolo" to nuovaCategoria)
 
-                db.collection("utenti")
+                db.collection("Utenti")
                     .document(userId)
                     .collection("categorie")
                     .add(nuovaCategoriaMap)
                     .addOnSuccessListener {
                         Toast.makeText(ctx, "Categoria aggiunta: $nuovaCategoria", Toast.LENGTH_SHORT).show()
                         caricaCategorie()
+                        autoCompleteCategorie.setText(nuovaCategoria, false)
                     }
                     .addOnFailureListener {
                         Toast.makeText(ctx, "Errore nel salvataggio della categoria", Toast.LENGTH_SHORT).show()

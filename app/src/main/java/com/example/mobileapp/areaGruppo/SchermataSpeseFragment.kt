@@ -2,6 +2,7 @@ package com.example.mobileapp.areaGruppo
 
 import android.app.DatePickerDialog
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
@@ -18,6 +19,7 @@ import com.google.android.material.tabs.TabLayoutMediator
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import java.util.Calendar
+import com.google.firebase.firestore.FieldPath
 
 class SchermataSpeseFragment : Fragment(R.layout.fragment_schermata_spese) {
 
@@ -84,10 +86,12 @@ class SchermataSpeseFragment : Fragment(R.layout.fragment_schermata_spese) {
                         (fragment as? SaldatiFragment)?.mostraDialogFiltri()
                         true
                     }
+
                     R.id.action_membri -> {
                         mostraDialogMembri()
                         true
                     }
+
                     else -> false
                 }
             }
@@ -102,7 +106,12 @@ class SchermataSpeseFragment : Fragment(R.layout.fragment_schermata_spese) {
             .document(idGruppoFirestore)
             .get()
             .addOnSuccessListener { document ->
-                val utentiID = document.get("utentiID") as? List<String> ?: return@addOnSuccessListener
+                val utentiID = (document.get("utentiID") as? List<*>)?.mapNotNull { it as? String }
+                    ?: return@addOnSuccessListener
+
+                Log.d("DEBUG", "ID Utenti da cercare: $utentiID")
+
+                if (utentiID.isEmpty()) return@addOnSuccessListener
 
                 FirebaseFirestore.getInstance()
                     .collection("Utenti")
@@ -114,7 +123,15 @@ class SchermataSpeseFragment : Fragment(R.layout.fragment_schermata_spese) {
                             val nick = it.getString("nickname")
                             if (id != null && nick != null) Utente(id, nick) else null
                         }
+
+                        Log.d("DEBUG", "Utenti caricati: ${listaUtentiGruppo.size}")
                     }
+                    .addOnFailureListener {
+                        Log.e("Firestore", "Errore nella query utenti", it)
+                    }
+            }
+            .addOnFailureListener {
+                Log.e("Firestore", "Errore nel recupero gruppo", it)
             }
     }
 
@@ -124,33 +141,61 @@ class SchermataSpeseFragment : Fragment(R.layout.fragment_schermata_spese) {
             .document(idGruppoFirestore)
             .get()
             .addOnSuccessListener { document ->
-                val utentiID = document.get("utentiID") as? List<String> ?: return@addOnSuccessListener
+                val utentiID = (document.get("utentiID") as? List<*>)?.mapNotNull { it as? String }
+
+                if (utentiID.isNullOrEmpty()) {
+                    Toast.makeText(requireContext(), "Nessun membro trovato", Toast.LENGTH_SHORT).show()
+                    return@addOnSuccessListener
+                }
+
+                Log.d("DEBUG", "ID membri trovati: $utentiID")
 
                 FirebaseFirestore.getInstance()
                     .collection("Utenti")
-                    .whereIn("utenteID", utentiID)
+                    .whereIn(FieldPath.documentId(), utentiID) // usa gli ID dei documenti
                     .get()
                     .addOnSuccessListener { utentiDocs ->
                         val listaUtenti = utentiDocs.mapNotNull {
-                            val id = it.getString("utenteID")
+                            val id = it.id // usa l'ID del documento
                             val nick = it.getString("nickname")
-                            if (id != null && nick != null) Utente(id, nick) else null
+                            if (nick != null) Utente(id, nick) else null
+                        }
+
+                        if (listaUtenti.isEmpty()) {
+                            Toast.makeText(
+                                requireContext(),
+                                "Nessun utente corrispondente trovato",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                            return@addOnSuccessListener
                         }
 
                         MembriGruppoDialog(listaUtenti)
                             .show(parentFragmentManager, "MembriGruppoDialog")
                     }
+                    .addOnFailureListener {
+                        Toast.makeText(
+                            requireContext(),
+                            "Errore nella query utenti",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        Log.e("Firestore", "Errore query utenti", it)
+                    }
+            }
+            .addOnFailureListener {
+                Toast.makeText(requireContext(), "Errore nel recupero gruppo", Toast.LENGTH_SHORT).show()
+                Log.e("Firestore", "Errore gruppo", it)
             }
     }
+
     private fun getCurrentFragment(): Fragment? {
         val viewPager = requireView().findViewById<ViewPager2>(R.id.viewPager)
         val currentItem = viewPager.currentItem
         return childFragmentManager.findFragmentByTag("f$currentItem")
     }
+
     override fun onDestroyView() {
         super.onDestroyView()
         requireActivity().findViewById<TabLayout>(R.id.tabLayout)?.visibility = View.GONE
     }
-
-
 }

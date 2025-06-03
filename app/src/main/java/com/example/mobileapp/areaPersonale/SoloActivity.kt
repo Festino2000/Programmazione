@@ -7,12 +7,19 @@ import android.content.Intent
 import android.icu.util.Calendar
 import android.os.Bundle
 import android.util.Log
+import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.view.ViewGroup
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.EditText
 import android.widget.FrameLayout
+import android.widget.LinearLayout
+import android.widget.Spinner
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
@@ -303,9 +310,103 @@ class SoloActivity : AppCompatActivity(), AggiungiSpesaFragment.OnSpesaAggiuntaL
             Toast.makeText(this, "Nessuna spesa trovata in questo intervallo", Toast.LENGTH_SHORT).show()
         }
     }
+
+    private fun mostraPopupStatisticheConFiltroMese() {
+        val context = this
+        val spese = viewModel.spese.value ?: return
+        if (spese.isEmpty()) return
+
+        val dialogView = layoutInflater.inflate(R.layout.dialog_statistiche_mese, null)
+        val spinnerMese = dialogView.findViewById<Spinner>(R.id.spinnerMese)
+        val textStatistiche = dialogView.findViewById<TextView>(R.id.textStatistiche)
+
+        val mesi = listOf(
+            "Gennaio", "Febbraio", "Marzo", "Aprile", "Maggio", "Giugno",
+            "Luglio", "Agosto", "Settembre", "Ottobre", "Novembre", "Dicembre"
+        )
+        spinnerMese.adapter = ArrayAdapter(context, android.R.layout.simple_spinner_dropdown_item, mesi)
+
+        val anniDisponibili = spese.map { it.anno }.toSet().sorted()
+
+        if (anniDisponibili.isEmpty()) {
+            Toast.makeText(context, "Nessun anno disponibile per le statistiche", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        val spinnerAnno = Spinner(context).apply {
+            layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+            adapter = ArrayAdapter(context, android.R.layout.simple_spinner_dropdown_item, anniDisponibili)
+        }
+
+        // Inserisci anche lo spinner anno nel layout
+        val layout = dialogView.findViewById<LinearLayout>(R.id.layoutStatisticheMese)
+        layout.addView(spinnerAnno, 1)
+
+        val builder = AlertDialog.Builder(context)
+            .setTitle("Statistiche per mese")
+            .setView(dialogView)
+            .setPositiveButton("Chiudi", null)
+
+        val alertDialog = builder.create()
+        alertDialog.show()
+
+        val calcolaStatistiche = lambda@{
+            val meseSelezionato = spinnerMese.selectedItemPosition + 1
+            val annoSelezionato = spinnerAnno.selectedItem as Int
+
+            val speseFiltrate = spese.filter { it.mese == meseSelezionato && it.anno == annoSelezionato }
+
+            if (speseFiltrate.isEmpty()) {
+                textStatistiche.text = "Nessuna spesa trovata per questo mese."
+                    return@lambda
+            }
+
+            val totale = speseFiltrate.sumOf { it.importo.toDouble() }
+            val media = totale / speseFiltrate.size
+
+            val max = speseFiltrate.maxByOrNull { it.importo }!!
+            val min = speseFiltrate.minByOrNull { it.importo }!!
+
+            val categorieMap = mutableMapOf<String, Double>()
+            speseFiltrate.forEach {
+                categorieMap[it.categoria] = categorieMap.getOrDefault(it.categoria, 0.0) + it.importo
+            }
+
+            val top3Categorie = categorieMap.entries.sortedByDescending { it.value }.take(3)
+
+            val sb = StringBuilder()
+            sb.append("Totale: €%.2f\n".format(totale))
+            sb.append("Media: €%.2f\n\n".format(media))
+
+            sb.append("Top categorie:\n")
+            top3Categorie.forEach {
+                sb.append("${it.key}: €%.2f\n".format(it.value))
+            }
+
+            sb.append("\nSpesa più alta: ${max.titolo} - €%.2f\n".format(max.importo))
+            sb.append("Spesa più bassa: ${min.titolo} - €%.2f\n".format(min.importo))
+
+            textStatistiche.text = sb.toString()
+        }
+
+        spinnerMese.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
+                calcolaStatistiche()
+            }
+            override fun onNothingSelected(parent: AdapterView<*>) {}
+        }
+
+        spinnerAnno.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
+                calcolaStatistiche()
+            }
+            override fun onNothingSelected(parent: AdapterView<*>) {}
+        }
+    } // fine metodo
+
+
     private fun mostraPopupStatistiche() {
         val spese = viewModel.spese.value ?: return
-
         if (spese.isEmpty()) return
 
         // Totale complessivo
@@ -356,13 +457,17 @@ class SoloActivity : AppCompatActivity(), AggiungiSpesaFragment.OnSpesaAggiuntaL
         sb.append("\nSpesa più alta: ${spesaMax.titolo} - €%.2f\n".format(spesaMax.importo))
         sb.append("Spesa più bassa: ${spesaMin.titolo} - €%.2f\n".format(spesaMin.importo))
 
-        // Mostra AlertDialog
+        // Mostra AlertDialog con pulsante per statistiche dettagliate
         AlertDialog.Builder(this)
             .setTitle("Statistiche")
             .setMessage(sb.toString())
             .setPositiveButton("OK", null)
+            .setNeutralButton("Visualizza dettagli mese") { _, _ ->
+                mostraPopupStatisticheConFiltroMese()
+            }
             .show()
     }
+
 
     private fun apriModificaSpesaFragment(spesa: Spesa) {
         btnAggiungiSpesa.visibility = View.GONE

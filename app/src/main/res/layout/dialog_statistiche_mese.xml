@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/layoutStatisticheMese"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="24dp">
+
+    <TextView
+        android:id="@+id/labelSelezionaMese"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Seleziona mese:"
+        android:textStyle="bold"
+        android:layout_marginBottom="8dp" />
+
+    <Spinner
+        android:id="@+id/spinnerMese"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp" />
+
+    <!-- Lo Spinner per l’anno viene aggiunto via codice -->
+
+    <TextView
+        android:id="@+id/textStatistiche"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Statistiche qui..."
+        android:paddingTop="16dp"
+        android:textSize="14sp" />
+</LinearLayout>

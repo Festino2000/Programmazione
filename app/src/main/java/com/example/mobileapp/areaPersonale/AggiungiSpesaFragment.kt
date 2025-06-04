@@ -4,6 +4,9 @@ import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -16,11 +19,22 @@ import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import java.util.*
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
+import com.google.firebase.storage.FirebaseStorage
+import java.io.File
+import android.Manifest
 
 class AggiungiSpesaFragment : Fragment(R.layout.fragment_aggiungi_spesa) {
 
     private lateinit var autoCompleteCategorie: AutoCompleteTextView
     private val categorieList = mutableListOf<String>()
+    private lateinit var launcherGalleria: ActivityResultLauncher<String>
+    private lateinit var launcherCamera: ActivityResultLauncher<Uri>
+    private lateinit var fileFotoUri: Uri
     private lateinit var callback: OnSpesaAggiuntaListener
     private lateinit var db: FirebaseFirestore
 
@@ -38,10 +52,38 @@ class AggiungiSpesaFragment : Fragment(R.layout.fragment_aggiungi_spesa) {
         db = FirebaseFirestore.getInstance()
     }
 
+    private val imageUris = mutableListOf<Uri>()
+    private lateinit var launcher: ActivityResultLauncher<String>
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.fragment_aggiungi_spesa, container, false)
+
+        val btnAggiungiFoto = view.findViewById<Button>(R.id.btnAggiungiFoto)
+        val layoutGalleria = view.findViewById<LinearLayout>(R.id.layoutGalleria)
+
+        launcherGalleria = registerForActivityResult(ActivityResultContracts.GetMultipleContents()) { uris ->
+            imageUris.addAll(uris)
+            mostraAnteprime(layoutGalleria)
+        }
+
+        launcherCamera = registerForActivityResult(ActivityResultContracts.TakePicture()) { success ->
+            if (success) {
+                imageUris.add(fileFotoUri)
+                mostraAnteprime(layoutGalleria)
+            }
+        }
+
+        launcher = registerForActivityResult(ActivityResultContracts.GetMultipleContents()) { uris ->
+            imageUris.clear()
+            imageUris.addAll(uris)
+            mostraAnteprime(layoutGalleria)
+        }
+
+        btnAggiungiFoto.setOnClickListener {
+            mostraSceltaFotoDialog()
+        }
 
         autoCompleteCategorie = view.findViewById(R.id.categoriaSpesa)
         caricaCategorie()
@@ -106,7 +148,7 @@ class AggiungiSpesaFragment : Fragment(R.layout.fragment_aggiungi_spesa) {
                 return@setOnClickListener
             }
 
-            val spesaMap = hashMapOf(
+            val spesaMap = hashMapOf<String, Any>(
                 "uid" to uid,
                 "titolo" to titolo,
                 "descrizione" to descrizione,
@@ -134,19 +176,18 @@ class AggiungiSpesaFragment : Fragment(R.layout.fragment_aggiungi_spesa) {
                         Toast.makeText(requireContext(), "Errore nella modifica della spesa", Toast.LENGTH_SHORT).show()
                     }
             } else {
-                // Aggiunta nuova spesa
-                db.collection("Spese")
-                    .add(spesaMap)
-                    .addOnSuccessListener { docRef ->
+                salvaSpesaConImmagini(spesaMap,
+                    onComplete = { docId ->
                         Toast.makeText(requireContext(), "Spesa Aggiunta Con Successo!", Toast.LENGTH_SHORT).show()
-                        callback.onSpesaAggiunta(Spesa(titolo, descrizione, giorno, mese, anno, importo, categoria, docRef.id))
+                        callback.onSpesaAggiunta(Spesa(titolo, descrizione, giorno, mese, anno, importo, categoria, docId))
                         val intent = Intent(requireContext(), SoloActivity::class.java)
                         startActivity(intent)
+                    },
+                    onError = { e ->
+                        Toast.makeText(requireContext(), "Errore nel salvataggio della spesa con immagini", Toast.LENGTH_SHORT).show()
+                        Log.e("AggiungiSpesaFragment", "Errore immagini/Firestore", e)
                     }
-                    .addOnFailureListener { e ->
-                        Toast.makeText(requireContext(), "Errore nel salvataggio su Firestore", Toast.LENGTH_SHORT).show()
-                        Log.e("AggiungiSpesaFragment", "Errore nel salvataggio su Firestore", e)
-                    }
+                )
             }
         }
 
@@ -246,6 +287,108 @@ class AggiungiSpesaFragment : Fragment(R.layout.fragment_aggiungi_spesa) {
         }
 
         builder.show()
+    }
+
+    private fun mostraAnteprime(container: LinearLayout) {
+        container.removeAllViews()
+        for (uri in imageUris) {
+            val imageView = ImageView(requireContext()).apply {
+                layoutParams = LinearLayout.LayoutParams(200, 200).apply {
+                    setMargins(8, 0, 8, 0)
+                }
+                setImageURI(uri)
+                scaleType = ImageView.ScaleType.CENTER_CROP
+            }
+            container.addView(imageView)
+        }
+    }
+    fun salvaSpesaConImmagini(
+        spesaMap: HashMap<String, Any>,
+        onComplete: (String) -> Unit,
+        onError: (Exception) -> Unit
+    ) {
+        val storageRef = FirebaseStorage.getInstance().reference
+        val imageUrls = mutableListOf<String>()
+        val uid = FirebaseAuth.getInstance().currentUser?.uid ?: return
+
+        if (imageUris.isEmpty()) {
+            // Nessuna immagine da caricare
+            db.collection("Spese").add(spesaMap)
+                .addOnSuccessListener { ref -> onComplete(ref.id) }
+                .addOnFailureListener(onError)
+            return
+        }
+
+        for ((i, uri) in imageUris.withIndex()) {
+            val path = "spese/$uid/${System.currentTimeMillis()}_$i.jpg"
+            val imageRef = storageRef.child(path)
+
+            imageRef.putFile(uri).continueWithTask { task ->
+                if (!task.isSuccessful) throw task.exception ?: Exception("Upload fallito")
+                imageRef.downloadUrl
+            }.addOnSuccessListener { downloadUrl ->
+                imageUrls.add(downloadUrl.toString())
+                if (imageUrls.size == imageUris.size) {
+                    spesaMap["immagini"] = imageUrls
+                    db.collection("Spese").add(spesaMap)
+                        .addOnSuccessListener { ref -> onComplete(ref.id) }
+                        .addOnFailureListener(onError)
+                }
+            }.addOnFailureListener(onError)
+        }
+    }
+    private fun mostraSceltaFotoDialog() {
+        val opzioni = arrayOf("Scatta una foto", "Scegli dalla galleria")
+
+        AlertDialog.Builder(requireContext())
+            .setTitle("Aggiungi Foto")
+            .setItems(opzioni) { _, which ->
+                when (which) {
+                    0 -> richiediPermessoFotocamera()
+                    1 -> richiediPermessoGalleria()
+                }
+            }
+            .show()
+    }
+
+    private fun richiediPermessoGalleria() {
+        val permission = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            Manifest.permission.READ_MEDIA_IMAGES
+        } else {
+            Manifest.permission.READ_EXTERNAL_STORAGE
+        }
+
+        if (ContextCompat.checkSelfPermission(requireContext(), permission) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(requireActivity(), arrayOf(permission), 1001)
+        } else {
+            launcherGalleria.launch("image/*")
+        }
+    }
+
+
+    private fun richiediPermessoFotocamera() {
+        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(requireActivity(), arrayOf(Manifest.permission.CAMERA), 1002)
+        } else {
+            avviaCamera()
+        }
+    }
+
+    private fun avviaCamera() {
+        val fotoFile = File.createTempFile("spesa_", ".jpg", requireContext().cacheDir)
+        fileFotoUri = FileProvider.getUriForFile(requireContext(), "${requireContext().packageName}.provider", fotoFile)
+        launcherCamera.launch(fileFotoUri)
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == 1001 && grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            launcherGalleria.launch("image/*")
+        } else if (requestCode == 1002 && grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            avviaCamera()
+        } else {
+            Toast.makeText(requireContext(), "Permesso negato!", Toast.LENGTH_SHORT).show()
+        }
     }
 }
 

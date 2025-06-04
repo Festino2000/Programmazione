@@ -43,6 +43,7 @@ dependencies {
     implementation("com.google.firebase:firebase-auth:22.1.1")
     implementation("com.google.android.gms:play-services-auth:20.7.0")
     implementation("com.jakewharton.threetenabp:threetenabp:1.4.4")
+    implementation ("com.google.firebase:firebase-storage:20.3.0")
 
     // Support libraries
     implementation("androidx.appcompat:appcompat:1.6.1")

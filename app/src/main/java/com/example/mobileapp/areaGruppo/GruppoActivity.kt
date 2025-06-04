@@ -1,14 +1,19 @@
 package com.example.mobileapp.areaGruppo
 
+import android.app.AlertDialog
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.Menu
+import android.view.MenuItem
 import android.view.View
 import android.widget.Button
+import android.widget.TextView
 import androidx.appcompat.widget.SearchView
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.core.content.ContentProviderCompat.requireContext
 import com.example.mobileapp.FabMenuController
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -107,6 +112,39 @@ class GruppoActivity : AppCompatActivity() {
         return true
 
         }
+
+    // 🔥 Mostra l’icona “Statistiche” solo nel fragment giusto
+    override fun onPrepareOptionsMenu(menu: Menu): Boolean {
+        val currentFragment = supportFragmentManager
+            .findFragmentById(R.id.fragmentContainerView)
+            ?.childFragmentManager
+            ?.fragments
+            ?.firstOrNull()
+
+        menu.findItem(R.id.statistiche)?.isVisible = currentFragment is SpesaCondivisaFragment
+        return super.onPrepareOptionsMenu(menu)
+    }
+
+    // 🔥 Gestisce il click sull’icona “Statistiche”
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.statistiche -> {
+                val currentFragment = supportFragmentManager
+                    .findFragmentById(R.id.fragmentContainerView)
+                    ?.childFragmentManager
+                    ?.fragments
+                    ?.firstOrNull()
+
+                if (currentFragment is SpesaCondivisaFragment) {
+                    currentFragment.mostraDialogStatistiche()
+                }
+                true
+            }
+
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
+
     private fun apriSchermataSpeseGruppo(gruppo: Gruppo) {
         val fragment = SchermataSpeseFragment()
         supportFragmentManager.addOnBackStackChangedListener {

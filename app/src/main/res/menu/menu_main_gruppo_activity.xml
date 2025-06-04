@@ -1,6 +1,4 @@
-
-<menu
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
@@ -10,13 +8,17 @@
         app:showAsAction="always|collapseActionView"
         app:actionViewClass="androidx.appcompat.widget.SearchView" />
 
-
-
     <item
         android:id="@+id/membri"
         android:title="Visualizza Membri"
         app:showAsAction="never"
-        android:visible="false"
-        />
+        android:visible="false" />
 
+    <!-- Bottone statistiche -->
+    <item
+        android:id="@+id/statistiche"
+        android:icon="@drawable/ic_bar_chart"
+        android:title="Statistiche"
+        app:showAsAction="always"
+        android:visible="false" />
 </menu>

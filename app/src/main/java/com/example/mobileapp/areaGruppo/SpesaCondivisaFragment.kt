@@ -1,11 +1,16 @@
 package com.example.mobileapp.areaGruppo
 
+import android.app.AlertDialog
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -34,8 +39,26 @@ class SpesaCondivisaFragment : Fragment(R.layout.fragment_spese_condivise) {
         return inflater.inflate(R.layout.fragment_spese_condivise, container, false)
     }
 
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+        inflater.inflate(R.menu.menu_main_gruppo_activity, menu)
+        menu.findItem(R.id.statistiche)?.isVisible = true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.statistiche -> {
+                mostraDialogStatistiche()
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        setHasOptionsMenu(true)
         super.onViewCreated(view, savedInstanceState)
+        (requireActivity() as AppCompatActivity).setSupportActionBar(requireActivity().findViewById(R.id.toolbar2))
 
         recyclerViewDaPagare = view.findViewById(R.id.recyclerViewDaPagare)
         recyclerViewDaRicevere = view.findViewById(R.id.recyclerViewDaRicevere)
@@ -167,5 +190,27 @@ class SpesaCondivisaFragment : Fragment(R.layout.fragment_spese_condivise) {
 
         totalePagareView.text = if (totalePagare > 0) "-${"%.2f".format(totalePagare)}€" else "0€"
         totaleRicevereView.text = if (totaleRicevere > 0) "+${"%.2f".format(totaleRicevere)}€" else "0€"
+    }
+
+    fun mostraDialogStatistiche() {
+        val dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_statistiche_gruppo, null)
+        val textTotale = dialogView.findViewById<TextView>(R.id.valoreTotaleSpese)
+
+        val totale = calcolaTotaleSpese()
+        textTotale.text = "Totale spese: %.2f€".format(totale)
+
+        AlertDialog.Builder(requireContext())
+            .setTitle("Statistiche del gruppo")
+            .setView(dialogView)
+            .setPositiveButton("OK", null)
+            .show()
+    }
+
+    private fun calcolaTotaleSpese(): Double {
+        var totale = 0.0
+        for (spesa in listaSpese) {
+            totale += spesa.importo.toDouble()
+        }
+        return totale
     }
 }

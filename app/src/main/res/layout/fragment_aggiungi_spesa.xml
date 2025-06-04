@@ -72,6 +72,27 @@
         />
 
     <Button
+        android:id="@+id/btnAggiungiFoto"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="📷 Aggiungi Foto"
+        android:textColor="@color/colorOnPrimary"
+        android:backgroundTint="@color/colorPrimary"
+        android:layout_marginTop="12dp" />
+
+    <HorizontalScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp">
+
+        <LinearLayout
+            android:id="@+id/layoutGalleria"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal" />
+    </HorizontalScrollView>
+
+    <Button
         android:id="@+id/btnConfermaSpesa"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

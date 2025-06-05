@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#6200EE</color>
-    <color name="colorPrimaryVariant">#3700B3</color>
+    <color name="colorPrimary">#4CAF50</color>
+    <color name="colorPrimaryVariant">#388E3C</color>
     <color name="colorOnPrimary">#FFFFFF</color>
-    <color name="colorSecondary">#03DAC6</color>
+    <color name="colorSecondary">#81C784</color>
     <color name="colorOnSecondary">#000000</color>
     <color name="colorBackground">#FFFFFF</color>
     <color name="colorOnBackground">#000000</color>
+    <color name="verde_sfondo_app">#2EAD66</color>
     <color name="verde_chiaro">#4CAF50</color>
     <color name="purple_500">#6200EE</color>
     <color name="purple_700">#3700B3</color>

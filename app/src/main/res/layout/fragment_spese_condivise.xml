@@ -103,7 +103,7 @@
         android:layout_marginEnd="16dp"
         android:contentDescription="Aggiungi spesa"
         android:src="@drawable/segno_piu"
-        app:backgroundTint="@color/purple_500"
+        app:backgroundTint="@color/verde_sfondo_app"
         app:tint="@android:color/white" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

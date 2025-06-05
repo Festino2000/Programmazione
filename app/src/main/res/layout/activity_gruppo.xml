@@ -27,7 +27,7 @@
                 android:id="@+id/toolbar2"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@color/purple_500"
+                android:background="@color/verde_sfondo_app"
                 android:title="Gruppi"
                 android:titleTextColor="@android:color/white"
                 app:titleCentered="false"
@@ -41,8 +41,8 @@
             android:layout_height="48dp"
             android:visibility="gone"
             app:tabTextColor="@color/tab_default_color"
-            app:tabSelectedTextColor="@color/tab_selected_color"
-            app:tabIndicatorColor="@color/tab_selected_color"
+            app:tabSelectedTextColor="@color/colorPrimaryVariant"
+            app:tabIndicatorColor="@color/colorPrimaryVariant"
             app:tabInlineLabel="true" />
         </com.google.android.material.appbar.AppBarLayout>
 

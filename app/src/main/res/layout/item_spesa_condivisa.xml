@@ -100,7 +100,7 @@
             android:paddingHorizontal="12dp"
             android:paddingVertical="4dp"
             android:text="NON PAGATO"
-            android:textColor="@color/purple_500"
+            android:textColor="@color/verde_sfondo_app"
             android:textSize="12sp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/textQuotaSpesa" />

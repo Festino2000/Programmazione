@@ -45,7 +45,7 @@ class SchermataSpeseFragment : Fragment(R.layout.fragment_schermata_spese) {
             tab.text = when (position) {
                 0 -> "Spese"
                 1 -> "Saldati"
-                2 -> "Bilancio"
+                2 -> "Statistiche"
                 else -> ""
             }
         }.attach()

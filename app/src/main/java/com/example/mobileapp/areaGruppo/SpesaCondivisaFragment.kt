@@ -2,6 +2,7 @@ package com.example.mobileapp.areaGruppo
 
 import android.app.AlertDialog
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
@@ -19,6 +20,7 @@ import com.example.mobileapp.R
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.example.mobileapp.areaGruppo.StatisticheFragment
 
 class SpesaCondivisaFragment : Fragment(R.layout.fragment_spese_condivise) {
 
@@ -37,22 +39,6 @@ class SpesaCondivisaFragment : Fragment(R.layout.fragment_spese_condivise) {
         savedInstanceState: Bundle?
     ): View {
         return inflater.inflate(R.layout.fragment_spese_condivise, container, false)
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        super.onCreateOptionsMenu(menu, inflater)
-        inflater.inflate(R.menu.menu_main_gruppo_activity, menu)
-        menu.findItem(R.id.statistiche)?.isVisible = true
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId) {
-            R.id.statistiche -> {
-                mostraDialogStatistiche()
-                true
-            }
-            else -> super.onOptionsItemSelected(item)
-        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -136,6 +122,31 @@ class SpesaCondivisaFragment : Fragment(R.layout.fragment_spese_condivise) {
     private fun caricaSpese(gruppoId: String, view: View) {
         val mioId = FirebaseAuth.getInstance().currentUser?.uid ?: return
 
+        Log.d("DEBUG", "Avvio caricamento spese per gruppo $gruppoId")
+
+        FirebaseFirestore.getInstance()
+            .collection("Gruppi")
+            .document(gruppoId)
+            .collection("Spese")
+            .get()
+            .addOnSuccessListener { result ->
+                Log.d("DEBUG", "Numero documenti trovati: ${result.documents.size}")
+
+                val speseCaricate = result.documents.mapNotNull { doc ->
+                    val spesa = doc.toObject(SpesaCondivisa::class.java)
+                    Log.d("DEBUG", "Doc ${doc.id} → importo: ${spesa?.importo}")
+                    spesa?.apply { idDocumento = doc.id }
+                }
+
+                listaSpese.clear()
+                listaSpese.addAll(speseCaricate)
+
+                Log.d("DEBUG", "Spese parse correttamente: ${listaSpese.size}")
+            }
+            .addOnFailureListener {
+                Log.e("DEBUG", "Errore nel caricamento spese", it)
+            }
+
         FirebaseFirestore.getInstance()
             .collection("Gruppi")
             .document(gruppoId)
@@ -171,8 +182,8 @@ class SpesaCondivisaFragment : Fragment(R.layout.fragment_spese_condivise) {
 
     private fun aggiornaTotali(view: View, spese: List<SpesaCondivisa>) {
         val mioId = FirebaseAuth.getInstance().currentUser?.uid ?: return
-        var totalePagare = 0f
-        var totaleRicevere = 0f
+        var totalePagare = 0.0
+        var totaleRicevere = 0.0
 
         for (spesa in spese) {
             val numQuote = spesa.idUtentiCoinvolti.size + 1
@@ -190,27 +201,5 @@ class SpesaCondivisaFragment : Fragment(R.layout.fragment_spese_condivise) {
 
         totalePagareView.text = if (totalePagare > 0) "-${"%.2f".format(totalePagare)}€" else "0€"
         totaleRicevereView.text = if (totaleRicevere > 0) "+${"%.2f".format(totaleRicevere)}€" else "0€"
-    }
-
-    fun mostraDialogStatistiche() {
-        val dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_statistiche_gruppo, null)
-        val textTotale = dialogView.findViewById<TextView>(R.id.valoreTotaleSpese)
-
-        val totale = calcolaTotaleSpese()
-        textTotale.text = "Totale spese: %.2f€".format(totale)
-
-        AlertDialog.Builder(requireContext())
-            .setTitle("Statistiche del gruppo")
-            .setView(dialogView)
-            .setPositiveButton("OK", null)
-            .show()
-    }
-
-    private fun calcolaTotaleSpese(): Double {
-        var totale = 0.0
-        for (spesa in listaSpese) {
-            totale += spesa.importo.toDouble()
-        }
-        return totale
     }
 }

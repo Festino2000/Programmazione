@@ -4,9 +4,6 @@ package com.example.mobileapp.areaGruppo
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import androidx.viewpager2.adapter.FragmentStateAdapter
-import com.example.mobileapp.areaGruppo.BilancioFragment
-import com.example.mobileapp.areaGruppo.SaldatiFragment
-import com.example.mobileapp.areaGruppo.SpesaCondivisaFragment
 
 class GruppoPagerAdapter(
     fragment: Fragment,
@@ -23,7 +20,7 @@ class GruppoPagerAdapter(
         val fragment = when (position) {
             0 -> SpesaCondivisaFragment()
             1 -> SaldatiFragment()
-            2 -> BilancioFragment()
+            2 -> StatisticheFragment()
             else -> Fragment()
         }
 

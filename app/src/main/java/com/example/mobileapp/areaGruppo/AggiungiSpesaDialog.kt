@@ -64,13 +64,13 @@ class AggiungiSpesaDialog(
             .setPositiveButton("Aggiungi") { _, _ ->
                 val titolo = editTitolo.text.toString()
                 val descrizione = editDescrizione.text.toString()
-                val importo = editImporto.text.toString().toFloatOrNull() ?: 0f
+                val importo = editImporto.text.toString().toDoubleOrNull() ?: 0.0
 
                 val mioId = FirebaseAuth.getInstance().currentUser?.uid ?: return@setPositiveButton
 
                 val utentiSelezionati = adapter.getUtentiSelezionati()
                     .map { it.utenteID }
-                    .filter { it != mioId } // ✅ Rimuove il creatore dalla lista
+                    .filter { it != mioId } // Rimuove il creatore dalla lista
 
                 if (titolo.isNotBlank() && importo > 0 && utentiSelezionati.isNotEmpty()) {
                     val spesa = SpesaCondivisa(

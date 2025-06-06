@@ -113,38 +113,6 @@ class GruppoActivity : AppCompatActivity() {
 
         }
 
-    // 🔥 Mostra l’icona “Statistiche” solo nel fragment giusto
-    override fun onPrepareOptionsMenu(menu: Menu): Boolean {
-        val currentFragment = supportFragmentManager
-            .findFragmentById(R.id.fragmentContainerView)
-            ?.childFragmentManager
-            ?.fragments
-            ?.firstOrNull()
-
-        menu.findItem(R.id.statistiche)?.isVisible = currentFragment is SpesaCondivisaFragment
-        return super.onPrepareOptionsMenu(menu)
-    }
-
-    // 🔥 Gestisce il click sull’icona “Statistiche”
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId) {
-            R.id.statistiche -> {
-                val currentFragment = supportFragmentManager
-                    .findFragmentById(R.id.fragmentContainerView)
-                    ?.childFragmentManager
-                    ?.fragments
-                    ?.firstOrNull()
-
-                if (currentFragment is SpesaCondivisaFragment) {
-                    currentFragment.mostraDialogStatistiche()
-                }
-                true
-            }
-
-            else -> super.onOptionsItemSelected(item)
-        }
-    }
-
     private fun apriSchermataSpeseGruppo(gruppo: Gruppo) {
         val fragment = SchermataSpeseFragment()
         supportFragmentManager.addOnBackStackChangedListener {

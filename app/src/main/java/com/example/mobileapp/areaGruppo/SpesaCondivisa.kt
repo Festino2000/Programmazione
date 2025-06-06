@@ -6,7 +6,7 @@ data class SpesaCondivisa(
     val giorno: Int = 0,
     val mese: Int = 0,
     val anno: Int = 0,
-    val importo: Float = 0f,
+    val importo: Double = 0.0,
     val idUtentiCoinvolti: List<String> = emptyList(),
     var creatoreID: String = "",
     var pagamentiEffettuati: MutableList<String> = mutableListOf(),

@@ -9,6 +9,7 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.os.Environment
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -221,8 +222,15 @@ class AggiungiSpesaFragment : Fragment(R.layout.fragment_aggiungi_spesa) {
     }
 
     private fun avviaCamera() {
-        val fotoFile = File.createTempFile("spesa_", ".jpg", requireContext().cacheDir)
-        fileFotoUri = FileProvider.getUriForFile(requireContext(), "${requireContext().packageName}.provider", fotoFile)
+        val fotoFile = File(
+            requireContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES),
+            "spesa_${System.currentTimeMillis()}.jpg"
+        )
+        fileFotoUri = FileProvider.getUriForFile(
+            requireContext(),
+            "${requireContext().packageName}.fileprovider",
+            fotoFile
+        )
         launcherCamera.launch(fileFotoUri)
     }
 

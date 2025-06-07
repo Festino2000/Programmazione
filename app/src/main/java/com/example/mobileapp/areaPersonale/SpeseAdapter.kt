@@ -1,9 +1,14 @@
 package com.example.mobileapp.areaPersonale
 
+import android.net.Uri
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -55,6 +60,7 @@ class SpeseAdapter(
                 }
                 .show()
         }
+
     }
 
     class SpesaDiffCallback : DiffUtil.ItemCallback<Spesa>() {

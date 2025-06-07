@@ -64,6 +64,16 @@ class AggiungiSpesaFragment : Fragment(R.layout.fragment_aggiungi_spesa) {
         val layoutGalleria = view.findViewById<LinearLayout>(R.id.layoutGalleria)
 
         launcherGalleria = registerForActivityResult(ActivityResultContracts.GetMultipleContents()) { uris ->
+            uris.forEach { uri ->
+                try {
+                    requireContext().contentResolver.takePersistableUriPermission(
+                        uri,
+                        Intent.FLAG_GRANT_READ_URI_PERMISSION
+                    )
+                } catch (e: SecurityException) {
+                    Log.w("SpesaDebug", "Permission persist failed: $uri", e)
+                }
+            }
             imageUris.addAll(uris)
             mostraAnteprime(layoutGalleria)
         }
@@ -151,18 +161,21 @@ class AggiungiSpesaFragment : Fragment(R.layout.fragment_aggiungi_spesa) {
 
             db.collection("Spese").add(spesaMap)
                 .addOnSuccessListener { docRef ->
+                    Log.d("SpesaDebug", "URI immagini salvate: ${imageUris.map { it.toString() }}")
 
-                    // Salva solo gli URI delle immagini in Room
                     val spesaLocale = SpesaLocale(
                         id = docRef.id,
-                        immagini = imageUris.map { it.toString() }
+                        immagini = imageUris.mapNotNull { it.toString() }
                     )
 
                     Thread {
-                        AppDatabase.getDatabase(requireContext()).spesaDao().inserisci(spesaLocale)
+                        try {
+                            AppDatabase.getDatabase(requireContext()).spesaDao().inserisci(spesaLocale)
+                        } catch (e: Exception) {
+                            Log.e("SpesaDebug", "Errore salvataggio Room", e)
+                        }
                     }.start()
 
-                    // Usa classe Spesa solo per callback e navigazione
                     val nuovaSpesa = Spesa(
                         titolo = titolo,
                         descrizione = descrizione,
@@ -181,7 +194,6 @@ class AggiungiSpesaFragment : Fragment(R.layout.fragment_aggiungi_spesa) {
                     Toast.makeText(requireContext(), "Errore nel salvataggio su Firestore", Toast.LENGTH_SHORT).show()
                 }
         }
-
 
         return view
     }
@@ -331,6 +343,5 @@ class AggiungiSpesaFragment : Fragment(R.layout.fragment_aggiungi_spesa) {
         builder.show()
     }
 }
-
 
 

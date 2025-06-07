@@ -3,8 +3,10 @@ package com.example.mobileapp.areaGruppo
 import android.os.Bundle
 import android.view.Menu
 import android.view.View
+import android.widget.EditText
 import androidx.appcompat.widget.SearchView
 import androidx.activity.viewModels
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import com.example.mobileapp.FabMenuController
@@ -14,6 +16,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.mobileapp.R
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 
 class GruppoActivity : AppCompatActivity() {
 
@@ -31,9 +35,10 @@ class GruppoActivity : AppCompatActivity() {
 
         recyclerView = findViewById(R.id.recyclerViewGruppi)
         recyclerView.layoutManager = LinearLayoutManager(this)
-        adapter = GruppoAdapter { gruppo ->
-            apriSchermataSpeseGruppo(gruppo)
-        }
+        adapter = GruppoAdapter(
+            onGruppoClick = { gruppo -> apriSchermataSpeseGruppo(gruppo) },
+            onGruppoLongClick = { gruppo -> mostraDialogGestioneGruppo(gruppo) }
+        )
         recyclerView.adapter = adapter
 
         val fabMenu = findViewById<ExtendedFloatingActionButton>(R.id.fabMenu)
@@ -75,16 +80,6 @@ class GruppoActivity : AppCompatActivity() {
 
         // Carica inizialmente i gruppi dell’utente
         viewModel.caricaGruppiUtente()
-
-        /*val button = findViewById<Button>(R.id.button)
-        button.setOnClickListener {
-            Toast.makeText(this, "Click OK", Toast.LENGTH_SHORT).show()
-            val fragment = SchermataSpeseFragment()
-            supportFragmentManager.beginTransaction()
-                .replace(R.id.fragmentContainerView, fragment)
-                .addToBackStack(null)
-                .commit()
-        }*/
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -138,5 +133,78 @@ class GruppoActivity : AppCompatActivity() {
             it.titolo.contains(query, ignoreCase = true)
         }
         adapter.submitList(gruppiFiltrati)
+    }
+    private fun mostraDialogGestioneGruppo(gruppo: Gruppo) {
+        val uidCorrente = FirebaseAuth.getInstance().currentUser?.uid
+        if (uidCorrente != gruppo.creatoreID) return // solo il creatore può modificare/eliminare
+
+        val opzioni = arrayOf("Modifica Gruppo", "Elimina Gruppo")
+
+        AlertDialog.Builder(this)
+            .setTitle(gruppo.titolo)
+            .setItems(opzioni) { _, which ->
+                when (which) {
+                    0 -> mostraDialogModificaGruppo(gruppo)
+                    1 -> confermaEliminazioneGruppo(gruppo)
+                }
+            }
+            .show()
+    }
+    private fun confermaEliminazioneGruppo(gruppo: Gruppo) {
+        AlertDialog.Builder(this)
+            .setTitle("Elimina gruppo")
+            .setMessage("Vuoi eliminare il gruppo e tutte le sue spese?")
+            .setPositiveButton("Sì") { _, _ ->
+                val db = FirebaseFirestore.getInstance()
+                db.collection("Gruppi")
+                    .whereEqualTo("idUnico", gruppo.idUnico)
+                    .get()
+                    .addOnSuccessListener { result ->
+                        val docId = result.documents.firstOrNull()?.id ?: return@addOnSuccessListener
+
+                        // Prima elimina tutte le spese
+                        db.collection("Gruppi").document(docId)
+                            .collection("Spese")
+                            .get()
+                            .addOnSuccessListener { spese ->
+                                for (doc in spese.documents) {
+                                    doc.reference.delete()
+                                }
+
+                                // Poi elimina il gruppo
+                                db.collection("Gruppi").document(docId).delete().addOnSuccessListener {
+                                    viewModel.caricaGruppiUtente()
+                                }
+                            }
+                    }
+            }
+            .setNegativeButton("Annulla", null)
+            .show()
+    }
+    private fun mostraDialogModificaGruppo(gruppo: Gruppo) {
+        val input = EditText(this).apply {
+            hint = "Titolo nuovo"
+            setText(gruppo.titolo)
+        }
+
+        AlertDialog.Builder(this)
+            .setTitle("Modifica gruppo")
+            .setView(input)
+            .setPositiveButton("Salva") { _, _ ->
+                val nuovoTitolo = input.text.toString()
+                val db = FirebaseFirestore.getInstance()
+
+                db.collection("Gruppi")
+                    .whereEqualTo("idUnico", gruppo.idUnico)
+                    .get()
+                    .addOnSuccessListener { result ->
+                        val docId = result.documents.firstOrNull()?.id ?: return@addOnSuccessListener
+                        db.collection("Gruppi").document(docId)
+                            .update("titolo", nuovoTitolo)
+                            .addOnSuccessListener { viewModel.caricaGruppiUtente() }
+                    }
+            }
+            .setNegativeButton("Annulla", null)
+            .show()
     }
 }

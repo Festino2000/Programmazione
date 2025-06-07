@@ -1,6 +1,5 @@
 package com.example.mobileapp.areaGruppo
 
-import android.app.DatePickerDialog
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
@@ -13,12 +12,9 @@ import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.viewpager2.widget.ViewPager2
 import com.example.mobileapp.R
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
-import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
-import java.util.Calendar
 import com.google.firebase.firestore.FieldPath
 
 class SchermataSpeseFragment : Fragment(R.layout.fragment_schermata_spese) {

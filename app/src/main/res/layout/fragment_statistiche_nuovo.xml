@@ -4,17 +4,50 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:padding="16dp">
 
     <TextView
         android:id="@+id/valoreTotaleSpese"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="Totale spese: "
+        android:text="Totale spese:"
         android:textSize="20sp"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"/>
 
+    <TextView
+        android:id="@+id/valoreSpesaMedia"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Spesa media per utente:"
+        android:textSize="18sp"
+        app:layout_constraintTop_toBottomOf="@id/valoreTotaleSpese"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="16dp"/>
+
+    <TextView
+        android:id="@+id/valoreTotalePerUtente"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Totale speso per utente:"
+        android:textSize="18sp"
+        app:layout_constraintTop_toBottomOf="@id/valoreSpesaMedia"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="24dp"/>
+
+    <TextView
+        android:id="@+id/valoreSaldoPerUtente"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Saldo per utente:"
+        android:textSize="18sp"
+        app:layout_constraintTop_toBottomOf="@id/valoreTotalePerUtente"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="24dp"/>
 </androidx.constraintlayout.widget.ConstraintLayout>
+

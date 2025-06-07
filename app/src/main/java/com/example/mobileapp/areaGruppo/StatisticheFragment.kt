@@ -1,20 +1,18 @@
 package com.example.mobileapp.areaGruppo
 
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.widget.TextView
 import android.util.Log
 import androidx.fragment.app.Fragment
 import com.example.mobileapp.R
-import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
 class StatisticheFragment : Fragment(R.layout.fragment_statistiche_nuovo) {
 
     private lateinit var idGruppoFirestore: String
     private val listaSpese = mutableListOf<SpesaCondivisa>()
+    private val uidToNickname = mutableMapOf<String, String>()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -26,7 +24,6 @@ class StatisticheFragment : Fragment(R.layout.fragment_statistiche_nuovo) {
     }
 
     private fun caricaSpese(gruppoId: String, view: View) {
-        // Cerchiamo il gruppo tramite il campo idUnico
         FirebaseFirestore.getInstance()
             .collection("Gruppi")
             .whereEqualTo("idUnico", gruppoId)
@@ -40,7 +37,6 @@ class StatisticheFragment : Fragment(R.layout.fragment_statistiche_nuovo) {
 
                 val docId = documento.id
 
-                // Una volta trovato l'ID corretto, carichiamo le spese
                 FirebaseFirestore.getInstance()
                     .collection("Gruppi")
                     .document(docId)
@@ -56,7 +52,7 @@ class StatisticheFragment : Fragment(R.layout.fragment_statistiche_nuovo) {
                         listaSpese.addAll(speseCaricate)
 
                         Log.d("StatisticheFragment", "Spese trovate: ${listaSpese.size}")
-                        aggiornaStatistiche(view)
+                        caricaNicknameUtenti(view)
                     }
                     .addOnFailureListener {
                         Log.e("StatisticheFragment", "Errore nel caricamento spese", it)
@@ -67,20 +63,69 @@ class StatisticheFragment : Fragment(R.layout.fragment_statistiche_nuovo) {
             }
     }
 
+    private fun caricaNicknameUtenti(view: View) {
+        val db = FirebaseFirestore.getInstance()
+        val utentiCoinvolti = listaSpese.flatMap { it.idUtentiCoinvolti + it.creatoreID }.toSet()
+
+        db.collection("Utenti")
+            .get()
+            .addOnSuccessListener { result ->
+                for (doc in result) {
+                    val uid = doc.id
+                    val nickname = doc.getString("nickname") ?: "Sconosciuto"
+                    if (uid in utentiCoinvolti) {
+                        uidToNickname[uid] = nickname
+                    }
+                }
+                aggiornaStatistiche(view)
+            }
+            .addOnFailureListener {
+                Log.e("StatisticheFragment", "Errore nel caricamento dei nickname", it)
+                aggiornaStatistiche(view)
+            }
+    }
 
     fun aggiornaStatistiche(view: View) {
         val totale = calcolaTotaleSpese()
-        val textTotale = view.findViewById<TextView>(R.id.valoreTotaleSpese)
-        textTotale.text = "Totale spese: %.2f€".format(totale)
+        val totalePerUtente = calcolaTotalePerUtente()
+        val saldoPerUtente = calcolaSaldoPerUtente()
+        val spesaMedia = if (saldoPerUtente.isNotEmpty()) totale / saldoPerUtente.size else 0.0
+
+        view.findViewById<TextView>(R.id.valoreTotaleSpese).text = "Totale spese: %.2f€".format(totale)
+        view.findViewById<TextView>(R.id.valoreSpesaMedia).text = "Spesa media per utente: %.2f€".format(spesaMedia)
+
+        val textTotalePerUtente = view.findViewById<TextView>(R.id.valoreTotalePerUtente)
+        textTotalePerUtente.text = totalePerUtente.entries.joinToString("\n") {
+            "${uidToNickname[it.key] ?: it.key}: %.2f€".format(it.value)
+        }
+
+        val textSaldoPerUtente = view.findViewById<TextView>(R.id.valoreSaldoPerUtente)
+        textSaldoPerUtente.text = saldoPerUtente.entries.joinToString("\n") {
+            "${uidToNickname[it.key] ?: it.key}: %.2f€".format(it.value)
+        }
     }
 
     private fun calcolaTotaleSpese(): Double {
-        var totale = 0.0
+        return listaSpese.sumOf { it.importo }
+    }
+
+    private fun calcolaTotalePerUtente(): Map<String, Double> {
+        return listaSpese.groupBy { it.creatoreID }
+            .mapValues { entry -> entry.value.sumOf { it.importo } }
+    }
+
+    private fun calcolaSaldoPerUtente(): Map<String, Double> {
+        val saldo = mutableMapOf<String, Double>()
         for (spesa in listaSpese) {
-            totale += spesa.importo
+            val quota = spesa.importo / spesa.idUtentiCoinvolti.size
+            for (uid in spesa.idUtentiCoinvolti) {
+                saldo[uid] = saldo.getOrDefault(uid, 0.0) - quota
+            }
+            saldo[spesa.creatoreID] = saldo.getOrDefault(spesa.creatoreID, 0.0) + spesa.importo
         }
-        return totale
+        return saldo
     }
 }
+
 
 

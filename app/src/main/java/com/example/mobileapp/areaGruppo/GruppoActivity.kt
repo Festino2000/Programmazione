@@ -1,19 +1,12 @@
 package com.example.mobileapp.areaGruppo
 
-import android.app.AlertDialog
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.Menu
-import android.view.MenuItem
 import android.view.View
-import android.widget.Button
-import android.widget.TextView
 import androidx.appcompat.widget.SearchView
-import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
-import androidx.core.content.ContentProviderCompat.requireContext
 import com.example.mobileapp.FabMenuController
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager

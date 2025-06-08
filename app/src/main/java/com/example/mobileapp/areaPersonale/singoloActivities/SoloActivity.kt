@@ -358,7 +358,7 @@ class SoloActivity : AppCompatActivity(), AggiungiSpesaFragment.OnSpesaAggiuntaL
 
             if (speseFiltrate.isEmpty()) {
                 textStatistiche.text = "Nessuna spesa trovata per questo mese."
-                    return@lambda
+                return@lambda
             }
 
             val totale = speseFiltrate.sumOf { it.importo.toDouble() }

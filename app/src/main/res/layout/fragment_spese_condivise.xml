@@ -6,7 +6,7 @@
     android:id="@+id/coordinatorLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".areaGruppo.SchermataSpeseFragment">
+    tools:context=".areaGruppo.gruppoFragments.SchermataSpeseFragment">
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
@@ -103,7 +103,7 @@
         android:layout_marginEnd="16dp"
         android:contentDescription="Aggiungi spesa"
         android:src="@drawable/segno_piu"
-        app:backgroundTint="@color/purple_500"
+        app:backgroundTint="@color/verde_sfondo_app"
         app:tint="@android:color/white" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

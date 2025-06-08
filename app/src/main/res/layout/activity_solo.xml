@@ -6,7 +6,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".areaPersonale.SoloActivity">
+    tools:context=".areaPersonale.singoloActivities.SoloActivity">
 
     <!-- Toolbar -->
 
@@ -14,7 +14,7 @@
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="70dp"
-        android:background="?attr/colorPrimary"
+        android:background="@color/verde_sfondo_app"
         android:elevation="6dp"
         android:paddingTop="14dp"
         android:paddingBottom="14dp"

@@ -10,4 +10,5 @@
     <color name="tab_default_color">#AAAAAA</color>
     <color name="colorOnBackground">#FFFFFF</color>
     <color name="da_spostare_text_color">#AAAAAA</color>
+    <color name="text_black">#000000</color> <!-- NERO anche in dark mode -->
 </resources>

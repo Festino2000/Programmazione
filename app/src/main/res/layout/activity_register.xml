@@ -54,7 +54,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Registrati"
-            android:backgroundTint="#6200EE"
+            android:backgroundTint="@color/verde_sfondo_app"
             android:textColor="#FFF"
             android:padding="12dp" />
 

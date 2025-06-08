@@ -6,7 +6,7 @@
     android:id="@+id/coordinatorLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".areaGruppo.SchermataSpeseFragment">
+    tools:context=".areaGruppo.gruppoFragments.SchermataSpeseFragment">
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"

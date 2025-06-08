@@ -4,8 +4,8 @@ import android.content.Intent
 import android.os.Bundle
 import android.widget.ImageButton
 import androidx.appcompat.app.AppCompatActivity
-import com.example.mobileapp.areaGruppo.GruppoActivity
-import com.example.mobileapp.areaPersonale.SoloActivity
+import com.example.mobileapp.areaGruppo.gruppoActivities.GruppoActivity
+import com.example.mobileapp.areaPersonale.singoloActivities.SoloActivity
 import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.FirebaseAuth
 import androidx.appcompat.app.AlertDialog

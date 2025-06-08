@@ -9,7 +9,7 @@
     android:clickable="true"
     android:focusable="true"
     android:focusableInTouchMode="true"
-    tools:context=".areaGruppo.GruppoActivity">
+    tools:context=".areaGruppo.gruppoActivities.GruppoActivity">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"

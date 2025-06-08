@@ -53,7 +53,7 @@
 
         <!-- Attivita per il singolo -->
         <activity
-            android:name=".areaPersonale.SoloActivity"
+            android:name=".areaPersonale.singoloActivities.SoloActivity"
             android:exported="true"/>
 
         <!-- Attività per il login con Google -->
@@ -65,7 +65,7 @@
 
         <!-- Dichiarazione della GruppoActivity -->
         <activity
-            android:name=".areaGruppo.GruppoActivity"
+            android:name=".areaGruppo.gruppoActivities.GruppoActivity"
             android:exported="true" />
 
         <!-- Configurazione dell'API Google -->

@@ -161,41 +161,81 @@ class AggiungiSpesaFragment : Fragment(R.layout.fragment_aggiungi_spesa) {
                 "data" to Timestamp.now()
             )
 
-            db.collection("Spese").add(spesaMap)
-                .addOnSuccessListener { docRef ->
-                    Log.d("SpesaDebug", "URI immagini salvate: ${imageUris.map { it.toString() }}")
+            val documentId = arguments?.getString("documentId")
 
-                    val spesaLocale = SpesaLocale(
-                        id = docRef.id,
-                        immagini = imageUris.mapNotNull { it.toString() }
-                    )
+            if (documentId != null) {
+                // MODIFICA
+                db.collection("Spese").document(documentId)
+                    .set(spesaMap)
+                    .addOnSuccessListener {
+                        // Aggiorna anche la Room locale
+                        val spesaLocale = SpesaLocale(
+                            id = documentId,
+                            immagini = imageUris.mapNotNull { it.toString() }
+                        )
 
-                    Thread {
-                        try {
-                            AppDatabase.getDatabase(requireContext()).spesaDao().inserisci(spesaLocale)
-                        } catch (e: Exception) {
-                            Log.e("SpesaDebug", "Errore salvataggio Room", e)
-                        }
-                    }.start()
+                        Thread {
+                            try {
+                                AppDatabase.getDatabase(requireContext()).spesaDao().inserisci(spesaLocale)
+                            } catch (e: Exception) {
+                                Log.e("SpesaDebug", "Errore salvataggio Room", e)
+                            }
+                        }.start()
 
-                    val nuovaSpesa = Spesa(
-                        titolo = titolo,
-                        descrizione = descrizione,
-                        giorno = giorno,
-                        mese = mese,
-                        anno = anno,
-                        importo = importo,
-                        categoria = categoria,
-                        id = docRef.id
-                    )
+                        val nuovaSpesa = Spesa(
+                            titolo = titolo,
+                            descrizione = descrizione,
+                            giorno = giorno,
+                            mese = mese,
+                            anno = anno,
+                            importo = importo,
+                            categoria = categoria,
+                            id = documentId
+                        )
 
-                    callback.onSpesaAggiunta(nuovaSpesa)
-                    startActivity(Intent(requireContext(), SoloActivity::class.java))
-                }
-                .addOnFailureListener {
-                    Toast.makeText(requireContext(), "Errore nel salvataggio su Firestore", Toast.LENGTH_SHORT).show()
-                }
+                        callback.onSpesaAggiunta(nuovaSpesa)
+                        startActivity(Intent(requireContext(), SoloActivity::class.java))
+                    }
+                    .addOnFailureListener {
+                        Toast.makeText(requireContext(), "Errore nella modifica", Toast.LENGTH_SHORT).show()
+                    }
+            } else {
+                // INSERIMENTO
+                db.collection("Spese").add(spesaMap)
+                    .addOnSuccessListener { docRef ->
+                        val spesaLocale = SpesaLocale(
+                            id = docRef.id,
+                            immagini = imageUris.mapNotNull { it.toString() }
+                        )
+
+                        Thread {
+                            try {
+                                AppDatabase.getDatabase(requireContext()).spesaDao().inserisci(spesaLocale)
+                            } catch (e: Exception) {
+                                Log.e("SpesaDebug", "Errore salvataggio Room", e)
+                            }
+                        }.start()
+
+                        val nuovaSpesa = Spesa(
+                            titolo = titolo,
+                            descrizione = descrizione,
+                            giorno = giorno,
+                            mese = mese,
+                            anno = anno,
+                            importo = importo,
+                            categoria = categoria,
+                            id = docRef.id
+                        )
+
+                        callback.onSpesaAggiunta(nuovaSpesa)
+                        startActivity(Intent(requireContext(), SoloActivity::class.java))
+                    }
+                    .addOnFailureListener {
+                        Toast.makeText(requireContext(), "Errore nel salvataggio su Firestore", Toast.LENGTH_SHORT).show()
+                    }
+            }
         }
+
 
         return view
     }

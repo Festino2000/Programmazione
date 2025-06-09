@@ -469,14 +469,12 @@ class SoloActivity : AppCompatActivity(),
             .show()
     }
 
-
     private fun apriModificaSpesaFragment(spesa: Spesa) {
         btnAggiungiSpesa.visibility = View.GONE
         findViewById<FrameLayout>(R.id.fragment_container).visibility = View.VISIBLE
 
         val fragment = AggiungiSpesaFragment()
 
-        // Passa la spesa come argomento
         val bundle = Bundle().apply {
             putString("titolo", spesa.titolo)
             putString("descrizione", spesa.descrizione)
@@ -485,7 +483,8 @@ class SoloActivity : AppCompatActivity(),
             putInt("anno", spesa.anno)
             putFloat("importo", spesa.importo)
             putString("categoria", spesa.categoria)
-            putString("documentId", spesa.id) // se hai salvato anche l'id del documento
+            putString("documentId", spesa.id) // <--- ID necessario per l'update!
+            putBoolean("modifica", true) // <--- Flag per distinguere modalità modifica
         }
 
         fragment.arguments = bundle
@@ -495,6 +494,7 @@ class SoloActivity : AppCompatActivity(),
             .addToBackStack(null)
             .commit()
     }
+
     private fun mostraDialogConfermaEliminazione(spesa: Spesa) {
         AlertDialog.Builder(this)
             .setTitle("Conferma eliminazione")

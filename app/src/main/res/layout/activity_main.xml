@@ -6,6 +6,20 @@
     android:layout_height="match_parent"
     android:gravity="center">
 
+    <TextView
+        android:id="@+id/textViewNickname"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Ciao"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:textColor="@color/colorOnBackground"
+        android:layout_marginTop="64dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:textAlignment="center" />
+
     <!-- Bottone Immagine Singolo (YOU) -->
     <ImageButton
         android:id="@+id/solo"

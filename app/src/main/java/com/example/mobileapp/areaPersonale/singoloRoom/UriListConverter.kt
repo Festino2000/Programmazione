@@ -1,4 +1,4 @@
-package com.example.mobileapp.areaPersonale
+package com.example.mobileapp.areaPersonale.singoloRoom
 
 import androidx.room.TypeConverter
 

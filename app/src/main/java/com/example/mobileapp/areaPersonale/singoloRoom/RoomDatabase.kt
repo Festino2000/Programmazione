@@ -3,7 +3,7 @@ import androidx.room.RoomDatabase
 import androidx.room.Database
 import com.example.mobileapp.areaPersonale.singoloDataClasses.SpesaLocale
 import androidx.room.TypeConverters
-import com.example.mobileapp.areaPersonale.UriListConverter
+import com.example.mobileapp.areaPersonale.singoloRoom.UriListConverter
 import androidx.room.Room
 import com.example.mobileapp.areaPersonale.singoloRoom.SpesaDao
 

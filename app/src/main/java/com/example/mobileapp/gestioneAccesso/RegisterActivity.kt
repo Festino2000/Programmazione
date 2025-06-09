@@ -119,7 +119,7 @@ class RegisterActivity : AppCompatActivity() {
 
         editTextEmail = findViewById(R.id.editTextEmail)
         editTextPassword = findViewById(R.id.editTextPassword)
-        editTextConfirmPassword = findViewById(R.id.editTextConfirmPassword)
+        editTextConfirmPassword = findViewById(R.id.editTextConfermaPassword)
         buttonRegister = findViewById(R.id.buttonRegister)
         buttonGoogleSignIn = findViewById(R.id.buttonGoogleSignIn)
         editTextNickname = findViewById(R.id.editTextNickname)

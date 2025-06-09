@@ -1,19 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="8dp"
     app:cardCornerRadius="12dp"
-    app:cardElevation="4dp">
+    app:cardElevation="4dp"
+    android:clickable="true"
+    android:focusable="true"
+    android:foreground="?attr/selectableItemBackground">
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="349dp"
-        android:layout_height="match_parent"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:padding="12dp">
 
-        <!-- Nome persona -->
+        <!-- Nome partecipante -->
         <TextView
             android:id="@+id/textPersona"
             android:layout_width="0dp"
@@ -22,35 +25,22 @@
             android:text="Nome partecipante"
             android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
             android:textStyle="bold"
-            app:layout_constraintBottom_toTopOf="@+id/textDescrizioneSpesa"
-            app:layout_constraintEnd_toStartOf="@+id/textImportoSpesa"
+            app:layout_constraintBottom_toTopOf="@id/textDescrizioneSpesa"
+            app:layout_constraintEnd_toStartOf="@+id/textQuotaSpesa"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <!-- Importo -->
-        <TextView
-            android:id="@+id/textImportoSpesa"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="-35,00"
-            android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
-            android:textColor="@android:color/black"
-            android:textStyle="bold"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@id/textPersona" />
-        <!-- Quota (sotto la data) -->
+        <!-- QUOTA spostata in alto a destra -->
         <TextView
             android:id="@+id/textQuotaSpesa"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:text="Quota: 0€"
-            android:textColor="@android:color/darker_gray"
-            android:textSize="12sp"
+            android:text="Quota: 12.50€"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="@android:color/black"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/textDataSpesa" />
-
+            app:layout_constraintTop_toTopOf="@id/textPersona" />
 
         <!-- Descrizione -->
         <TextView
@@ -67,7 +57,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/textPersona" />
 
-
+        <!-- Data -->
         <TextView
             android:id="@+id/textDataSpesa"
             android:layout_width="wrap_content"
@@ -79,18 +69,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/textDescrizioneSpesa" />
 
-        <LinearLayout
-            android:id="@+id/layoutPartecipanti"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:orientation="vertical"
-            android:visibility="gone"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/textStatoPagamento" />
-
-        <!-- Etichetta Stato -->
+        <!-- Stato pagamento -->
         <TextView
             android:id="@+id/textStatoPagamento"
             android:layout_width="wrap_content"
@@ -103,9 +82,23 @@
             android:textColor="@color/verde_sfondo_app"
             android:textSize="12sp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/textQuotaSpesa" />
+            app:layout_constraintTop_toBottomOf="@id/textDataSpesa" />
 
-        <!-- Bottone di conferma (solo per creatore) -->
+        <!-- IMPORTO spostato in basso a destra -->
+        <TextView
+            android:id="@+id/textImportoSpesa"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Totale: 35,00€"
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
+            android:textColor="@android:color/darker_gray"
+            android:textSize="13sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/textStatoPagamento"
+            android:layout_marginTop="8dp"/>
+
+        <!-- Bottone di conferma (solo creatore) -->
         <Button
             android:id="@+id/buttonConfermaRicezione"
             android:layout_width="wrap_content"
@@ -117,5 +110,17 @@
             android:visibility="gone"
             app:layout_constraintStart_toEndOf="@id/textStatoPagamento"
             app:layout_constraintTop_toTopOf="@id/textStatoPagamento" />
+
+        <!-- Partecipanti -->
+        <LinearLayout
+            android:id="@+id/layoutPartecipanti"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:orientation="vertical"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/textStatoPagamento" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.cardview.widget.CardView>

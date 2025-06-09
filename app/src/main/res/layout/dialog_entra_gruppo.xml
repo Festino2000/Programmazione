@@ -1,32 +1,30 @@
-<?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:orientation="vertical"
     android:padding="24dp"
-    android:orientation="vertical">
-
+    android:gravity="center">
     <TextView
-        android:id="@+id/textViewTitolo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Inserisci ID del Gruppo"
+        android:text="Inserisci ID Gruppo"
+        android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
+        android:fontFamily="@font/lilita_one_regular"
         android:textSize="18sp"
-        android:textStyle="bold"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginBottom="12dp" />
-
+        android:layout_marginBottom="12dp"/>
     <EditText
         android:id="@+id/editTextIdGruppo"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Es: 097465"
-        android:inputType="number"
-        android:maxLength="6"
-        android:layout_marginBottom="16dp" />
-
+        android:hint="ID Gruppo"
+        android:padding="12dp"
+        android:background="@drawable/rounded_edittext"/>
     <Button
         android:id="@+id/buttonEntra"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Entra nel Gruppo" />
+        android:text="Entra"
+        android:layout_marginTop="16dp"
+        android:textAllCaps="false"/>
 </LinearLayout>

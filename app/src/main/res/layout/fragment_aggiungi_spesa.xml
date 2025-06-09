@@ -7,15 +7,22 @@
     android:layout_marginTop="50dp"
     android:background="@color/colorBackground">
 
-    <EditText
-        android:id="@+id/titoloSpesa"
+    <com.google.android.material.textfield.TextInputLayout
+        style ="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Titolo"
-        android:textColor="@color/colorOnBackground"
-        android:backgroundTint="@color/colorOnBackground"
-        android:textColorHint="@color/colorOnBackground"
-        />
+        android:layout_marginBottom="12dp">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/titoloSpesa"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/lilita_one_regular"
+            android:textColor="@color/colorOnBackground"
+            android:textColorHint="@color/colorOnBackground" />
+    </com.google.android.material.textfield.TextInputLayout>
+
 
     <EditText
         android:id="@+id/descrizioneSpesa"

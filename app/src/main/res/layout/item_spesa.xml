@@ -1,39 +1,37 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:padding="16dp"
+    android:padding="20dp"
     android:background="@drawable/background_item"
     android:layout_margin="12dp"
     android:elevation="4dp"
-    android:clickable="true"
-    android:gravity="center">
-
-    <!-- Titolo della Spesa -->
+    android:gravity="start">
     <TextView
         android:id="@+id/titoloSpesa"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Titolo Spesa"
-        android:textStyle="bold"
-        android:textSize="18sp"
-        android:textColor="#000000" />
-
-    <!-- Importo della Spesa -->
+        android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
+        android:fontFamily="@font/lilita_one_regular"/>
     <TextView
         android:id="@+id/importoSpesa"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Importo"
-        android:textSize="16sp"
-        android:textColor="#000000" />
-
-    <!-- Data della Spesa -->
+        android:text="€0.00"
+        android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
+        android:textColor="@color/green"/>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        android:background="@color/lightGray"/>
     <TextView
         android:id="@+id/dataSpesa"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="15/05/2025"
-        android:textSize="14sp"
-        android:textColor="#000000" />
+        android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"/>
 </LinearLayout>

@@ -1,89 +1,99 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/verde_sfondo_app">
 
-    <LinearLayout
-        android:layout_width="match_parent"
+    <androidx.cardview.widget.CardView
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:gravity="center_horizontal"
-        android:padding="16dp">
+        android:layout_margin="24dp"
+        app:cardCornerRadius="24dp"
+        app:cardElevation="8dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
 
-        <!-- Spazio per abbassare il contenuto -->
-        <Space
-            android:layout_width="match_parent"
-            android:layout_height="140dp" />
-
-        <!-- Titolo della schermata -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Registrati"
-            android:textSize="24sp"
-            android:textStyle="bold"
-            android:paddingBottom="24dp"
-            android:textColor="@color/colorOnBackground" />
-
-        <!-- Campo Email -->
-        <EditText
-            android:id="@+id/editTextEmail"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Email"
-            android:inputType="textEmailAddress"
-            android:padding="12dp"
-            android:layout_marginBottom="8dp" />
+            android:orientation="vertical"
+            android:padding="24dp"
+            android:gravity="center_horizontal">
 
-        <!-- Campo Password -->
-        <EditText
-            android:id="@+id/editTextPassword"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Password"
-            android:inputType="textPassword"
-            android:padding="12dp"
-            android:layout_marginBottom="8dp" />
+            <TextView
+                android:id="@+id/textRegisterTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Registrati"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                android:fontFamily="@font/lilita_one_regular"
+                android:textColor="@color/verde_sfondo_app"
+                android:layout_marginBottom="16dp" />
 
-        <!-- Campo Conferma Password -->
-        <EditText
-            android:id="@+id/editTextConfirmPassword"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Conferma Password"
-            android:inputType="textPassword"
-            android:padding="12dp"
-            android:layout_marginBottom="16dp" />
+            <EditText
+                android:id="@+id/editTextNickname"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Nickname"
+                android:backgroundTint="@color/verde_sfondo_app"
+                android:layout_marginBottom="12dp" />
 
-        <!-- Nickname -->
-        <EditText
-            android:id="@+id/editTextNickname"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Nickname"
-            android:layout_marginBottom="16dp" />
+            <EditText
+                android:id="@+id/editTextEmail"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Email"
+                android:inputType="textEmailAddress"
+                android:backgroundTint="@color/verde_sfondo_app"
+                android:layout_marginBottom="12dp" />
 
-        <!-- Bottone di Registrazione -->
-        <Button
-            android:id="@+id/buttonRegister"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Registrati"
-            android:backgroundTint="@color/verde_sfondo_app"
-            android:textColor="#FFF"
-            android:padding="12dp" />
+            <EditText
+                android:id="@+id/editTextPassword"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Password"
+                android:inputType="textPassword"
+                android:backgroundTint="@color/verde_sfondo_app"
+                android:layout_marginBottom="12dp" />
 
-        <!-- Bottone Google -->
-        <Button
-            android:id="@+id/buttonGoogleSignIn"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Accedi con Google"
-            android:backgroundTint="#4285F4"
-            android:textColor="#FFF"
-            android:padding="12dp"
-            android:layout_marginTop="16dp" />
+            <EditText
+                android:id="@+id/editTextConfermaPassword"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Conferma Password"
+                android:inputType="textPassword"
+                android:backgroundTint="@color/verde_sfondo_app"
+                android:layout_marginBottom="24dp" />
 
-    </LinearLayout>
-</ScrollView>
+            <Button
+                android:id="@+id/buttonRegister"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Registrati"
+                android:textAllCaps="false"
+                android:textColor="@android:color/white"
+                android:backgroundTint="@color/verde_sfondo_app"
+                android:fontFamily="@font/lilita_one_regular"
+                style="@style/Widget.MaterialComponents.Button" />
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/buttonGoogleSignIn"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:text="Registrati con Google"
+                android:textAllCaps="false"
+                android:textColor="@android:color/white"
+                android:backgroundTint="#DB4437"
 
+                android:iconTint="@android:color/white"
+                style="@style/Widget.MaterialComponents.Button" />
+
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

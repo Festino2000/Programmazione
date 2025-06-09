@@ -3,7 +3,7 @@ package com.example.mobileapp.areaPersonale.singoloDataClasses
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import androidx.room.TypeConverters
-import com.example.mobileapp.areaPersonale.UriListConverter
+import com.example.mobileapp.areaPersonale.singoloRoom.UriListConverter
 
 @Entity
 @TypeConverters(UriListConverter::class)

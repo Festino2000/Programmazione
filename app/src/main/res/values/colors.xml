@@ -23,6 +23,10 @@
     <color name="colorOnBackground">#000000</color>
     <color name="verde_sfondo_app">#2EAD66</color>
     <color name="verde_chiaro">#4CAF50</color>
+    <color name="background_light">#FAFAFA</color> <!-- bianco sporco -->
+    <color name="green">#4CAF50</color> <!-- verde acceso -->
+    <color name="lightGray">#DDDDDD</color> <!-- grigio chiaro -->
+
 
     <!-- Generici -->
     <color name="white">#FFFFFF</color>

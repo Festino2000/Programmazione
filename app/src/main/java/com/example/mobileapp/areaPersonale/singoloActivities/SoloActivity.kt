@@ -32,7 +32,8 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
-class SoloActivity : AppCompatActivity(), AggiungiSpesaFragment.OnSpesaAggiuntaListener {
+class SoloActivity : AppCompatActivity(),
+    AggiungiSpesaFragment.OnSpesaAggiuntaListener {
 
     private val listaSpese = mutableListOf<Spesa>()
     private lateinit var db: FirebaseFirestore

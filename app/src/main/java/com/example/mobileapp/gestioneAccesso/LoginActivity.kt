@@ -13,7 +13,6 @@ import com.google.firebase.auth.FirebaseAuth
 
 class LoginActivity : AppCompatActivity() {
 
-    // Dichiarazione dei campi
     private lateinit var auth: FirebaseAuth
     private lateinit var editTextEmail: EditText
     private lateinit var editTextPassword: EditText
@@ -29,7 +28,7 @@ class LoginActivity : AppCompatActivity() {
         editTextEmail = findViewById(R.id.editTextEmail)
         editTextPassword = findViewById(R.id.editTextPassword)
         buttonLogin = findViewById(R.id.buttonLogin)
-        textViewRegister = findViewById(R.id.textViewRegister)
+        textViewRegister = findViewById(R.id.textRegistrati)
 
         // Azione sul bottone di login
         buttonLogin.setOnClickListener {
@@ -60,13 +59,5 @@ class LoginActivity : AppCompatActivity() {
             val intent = Intent(this, RegisterActivity::class.java)
             startActivity(intent)
         }
-    }
-
-
-    // Funzione per andare alla schermata principale dopo il login
-    private fun goToMainActivity() {
-        val intent = Intent(this, MainActivity::class.java)
-        startActivity(intent)
-        finish()
     }
 }

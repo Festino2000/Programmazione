@@ -12,6 +12,7 @@ import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Button
+import android.widget.CheckBox
 import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.Spinner
@@ -41,6 +42,60 @@ class SoloActivity : AppCompatActivity(),
     private lateinit var viewModel: SpeseViewModel
     private lateinit var adapter: SpeseAdapter
     private var filtroAttivo = false
+
+    /*private fun mostraDialogFiltro() {
+        val opzioni = arrayOf(
+            "Filtra per categoria",
+            "Filtra per prezzo",
+            "Ordina per Titolo (A-Z)",
+            "Filtra per intervallo di date"
+        )
+        val selectedItems = mutableListOf<Int>()
+
+        val checkedItems = BooleanArray(opzioni.size) { false }
+
+        val checkboxView = layoutInflater.inflate(R.layout.dialog_checkbox_layout, null)
+        val checkbox = checkboxView.findViewById<CheckBox>(R.id.checkbox_filtri_combinati)
+
+        MaterialAlertDialogBuilder(this)
+            .setTitle("Filtra le spese")
+            .setMultiChoiceItems(opzioni, checkedItems) { _, which, isChecked ->
+                checkedItems[which] = isChecked
+            }
+            .setView(checkboxView)
+            .setPositiveButton("Applica") { _, _ ->
+                filtriCombinati = checkbox.isChecked
+
+                val selezionati = checkedItems
+                    .mapIndexedNotNull { i, b -> if (b) i else null }
+
+                if (filtriCombinati) {
+                    // Applica tutti i filtri selezionati con logica AND
+                    applicaFiltriMultipli(selezionati)
+                } else {
+                    // Esegui il primo filtro selezionato come default (comportamento attuale)
+                    selezionati.firstOrNull()?.let {
+                        when (it) {
+                            0 -> mostraDialogoCategorie()
+                            1 -> mostraDialogoPrezzo()
+                            2 -> ordinaPerTitolo()
+                            3 -> mostraDialogoIntervalloDate()
+                        }
+                    }
+                }
+            }
+            .setNegativeButton("Annulla", null)
+            .show()
+    }*/
+
+
+    private var categorieFiltrate: List<String>? = null
+    private var rangePrezzoFiltrato: List<Pair<Float, Float>>? = null
+    private var intervalloDateInizio: Calendar? = null
+    private var intervalloDateFine: Calendar? = null
+    private var ordineDataDescrescente: Boolean = false
+    private var ordinaPerTitoloAttivo: Boolean = false
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -153,20 +208,53 @@ class SoloActivity : AppCompatActivity(),
             "Ordina per Titolo (A-Z)",
             "Filtra per intervallo di date"
         )
+        val checkedItems = booleanArrayOf(
+            categorieFiltrate != null,
+            rangePrezzoFiltrato != null,
+            ordinaPerTitoloAttivo,
+            intervalloDateInizio != null && intervalloDateFine != null
+        )
 
         MaterialAlertDialogBuilder(this)
-            .setTitle("Filtra le spese")
-            .setItems(opzioni) { _, which ->
-                when (which) {
-                    0 -> mostraDialogoCategorie()
-                    1 -> mostraDialogoPrezzo()
-                    2 -> ordinaPerTitolo()
-                    3 -> mostraDialogoIntervalloDate()
+            .setTitle("Filtri disponibili")
+            .setMultiChoiceItems(opzioni, checkedItems) { _, which, isChecked ->
+                checkedItems[which] = isChecked
+            }
+            .setPositiveButton("Applica") { _, _ ->
+                if (!checkedItems.any { it }) {
+                    // Nessun filtro selezionato → reset
+                    categorieFiltrate = null
+                    rangePrezzoFiltrato = null
+                    intervalloDateInizio = null
+                    intervalloDateFine = null
+                    ordinaPerTitoloAttivo = false
+                    applicaTuttiIFiltri()
+                    return@setPositiveButton
+                }
+
+                if (checkedItems[0]) mostraDialogoCategorie()
+                else categorieFiltrate = null
+
+                if (checkedItems[1]) mostraDialogoPrezzo()
+                else rangePrezzoFiltrato = null
+
+                ordinaPerTitoloAttivo = checkedItems[2]
+
+                if (checkedItems[3]) mostraDialogoIntervalloDate()
+                else {
+                    intervalloDateInizio = null
+                    intervalloDateFine = null
+                }
+
+                // Se non ci sono dialoghi asincroni (categorie o date), puoi chiamare direttamente:
+                if (!checkedItems[0] && !checkedItems[3]) {
+                    applicaTuttiIFiltri()
                 }
             }
             .setNegativeButton("Annulla", null)
             .show()
     }
+
 
 
     // Dialogo per selezione categoria
@@ -201,7 +289,7 @@ class SoloActivity : AppCompatActivity(),
                 Toast.makeText(this, "Errore nel caricamento delle categorie", Toast.LENGTH_SHORT)
                     .show()
             }
-        }
+    }
 
 
     // Ordina per data all'interno di un intervallo selezionato
@@ -262,53 +350,65 @@ class SoloActivity : AppCompatActivity(),
 
     // Filtro per categorie selezionate
     private fun filtraPerCategorie(categorie: List<String>) {
-        val spese = viewModel.spese.value ?: return
-        val speseFiltrate = spese.filter { categorie.contains(it.categoria) }
-        adapter.submitList(speseFiltrate)
-        if (speseFiltrate.isEmpty()) {
-            Toast.makeText(this, "Nessuna spesa trovata per le categorie selezionate", Toast.LENGTH_SHORT).show()
-        }
+        categorieFiltrate = categorie
+        applicaTuttiIFiltri()
     }
     private fun filtraPerPrezzo(rangeList: List<Pair<Float, Float>>) {
-        val spese = viewModel.spese.value ?: return
-        val speseFiltrate = spese.filter { spesa ->
-            rangeList.any { (min, max) -> spesa.importo in min..max }
-        }
-
-        adapter.submitList(speseFiltrate)
-        if (speseFiltrate.isEmpty()) {
-            Toast.makeText(this, "Nessuna spesa trovata per i prezzi selezionati", Toast.LENGTH_SHORT).show()
-        }
-        filtroAttivo = true
+        rangePrezzoFiltrato = rangeList
+        applicaTuttiIFiltri()
     }
 
     // Ordina per titolo
     private fun ordinaPerTitolo() {
-        val spese = viewModel.spese.value ?: return
-        adapter.submitList(spese.sortedBy { it.titolo.lowercase() })
+        ordinaPerTitoloAttivo = true
+        applicaTuttiIFiltri()
     }
 
     // Filtro per data con ordinamento crescente/decrescente
     private fun filtraPerIntervalloDate(inizio: Calendar, fine: Calendar, descending: Boolean) {
-        val spese = viewModel.spese.value ?: return
-        val speseFiltrate = spese.filter {
-            val dataSpesa = Calendar.getInstance().apply {
-                set(it.anno, it.mese - 1, it.giorno)
-            }
-            dataSpesa in inizio..fine
-        }.let { lista ->
-            if (descending)
-                lista.sortedByDescending {
-                    Calendar.getInstance().apply { set(it.anno, it.mese - 1, it.giorno) }.timeInMillis
-                }
-            else
-                lista.sortedBy {
-                    Calendar.getInstance().apply { set(it.anno, it.mese - 1, it.giorno) }.timeInMillis
-                }
+        intervalloDateInizio = inizio
+        intervalloDateFine = fine
+        ordineDataDescrescente = descending
+        applicaTuttiIFiltri()
+    }
+
+    private fun applicaTuttiIFiltri() {
+        val tutteLeSpese = viewModel.spese.value ?: return
+        var speseFiltrate = tutteLeSpese.toList()
+
+        categorieFiltrate?.let { categorie ->
+            speseFiltrate = speseFiltrate.filter { it.categoria in categorie }
         }
+
+        rangePrezzoFiltrato?.let { ranges ->
+            speseFiltrate = speseFiltrate.filter { spesa ->
+                ranges.any { (min, max) -> spesa.importo in min..max }
+            }
+        }
+
+        if (intervalloDateInizio != null && intervalloDateFine != null) {
+            speseFiltrate = speseFiltrate.filter {
+                val dataSpesa = Calendar.getInstance().apply {
+                    set(it.anno, it.mese - 1, it.giorno)
+                }
+                dataSpesa in intervalloDateInizio!!..intervalloDateFine!!
+            }.let {
+                if (ordineDataDescrescente)
+                    it.sortedByDescending { s -> Calendar.getInstance().apply { set(s.anno, s.mese - 1, s.giorno) }.timeInMillis }
+                else
+                    it.sortedBy { s -> Calendar.getInstance().apply { set(s.anno, s.mese - 1, s.giorno) }.timeInMillis }
+            }
+        }
+
+        // Ordinamento per titolo (alla fine della catena di filtri)
+        if (ordinaPerTitoloAttivo) {
+            speseFiltrate = speseFiltrate.sortedBy { it.titolo.lowercase() }
+        }
+
         adapter.submitList(speseFiltrate)
+
         if (speseFiltrate.isEmpty()) {
-            Toast.makeText(this, "Nessuna spesa trovata in questo intervallo", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Nessuna spesa trovata con i filtri applicati", Toast.LENGTH_SHORT).show()
         }
     }
 

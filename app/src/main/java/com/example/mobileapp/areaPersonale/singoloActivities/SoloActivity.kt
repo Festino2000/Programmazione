@@ -12,7 +12,6 @@ import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Button
-import android.widget.CheckBox
 import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.Spinner
@@ -43,52 +42,6 @@ class SoloActivity : AppCompatActivity(),
     private lateinit var adapter: SpeseAdapter
     private var filtroAttivo = false
 
-    /*private fun mostraDialogFiltro() {
-        val opzioni = arrayOf(
-            "Filtra per categoria",
-            "Filtra per prezzo",
-            "Ordina per Titolo (A-Z)",
-            "Filtra per intervallo di date"
-        )
-        val selectedItems = mutableListOf<Int>()
-
-        val checkedItems = BooleanArray(opzioni.size) { false }
-
-        val checkboxView = layoutInflater.inflate(R.layout.dialog_checkbox_layout, null)
-        val checkbox = checkboxView.findViewById<CheckBox>(R.id.checkbox_filtri_combinati)
-
-        MaterialAlertDialogBuilder(this)
-            .setTitle("Filtra le spese")
-            .setMultiChoiceItems(opzioni, checkedItems) { _, which, isChecked ->
-                checkedItems[which] = isChecked
-            }
-            .setView(checkboxView)
-            .setPositiveButton("Applica") { _, _ ->
-                filtriCombinati = checkbox.isChecked
-
-                val selezionati = checkedItems
-                    .mapIndexedNotNull { i, b -> if (b) i else null }
-
-                if (filtriCombinati) {
-                    // Applica tutti i filtri selezionati con logica AND
-                    applicaFiltriMultipli(selezionati)
-                } else {
-                    // Esegui il primo filtro selezionato come default (comportamento attuale)
-                    selezionati.firstOrNull()?.let {
-                        when (it) {
-                            0 -> mostraDialogoCategorie()
-                            1 -> mostraDialogoPrezzo()
-                            2 -> ordinaPerTitolo()
-                            3 -> mostraDialogoIntervalloDate()
-                        }
-                    }
-                }
-            }
-            .setNegativeButton("Annulla", null)
-            .show()
-    }*/
-
-
     private var categorieFiltrate: List<String>? = null
     private var rangePrezzoFiltrato: List<Pair<Float, Float>>? = null
     private var intervalloDateInizio: Calendar? = null
@@ -100,6 +53,26 @@ class SoloActivity : AppCompatActivity(),
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_solo)
+
+        val btnRipristina = findViewById<Button>(R.id.btnRipristinaFiltri)
+
+        btnRipristina.setOnClickListener {
+            // Reset dei filtri
+            categorieFiltrate = null
+            rangePrezzoFiltrato = null
+            intervalloDateInizio = null
+            intervalloDateFine = null
+            ordineDataDescrescente = false
+            ordinaPerTitoloAttivo = false
+
+            // Ricarica lista completa
+            viewModel.spese.value?.let {
+                adapter.submitList(it.toList())
+            }
+
+            // Nasconde il bottone
+            btnRipristina.visibility = View.GONE
+        }
 
         // Inizializzazione del database e della toolbar
         db = FirebaseFirestore.getInstance()
@@ -410,6 +383,8 @@ class SoloActivity : AppCompatActivity(),
         if (speseFiltrate.isEmpty()) {
             Toast.makeText(this, "Nessuna spesa trovata con i filtri applicati", Toast.LENGTH_SHORT).show()
         }
+        val btnRipristina = findViewById<Button>(R.id.btnRipristinaFiltri)
+        btnRipristina.visibility = View.VISIBLE
     }
 
     private fun mostraPopupStatisticheConFiltroMese() {

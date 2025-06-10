@@ -43,6 +43,7 @@ class SoloActivity : AppCompatActivity(),
     private lateinit var btnAggiungiSpesa: Button
     private lateinit var viewModel: SpeseViewModel
     private lateinit var adapter: SpeseAdapter
+    private lateinit var textImportoTotale: TextView
 
     // Variabili per filtri e ordinamenti
     private var categorieFiltrate: List<String>? = null
@@ -57,6 +58,7 @@ class SoloActivity : AppCompatActivity(),
         setContentView(R.layout.activity_solo)
 
         val btnRipristina = findViewById<Button>(R.id.btnRipristinaFiltri)
+        textImportoTotale = findViewById(R.id.textImportoTotale)
 
         // Listener per il bottone di ripristino filtri
         btnRipristina.setOnClickListener {
@@ -101,6 +103,7 @@ class SoloActivity : AppCompatActivity(),
         // Osserva aggiornamenti delle spese
         viewModel.spese.observe(this) { spese ->
             adapter.submitList(spese)
+            aggiornaImportoTotale(spese)
         }
 
         // Pulsante per aggiungere una spesa
@@ -383,6 +386,8 @@ class SoloActivity : AppCompatActivity(),
 
         adapter.submitList(speseFiltrate)
 
+        aggiornaImportoTotale(speseFiltrate)
+
         if (speseFiltrate.isEmpty()) {
             Toast.makeText(this, "Nessuna spesa trovata con i filtri applicati", Toast.LENGTH_SHORT).show()
         }
@@ -597,5 +602,11 @@ class SoloActivity : AppCompatActivity(),
             }
             .setNegativeButton("Annulla", null)
             .show()
+    }
+
+    private fun aggiornaImportoTotale(spese: List<Spesa>) {
+        val totale = spese.sumOf { it.importo.toDouble() }
+        val testo = "Importo Totale = €%.2f".format(totale)
+        textImportoTotale.text = testo
     }
 }

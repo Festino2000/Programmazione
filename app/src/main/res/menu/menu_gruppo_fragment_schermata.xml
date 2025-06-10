@@ -11,6 +11,11 @@
         app:showAsAction="ifRoom|collapseActionView"
         app:actionViewClass="androidx.appcompat.widget.SearchView" />
 
+    <item
+        android:id="@+id/action_abbandona_gruppo"
+        android:title="Abbandona gruppo"
+        app:showAsAction="never" />
+
     <!-- Filtra -->
     <item
         android:id="@+id/action_filter"

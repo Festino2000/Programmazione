@@ -1,5 +1,6 @@
 package com.example.mobileapp.areaGruppo.gruppoFragments
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
@@ -7,6 +8,7 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.SearchView
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
@@ -17,8 +19,11 @@ import com.example.mobileapp.areaGruppo.gruppoDialogs.MembriGruppoDialog
 import com.example.mobileapp.areaGruppo.gruppoDataClasses.Utente
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FieldPath
+import com.google.firebase.firestore.FieldValue
+import com.example.mobileapp.areaGruppo.gruppoActivities.GruppoActivity
 
 // Fragment principale che gestisce la schermata delle spese del gruppo
 class SchermataSpeseFragment : Fragment(R.layout.fragment_schermata_spese) {
@@ -96,13 +101,15 @@ class SchermataSpeseFragment : Fragment(R.layout.fragment_schermata_spese) {
                 val fragment = getCurrentFragment()
                 return when (menuItem.itemId) {
                     R.id.action_filter -> {
-                        // Mostra dialogo per filtrare solo nella tab "Saldati"
                         (fragment as? SaldatiFragment)?.mostraDialogFiltri()
                         true
                     }
                     R.id.action_membri -> {
-                        // Mostra il dialogo dei membri del gruppo
                         mostraDialogMembri()
+                        true
+                    }
+                    R.id.action_abbandona_gruppo -> {
+                        mostraDialogAbbandonaGruppo()
                         true
                     }
                     else -> false
@@ -110,6 +117,7 @@ class SchermataSpeseFragment : Fragment(R.layout.fragment_schermata_spese) {
             }
         }, viewLifecycleOwner)
     }
+
 
     // Carica la lista degli utenti del gruppo da Firestore
     private fun caricaUtentiGruppo() {
@@ -217,4 +225,53 @@ class SchermataSpeseFragment : Fragment(R.layout.fragment_schermata_spese) {
         super.onDestroyView()
         requireActivity().findViewById<TabLayout>(R.id.tabLayout)?.visibility = View.GONE
     }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.action_membri -> { // <-- CORRETTO
+                mostraDialogMembri()
+                true
+            }
+            R.id.action_abbandona_gruppo -> {
+                mostraDialogAbbandonaGruppo()
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
+
+    private fun abbandonaGruppo() {
+        val gruppoId = arguments?.getString("idGruppo") ?: return
+        val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return
+
+        val gruppoRef = FirebaseFirestore.getInstance()
+            .collection("gruppi")
+            .document(gruppoId)
+
+        gruppoRef.update("membri", FieldValue.arrayRemove(userId))
+            .addOnSuccessListener {
+                Toast.makeText(requireContext(), "Hai abbandonato il gruppo", Toast.LENGTH_SHORT).show()
+                val intent = Intent(requireContext(), GruppoActivity::class.java)
+                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
+                startActivity(intent)
+                activity?.finish()
+            }
+            .addOnFailureListener {
+                Toast.makeText(requireContext(), "Errore durante l'abbandono", Toast.LENGTH_SHORT).show()
+            }
+    }
+
+    private fun mostraDialogAbbandonaGruppo() {
+        AlertDialog.Builder(requireContext())
+            .setTitle("Abbandona gruppo")
+            .setMessage("Sei sicuro di voler uscire da questo gruppo?")
+            .setPositiveButton("Sì") { _, _ ->
+                abbandonaGruppo()
+            }
+            .setNegativeButton("Annulla", null)
+            .show()
+    }
+
+
+
 }

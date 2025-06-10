@@ -4,7 +4,7 @@
     <selectionStates>
       <SelectionState runConfigName="app">
         <option name="selectionMode" value="DROPDOWN" />
-        <DropdownSelection timestamp="2025-06-10T14:54:23.787351Z">
+        <DropdownSelection timestamp="2025-06-10T17:37:32.678400Z">
           <Target type="DEFAULT_BOOT">
             <handle>
               <DeviceId pluginId="LocalEmulator" identifier="path=/Users/alberto/.android/avd/Medium_Phone.avd" />
@@ -17,6 +17,12 @@
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
       <SelectionState runConfigName="AggiuntaSpesaInstrumentedTest">
+        <option name="selectionMode" value="DROPDOWN" />
+      </SelectionState>
+      <SelectionState runConfigName="RicercaSpesaTest">
+        <option name="selectionMode" value="DROPDOWN" />
+      </SelectionState>
+      <SelectionState runConfigName="ricercaMostraSoloSpeseCorrette()">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
     </selectionStates>

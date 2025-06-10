@@ -1,6 +1,5 @@
 package com.example.mobileapp.tests
 
-import android.widget.EditText
 import androidx.appcompat.widget.SearchView
 import androidx.test.core.app.ActivityScenario
 import androidx.test.espresso.Espresso.onView

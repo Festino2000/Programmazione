@@ -271,7 +271,4 @@ class SchermataSpeseFragment : Fragment(R.layout.fragment_schermata_spese) {
             .setNegativeButton("Annulla", null)
             .show()
     }
-
-
-
 }

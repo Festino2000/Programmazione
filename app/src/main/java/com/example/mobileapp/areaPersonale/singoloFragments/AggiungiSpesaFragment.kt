@@ -31,20 +31,30 @@ import java.io.File
 import java.util.*
 import com.example.mobileapp.areaPersonale.singoloDataClasses.SpesaLocale
 
+// Fragment che gestisce l'aggiunta (o modifica) di una spesa
 class AggiungiSpesaFragment : Fragment(R.layout.fragment_aggiungi_spesa) {
 
+    // AutoCompleteTextView per le categorie di spesa
     private lateinit var autoCompleteCategorie: AutoCompleteTextView
+    // Lista delle categorie
     private val categorieList = mutableListOf<String>()
+    // Launcher per la selezione di immagini dalla galleria
     private lateinit var launcherGalleria: ActivityResultLauncher<String>
+    // Launcher per scattare una foto con la fotocamera
     private lateinit var launcherCamera: ActivityResultLauncher<Uri>
+    // Uri dove verrà salvata la foto scattata
     private lateinit var fileFotoUri: Uri
+    // Callback per notificare la spesa aggiunta
     private lateinit var callback: OnSpesaAggiuntaListener
+    // Istanza del database Firestore
     private lateinit var db: FirebaseFirestore
 
+    // Interfaccia per comunicare la spesa aggiunta all'activity
     interface OnSpesaAggiuntaListener {
         fun onSpesaAggiunta(spesa: Spesa)
     }
 
+    // Viene chiamato quando il fragment viene attaccato alla activity
     override fun onAttach(context: Context) {
         super.onAttach(context)
         if (context is OnSpesaAggiuntaListener) {
@@ -55,19 +65,25 @@ class AggiungiSpesaFragment : Fragment(R.layout.fragment_aggiungi_spesa) {
         db = FirebaseFirestore.getInstance()
     }
 
+    // Lista degli URI delle immagini associate alla spesa
     private val imageUris = mutableListOf<Uri>()
 
+    // Metodo principale per la creazione della view del fragment
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.fragment_aggiungi_spesa, container, false)
 
+        // Pulsante per aggiungere foto
         val btnAggiungiFoto = view.findViewById<Button>(R.id.btnAggiungiFoto)
+        // Layout dove verranno mostrate le anteprime delle immagini
         val layoutGalleria = view.findViewById<LinearLayout>(R.id.layoutGalleria)
 
+        // Launcher per selezionare più immagini dalla galleria
         launcherGalleria = registerForActivityResult(ActivityResultContracts.GetMultipleContents()) { uris ->
             uris.forEach { uri ->
                 try {
+                    // Richiede il permesso permanente per leggere l'immagine
                     requireContext().contentResolver.takePersistableUriPermission(
                         uri,
                         Intent.FLAG_GRANT_READ_URI_PERMISSION
@@ -80,6 +96,7 @@ class AggiungiSpesaFragment : Fragment(R.layout.fragment_aggiungi_spesa) {
             mostraAnteprime(layoutGalleria)
         }
 
+        // Launcher per scattare una foto con la fotocamera
         launcherCamera = registerForActivityResult(ActivityResultContracts.TakePicture()) { success ->
             if (success) {
                 imageUris.add(fileFotoUri)
@@ -87,13 +104,16 @@ class AggiungiSpesaFragment : Fragment(R.layout.fragment_aggiungi_spesa) {
             }
         }
 
+        // Al click sul bottone, mostra il dialog per scegliere come aggiungere foto
         btnAggiungiFoto.setOnClickListener {
             mostraSceltaFotoDialog()
         }
 
+        // Inizializza l'AutoCompleteTextView delle categorie e carica le categorie
         autoCompleteCategorie = view.findViewById(R.id.categoriaSpesa)
         caricaCategorie()
 
+        // Trova i vari campi di input nella view
         val titoloSpesa = view.findViewById<EditText>(R.id.titoloSpesa)
         val descrizioneSpesa = view.findViewById<EditText>(R.id.descrizioneSpesa)
         val dataSpesa = view.findViewById<EditText>(R.id.DataSelezionata)
@@ -101,12 +121,15 @@ class AggiungiSpesaFragment : Fragment(R.layout.fragment_aggiungi_spesa) {
         val categoriaSpesa = view.findViewById<AutoCompleteTextView>(R.id.categoriaSpesa)
         val btnConferma = view.findViewById<Button>(R.id.btnConfermaSpesa)
 
+        // Mostra il dropdown delle categorie quando si clicca
         categoriaSpesa.setOnClickListener { categoriaSpesa.showDropDown() }
 
+        // Variabili per la data selezionata
         var giorno = 0
         var mese = 0
         var anno = 0
 
+        // Gestione del click per selezionare la data tramite DatePickerDialog
         dataSpesa.setOnClickListener {
             val calendario = Calendar.getInstance()
             anno = calendario.get(Calendar.YEAR)
@@ -115,13 +138,14 @@ class AggiungiSpesaFragment : Fragment(R.layout.fragment_aggiungi_spesa) {
 
             DatePickerDialog(requireContext(), { _, selectedYear, selectedMonth, selectedDay ->
                 giorno = selectedDay
-                mese = selectedMonth + 1
+                mese = selectedMonth + 1 // I mesi partono da 0
                 anno = selectedYear
                 val dataFormattata = "$giorno/$mese/$anno"
                 dataSpesa.setText(dataFormattata)
             }, anno, mese, giorno).show()
         }
 
+        // Se il fragment viene aperto per modificare una spesa, carica i dati passati nei campi
         arguments?.let { args ->
             titoloSpesa.setText(args.getString("titolo", ""))
             descrizioneSpesa.setText(args.getString("descrizione", ""))
@@ -135,6 +159,7 @@ class AggiungiSpesaFragment : Fragment(R.layout.fragment_aggiungi_spesa) {
             }
         }
 
+        // Gestione del click sul bottone di conferma per aggiungere/modificare la spesa
         btnConferma.setOnClickListener {
             val currentUser = FirebaseAuth.getInstance().currentUser
             val uid = currentUser?.uid ?: return@setOnClickListener
@@ -144,11 +169,13 @@ class AggiungiSpesaFragment : Fragment(R.layout.fragment_aggiungi_spesa) {
             val importo = importoSpesa.text.toString().toFloatOrNull() ?: 0.0f
             val categoria = categoriaSpesa.text.toString()
 
+            // Controlla che titolo e importo siano compilati
             if (titolo.isBlank() || importo == 0.0f) {
                 Toast.makeText(requireContext(), "Compila almeno il titolo e l'importo", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
+            // Mappa con i dati da salvare su Firestore
             val spesaMap = hashMapOf(
                 "uid" to uid,
                 "titolo" to titolo,
@@ -164,11 +191,11 @@ class AggiungiSpesaFragment : Fragment(R.layout.fragment_aggiungi_spesa) {
             val documentId = arguments?.getString("documentId")
 
             if (documentId != null) {
-                // MODIFICA
+                // MODIFICA di una spesa esistente
                 db.collection("Spese").document(documentId)
                     .set(spesaMap)
                     .addOnSuccessListener {
-                        // Aggiorna anche la Room locale
+                        // Aggiorna la Room locale (database locale)
                         val spesaLocale = SpesaLocale(
                             id = documentId,
                             immagini = imageUris.mapNotNull { it.toString() }
@@ -182,6 +209,7 @@ class AggiungiSpesaFragment : Fragment(R.layout.fragment_aggiungi_spesa) {
                             }
                         }.start()
 
+                        // Crea oggetto Spesa e notifica il callback
                         val nuovaSpesa = Spesa(
                             titolo = titolo,
                             descrizione = descrizione,
@@ -200,7 +228,7 @@ class AggiungiSpesaFragment : Fragment(R.layout.fragment_aggiungi_spesa) {
                         Toast.makeText(requireContext(), "Errore nella modifica", Toast.LENGTH_SHORT).show()
                     }
             } else {
-                // INSERIMENTO
+                // INSERIMENTO di una nuova spesa
                 db.collection("Spese").add(spesaMap)
                     .addOnSuccessListener { docRef ->
                         val spesaLocale = SpesaLocale(
@@ -236,10 +264,10 @@ class AggiungiSpesaFragment : Fragment(R.layout.fragment_aggiungi_spesa) {
             }
         }
 
-
         return view
     }
 
+    // Mostra un dialog per scegliere come aggiungere una foto (scattare o galleria)
     private fun mostraSceltaFotoDialog() {
         val opzioni = arrayOf("Scatta una foto", "Scegli dalla galleria")
         AlertDialog.Builder(requireContext())
@@ -253,6 +281,7 @@ class AggiungiSpesaFragment : Fragment(R.layout.fragment_aggiungi_spesa) {
             .show()
     }
 
+    // Richiede il permesso per accedere alla galleria e lancia il picker
     private fun richiediPermessoGalleria() {
         val permission = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             Manifest.permission.READ_MEDIA_IMAGES
@@ -267,6 +296,7 @@ class AggiungiSpesaFragment : Fragment(R.layout.fragment_aggiungi_spesa) {
         }
     }
 
+    // Richiede il permesso per la fotocamera e avvia la fotocamera se già concesso
     private fun richiediPermessoFotocamera() {
         if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(requireActivity(), arrayOf(Manifest.permission.CAMERA), 1002)
@@ -275,6 +305,7 @@ class AggiungiSpesaFragment : Fragment(R.layout.fragment_aggiungi_spesa) {
         }
     }
 
+    // Avvia la fotocamera per scattare una foto e salva l'immagine in un file temporaneo
     private fun avviaCamera() {
         val fotoFile = File(
             requireContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES),
@@ -288,6 +319,7 @@ class AggiungiSpesaFragment : Fragment(R.layout.fragment_aggiungi_spesa) {
         launcherCamera.launch(fileFotoUri)
     }
 
+    // Mostra le anteprime delle immagini scelte/scattate nel layout apposito
     private fun mostraAnteprime(container: LinearLayout) {
         container.removeAllViews()
         for (uri in imageUris) {
@@ -302,6 +334,7 @@ class AggiungiSpesaFragment : Fragment(R.layout.fragment_aggiungi_spesa) {
         }
     }
 
+    // Carica le categorie dalla lista predefinita e da Firestore
     private fun caricaCategorie() {
         val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return
         categorieList.clear()
@@ -325,6 +358,7 @@ class AggiungiSpesaFragment : Fragment(R.layout.fragment_aggiungi_spesa) {
             }
     }
 
+    // Aggiorna l'adapter dell'AutoCompleteTextView delle categorie
     private fun aggiornaAutoComplete() {
         val ctx = autoCompleteCategorie.context
         val dropdownList = categorieList.toMutableList()
@@ -344,6 +378,7 @@ class AggiungiSpesaFragment : Fragment(R.layout.fragment_aggiungi_spesa) {
         }
     }
 
+    // Mostra un dialog per aggiungere una nuova categoria personalizzata
     private fun mostraDialogAggiungiCategoria() {
         val ctx = autoCompleteCategorie.context
         val builder = AlertDialog.Builder(ctx)
@@ -385,5 +420,4 @@ class AggiungiSpesaFragment : Fragment(R.layout.fragment_aggiungi_spesa) {
         builder.show()
     }
 }
-
 

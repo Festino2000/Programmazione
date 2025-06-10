@@ -12,7 +12,7 @@ import com.example.mobileapp.areaGruppo.gruppoDataClasses.Gruppo
 
 class GruppoAdapter(
     private val onGruppoClick: (Gruppo) -> Unit,
-    private val onGruppoLongClick: (Gruppo) -> Unit // aggiunto per gestione long press
+
 ) : ListAdapter<Gruppo, GruppoAdapter.GruppiViewHolder>(GruppoDiffCallback()) {
 
     inner class GruppiViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -24,11 +24,6 @@ class GruppoAdapter(
             itemView.setOnClickListener {
                 val gruppo = getItem(adapterPosition)
                 onGruppoClick(gruppo)
-            }
-            itemView.setOnLongClickListener {
-                val gruppo = getItem(adapterPosition)
-                onGruppoLongClick(gruppo)
-                true
             }
         }
     }

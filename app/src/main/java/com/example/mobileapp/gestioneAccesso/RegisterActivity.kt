@@ -18,8 +18,10 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.firestore.FirebaseFirestore
 
+// Activity per la registrazione di un nuovo utente (email/password o Google)
 class RegisterActivity : AppCompatActivity() {
 
+    // Dichiarazione variabili per autenticazione, database e componenti UI
     private lateinit var auth: FirebaseAuth
     private lateinit var db: FirebaseFirestore
     private lateinit var editTextEmail: EditText
@@ -30,13 +32,16 @@ class RegisterActivity : AppCompatActivity() {
     private lateinit var oneTapClient: SignInClient
     private lateinit var editTextNickname: EditText
 
+    // Launcher per l'accesso con Google (One Tap)
     private val googleSignInLauncher = registerForActivityResult(
         ActivityResultContracts.StartIntentSenderForResult()
     ) { result ->
+        // Se il risultato è OK
         if (result.resultCode == RESULT_OK) {
             val credential = oneTapClient.getSignInCredentialFromIntent(result.data)
             val idToken = credential.googleIdToken
             if (idToken != null) {
+                // Ottieni le credenziali di Firebase da Google
                 val firebaseCredential = GoogleAuthProvider.getCredential(idToken, null)
                 auth.signInWithCredential(firebaseCredential)
                     .addOnCompleteListener(this) { task ->
@@ -47,6 +52,7 @@ class RegisterActivity : AppCompatActivity() {
 
                             if (uid != null && email != null) {
                                 val db = FirebaseFirestore.getInstance()
+                                // Controlla se l'utente esiste già nel database
                                 db.collection("Utenti").document(uid)
                                     .get()
                                     .addOnSuccessListener { document ->
@@ -72,6 +78,7 @@ class RegisterActivity : AppCompatActivity() {
         }
     }
 
+    // Mostra un dialog per inserire il nickname dopo login Google, se nuovo utente
     private fun mostraDialogNickname(uid: String, email: String) {
         val editText = EditText(this)
         editText.hint = "Inserisci un nickname"
@@ -109,14 +116,17 @@ class RegisterActivity : AppCompatActivity() {
             .show()
     }
 
+    // onCreate: inizializza componenti UI e listener dei bottoni
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_register)
 
+        // Inizializza Firebase e client Google One Tap
         auth = FirebaseAuth.getInstance()
         db = FirebaseFirestore.getInstance()
         oneTapClient = Identity.getSignInClient(this)
 
+        // Collega le variabili ai componenti della UI
         editTextEmail = findViewById(R.id.editTextEmail)
         editTextPassword = findViewById(R.id.editTextPassword)
         editTextConfirmPassword = findViewById(R.id.editTextConfermaPassword)
@@ -124,14 +134,17 @@ class RegisterActivity : AppCompatActivity() {
         buttonGoogleSignIn = findViewById(R.id.buttonGoogleSignIn)
         editTextNickname = findViewById(R.id.editTextNickname)
 
+        // Listener bottone "Registrati"
         buttonRegister.setOnClickListener {
             val email = editTextEmail.text.toString()
             val password = editTextPassword.text.toString()
             val confirmPassword = editTextConfirmPassword.text.toString()
             val nickname = editTextNickname.text.toString()
 
+            // Controlla che tutti i campi siano compilati
             if (email.isNotEmpty() && password.isNotEmpty() && confirmPassword.isNotEmpty() && nickname.isNotEmpty()) {
                 if (password == confirmPassword) {
+                    // Crea utente con email e password su Firebase
                     auth.createUserWithEmailAndPassword(email, password)
                         .addOnCompleteListener(this) { task ->
                             if (task.isSuccessful) {
@@ -171,6 +184,7 @@ class RegisterActivity : AppCompatActivity() {
             }
         }
 
+        // Listener bottone "Registrati con Google"
         buttonGoogleSignIn.setOnClickListener {
             val signInRequest = BeginSignInRequest.builder()
                 .setGoogleIdTokenRequestOptions(

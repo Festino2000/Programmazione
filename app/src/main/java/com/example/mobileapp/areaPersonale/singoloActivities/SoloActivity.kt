@@ -1,5 +1,6 @@
 package com.example.mobileapp.areaPersonale.singoloActivities
 
+// Import delle librerie Android e di classi personalizzate
 import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.icu.util.Calendar
@@ -32,16 +33,18 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
+// Activity principale per la gestione delle spese personali
 class SoloActivity : AppCompatActivity(),
     AggiungiSpesaFragment.OnSpesaAggiuntaListener {
 
+    // Lista che contiene le spese
     private val listaSpese = mutableListOf<Spesa>()
     private lateinit var db: FirebaseFirestore
     private lateinit var btnAggiungiSpesa: Button
     private lateinit var viewModel: SpeseViewModel
     private lateinit var adapter: SpeseAdapter
-    private var filtroAttivo = false
 
+    // Variabili per filtri e ordinamenti
     private var categorieFiltrate: List<String>? = null
     private var rangePrezzoFiltrato: List<Pair<Float, Float>>? = null
     private var intervalloDateInizio: Calendar? = null
@@ -49,13 +52,13 @@ class SoloActivity : AppCompatActivity(),
     private var ordineDataDescrescente: Boolean = false
     private var ordinaPerTitoloAttivo: Boolean = false
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_solo)
 
         val btnRipristina = findViewById<Button>(R.id.btnRipristinaFiltri)
 
+        // Listener per il bottone di ripristino filtri
         btnRipristina.setOnClickListener {
             // Reset dei filtri
             categorieFiltrate = null
@@ -74,12 +77,12 @@ class SoloActivity : AppCompatActivity(),
             btnRipristina.visibility = View.GONE
         }
 
-        // Inizializzazione del database e della toolbar
+        // Inizializzazione database e toolbar
         db = FirebaseFirestore.getInstance()
         val toolbar = findViewById<Toolbar>(R.id.toolbar)
         setSupportActionBar(toolbar)
 
-        // Setup della RecyclerView con layout a griglia e decorazione per il margine tra gli item
+        // Setup RecyclerView con layout a griglia
         val recyclerView = findViewById<RecyclerView>(R.id.recyclerViewSpese)
         adapter = SpeseAdapter(
             onModificaSpesa = { spesa -> apriModificaSpesaFragment(spesa) },
@@ -91,16 +94,16 @@ class SoloActivity : AppCompatActivity(),
         val spacingInPixels = resources.getDimensionPixelSize(R.dimen.item_spacing)
         recyclerView.addItemDecoration(SpacingItemDecoration(spacingInPixels, 2))
 
-        // Inizializzazione del ViewModel
+        // Inizializzazione ViewModel e caricamento spese
         viewModel = ViewModelProvider(this).get(SpeseViewModel::class.java)
         viewModel.caricaTutteLeSpese()
 
-        // Osservazione delle spese aggiornate
+        // Osserva aggiornamenti delle spese
         viewModel.spese.observe(this) { spese ->
             adapter.submitList(spese)
         }
 
-        // Pulsante per aprire il fragment di aggiunta spesa
+        // Pulsante per aggiungere una spesa
         btnAggiungiSpesa = findViewById(R.id.btnAggiungiSpesa)
         btnAggiungiSpesa.setOnClickListener {
             Log.d("SoloActivity", "Pulsante Aggiungi Spesa cliccato")
@@ -108,6 +111,7 @@ class SoloActivity : AppCompatActivity(),
         }
     }
 
+    // Apre il fragment per aggiungere una nuova spesa
     private fun apriAggiungiSpesaFragment() {
         btnAggiungiSpesa.visibility = View.GONE
         findViewById<FrameLayout>(R.id.fragment_container).visibility = View.VISIBLE
@@ -118,12 +122,13 @@ class SoloActivity : AppCompatActivity(),
             .commit()
     }
 
+    // Callback quando una nuova spesa è stata aggiunta
     override fun onSpesaAggiunta(spesa: Spesa) {
         listaSpese.add(spesa)
         Toast.makeText(this, "Spesa aggiunta: ${spesa.titolo}", Toast.LENGTH_SHORT).show()
     }
 
-    // Setup del menu ricerca
+    // Setup del menu di ricerca
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.menu_main, menu)
         val searchItem = menu.findItem(R.id.action_search)
@@ -146,6 +151,7 @@ class SoloActivity : AppCompatActivity(),
         return true
     }
 
+    // Gestione delle selezioni nel menu
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.action_filter -> {
@@ -160,6 +166,7 @@ class SoloActivity : AppCompatActivity(),
         }
     }
 
+    // Filtra la lista delle spese in base alla query testuale
     private fun filtraSpese(query: String) {
         val tutteLeSpese = viewModel.spese.value ?: return
         val speseFiltrate = tutteLeSpese.filter {
@@ -173,7 +180,7 @@ class SoloActivity : AppCompatActivity(),
         }
     }
 
-    // Mostra dialog con opzioni di filtro
+    // Mostra dialog per scegliere i filtri da applicare
     private fun mostraDialogFiltro() {
         val opzioni = arrayOf(
             "Filtra per categoria",
@@ -219,7 +226,7 @@ class SoloActivity : AppCompatActivity(),
                     intervalloDateFine = null
                 }
 
-                // Se non ci sono dialoghi asincroni (categorie o date), puoi chiamare direttamente:
+                // Se non ci sono dialoghi asincroni (categorie o date), chiama direttamente i filtri
                 if (!checkedItems[0] && !checkedItems[3]) {
                     applicaTuttiIFiltri()
                 }
@@ -228,9 +235,7 @@ class SoloActivity : AppCompatActivity(),
             .show()
     }
 
-
-
-    // Dialogo per selezione categoria
+    // Mostra dialog di selezione categoria (recupera anche categorie personalizzate da Firestore)
     private fun mostraDialogoCategorie() {
         val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return
         val db = FirebaseFirestore.getInstance()
@@ -264,8 +269,7 @@ class SoloActivity : AppCompatActivity(),
             }
     }
 
-
-    // Ordina per data all'interno di un intervallo selezionato
+    // Mostra dialog per scegliere ordinamento data all'interno di un intervallo scelto
     private fun mostraDialogoOrdinamentoDate(inizio: Calendar, fine: Calendar) {
         val opzioni = arrayOf("Ordina dal più vecchio al più recente", "Ordina dal più recente al più vecchio")
         MaterialAlertDialogBuilder(this)
@@ -278,7 +282,7 @@ class SoloActivity : AppCompatActivity(),
             .show()
     }
 
-    // Mostra i due date picker per l'intervallo
+    // Mostra i due date picker per selezionare l'intervallo di date
     private fun mostraDialogoIntervalloDate() {
         val calendarInizio = Calendar.getInstance()
         val calendarFine = Calendar.getInstance()
@@ -294,7 +298,7 @@ class SoloActivity : AppCompatActivity(),
         }, calendarInizio.get(Calendar.YEAR), calendarInizio.get(Calendar.MONTH), calendarInizio.get(Calendar.DAY_OF_MONTH)).show()
     }
 
-    // Dialogo per selezione intervallo prezzo con checkbox
+    // Mostra dialog per selezionare uno o più intervalli di prezzo
     private fun mostraDialogoPrezzo() {
         val opzioni = arrayOf(
             "Meno di 50€",
@@ -312,7 +316,7 @@ class SoloActivity : AppCompatActivity(),
                 val filtri = mutableListOf<Pair<Float, Float>>()
 
                 if (checkedItems[0]) filtri.add(0f to 50f)
-                if (checkedItems[1]) filtri.add(50f to 100f)  // correzione 1000f → 100f
+                if (checkedItems[1]) filtri.add(50f to 100f)
                 if (checkedItems[2]) filtri.add(100f to Float.MAX_VALUE)
 
                 filtraPerPrezzo(filtri)
@@ -321,23 +325,18 @@ class SoloActivity : AppCompatActivity(),
             .show()
     }
 
-    // Filtro per categorie selezionate
+    // Applica filtro per categorie
     private fun filtraPerCategorie(categorie: List<String>) {
         categorieFiltrate = categorie
         applicaTuttiIFiltri()
     }
+    // Applica filtro per intervallo di prezzo
     private fun filtraPerPrezzo(rangeList: List<Pair<Float, Float>>) {
         rangePrezzoFiltrato = rangeList
         applicaTuttiIFiltri()
     }
 
-    // Ordina per titolo
-    private fun ordinaPerTitolo() {
-        ordinaPerTitoloAttivo = true
-        applicaTuttiIFiltri()
-    }
-
-    // Filtro per data con ordinamento crescente/decrescente
+    // Applica filtro per intervallo di date e ordinamento
     private fun filtraPerIntervalloDate(inizio: Calendar, fine: Calendar, descending: Boolean) {
         intervalloDateInizio = inizio
         intervalloDateFine = fine
@@ -345,20 +344,24 @@ class SoloActivity : AppCompatActivity(),
         applicaTuttiIFiltri()
     }
 
+    // Applica tutti i filtri selezionati dall'utente
     private fun applicaTuttiIFiltri() {
         val tutteLeSpese = viewModel.spese.value ?: return
         var speseFiltrate = tutteLeSpese.toList()
 
+        // Filtro per categoria
         categorieFiltrate?.let { categorie ->
             speseFiltrate = speseFiltrate.filter { it.categoria in categorie }
         }
 
+        // Filtro per prezzo
         rangePrezzoFiltrato?.let { ranges ->
             speseFiltrate = speseFiltrate.filter { spesa ->
                 ranges.any { (min, max) -> spesa.importo in min..max }
             }
         }
 
+        // Filtro per intervallo di date
         if (intervalloDateInizio != null && intervalloDateFine != null) {
             speseFiltrate = speseFiltrate.filter {
                 val dataSpesa = Calendar.getInstance().apply {
@@ -373,7 +376,7 @@ class SoloActivity : AppCompatActivity(),
             }
         }
 
-        // Ordinamento per titolo (alla fine della catena di filtri)
+        // Ordinamento per titolo
         if (ordinaPerTitoloAttivo) {
             speseFiltrate = speseFiltrate.sortedBy { it.titolo.lowercase() }
         }
@@ -387,6 +390,7 @@ class SoloActivity : AppCompatActivity(),
         btnRipristina.visibility = View.VISIBLE
     }
 
+    // Mostra popup statistiche dettagliate per mese e anno
     private fun mostraPopupStatisticheConFiltroMese() {
         val context = this
         val spese = viewModel.spese.value ?: return
@@ -396,12 +400,14 @@ class SoloActivity : AppCompatActivity(),
         val spinnerMese = dialogView.findViewById<Spinner>(R.id.spinnerMese)
         val textStatistiche = dialogView.findViewById<TextView>(R.id.textStatistiche)
 
+        // Lista mesi e setup spinner
         val mesi = listOf(
             "Gennaio", "Febbraio", "Marzo", "Aprile", "Maggio", "Giugno",
             "Luglio", "Agosto", "Settembre", "Ottobre", "Novembre", "Dicembre"
         )
         spinnerMese.adapter = ArrayAdapter(context, android.R.layout.simple_spinner_dropdown_item, mesi)
 
+        // Anni disponibili nelle spese
         val anniDisponibili = spese.map { it.anno }.toSet().sorted()
 
         if (anniDisponibili.isEmpty()) {
@@ -409,12 +415,13 @@ class SoloActivity : AppCompatActivity(),
             return
         }
 
+        // Spinner per l'anno
         val spinnerAnno = Spinner(context).apply {
             layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
             adapter = ArrayAdapter(context, android.R.layout.simple_spinner_dropdown_item, anniDisponibili)
         }
 
-        // Inserisci anche lo spinner anno nel layout
+        // Inserisce spinner anno nel layout
         val layout = dialogView.findViewById<LinearLayout>(R.id.layoutStatisticheMese)
         layout.addView(spinnerAnno, 1)
 
@@ -426,6 +433,7 @@ class SoloActivity : AppCompatActivity(),
         val alertDialog = builder.create()
         alertDialog.show()
 
+        // Funzione per calcolare e mostrare statistiche
         val calcolaStatistiche = lambda@{
             val meseSelezionato = spinnerMese.selectedItemPosition + 1
             val annoSelezionato = spinnerAnno.selectedItem as Int
@@ -443,13 +451,14 @@ class SoloActivity : AppCompatActivity(),
             val max = speseFiltrate.maxByOrNull { it.importo }!!
             val min = speseFiltrate.minByOrNull { it.importo }!!
 
+            // Top 3 categorie per totale speso
             val categorieMap = mutableMapOf<String, Double>()
             speseFiltrate.forEach {
                 categorieMap[it.categoria] = categorieMap.getOrDefault(it.categoria, 0.0) + it.importo
             }
-
             val top3Categorie = categorieMap.entries.sortedByDescending { it.value }.take(3)
 
+            // Compone la stringa con le statistiche
             val sb = StringBuilder()
             sb.append("Totale: €%.2f\n".format(totale))
             sb.append("Media: €%.2f\n\n".format(media))
@@ -465,53 +474,45 @@ class SoloActivity : AppCompatActivity(),
             textStatistiche.text = sb.toString()
         }
 
+        // Listener per aggiornare le statistiche al cambio di mese o anno
         spinnerMese.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
                 calcolaStatistiche()
             }
             override fun onNothingSelected(parent: AdapterView<*>) {}
         }
-
         spinnerAnno.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
                 calcolaStatistiche()
             }
             override fun onNothingSelected(parent: AdapterView<*>) {}
         }
-    } // fine metodo
+    }
 
-
+    // Mostra popup statistiche globali
     private fun mostraPopupStatistiche() {
         val spese = viewModel.spese.value ?: return
         if (spese.isEmpty()) return
 
-        // Totale complessivo
+        // Calcolo totale, media mensile, top categorie, massimi e minimi
         var totaleComplessivo = 0.0
         val mesiUnici = mutableSetOf<Pair<Int, Int>>() // (anno, mese)
-
-        // Totale per categoria
         val totalePerCategoria = mutableMapOf<String, Double>()
-
-        // Spesa max/min
         var spesaMax = spese.first()
         var spesaMin = spese.first()
 
         for (spesa in spese) {
             totaleComplessivo += spesa.importo
-
-            // Categorie
+            // Totale per categoria
             val categoria = spesa.categoria
             totalePerCategoria[categoria] = totalePerCategoria.getOrDefault(categoria, 0.0) + spesa.importo
-
-            // Mesi unici (per media mensile)
+            // Mesi unici per la media mensile
             mesiUnici.add(Pair(spesa.anno, spesa.mese))
-
-            // Max / Min
+            // Valori massimo e minimo
             if (spesa.importo > spesaMax.importo) spesaMax = spesa
             if (spesa.importo < spesaMin.importo) spesaMin = spesa
         }
 
-        // Calcolo media mensile
         val mediaMensile = if (mesiUnici.isNotEmpty()) totaleComplessivo / mesiUnici.size else 0.0
 
         // Top 3 categorie
@@ -519,7 +520,7 @@ class SoloActivity : AppCompatActivity(),
             .sortedByDescending { it.value }
             .take(3)
 
-        // Costruzione del messaggio
+        // Compone il messaggio
         val sb = StringBuilder()
         sb.append("Statistiche Spese\n\n")
         sb.append("Totale complessivo: €%.2f\n".format(totaleComplessivo))
@@ -533,7 +534,7 @@ class SoloActivity : AppCompatActivity(),
         sb.append("\nSpesa più alta: ${spesaMax.titolo} - €%.2f\n".format(spesaMax.importo))
         sb.append("Spesa più bassa: ${spesaMin.titolo} - €%.2f\n".format(spesaMin.importo))
 
-        // Mostra AlertDialog con pulsante per statistiche dettagliate
+        // Mostra il dialog con le statistiche globali e il bottone per vedere quelle dettagliate per mese
         AlertDialog.Builder(this)
             .setTitle("Statistiche")
             .setMessage(sb.toString())
@@ -544,12 +545,14 @@ class SoloActivity : AppCompatActivity(),
             .show()
     }
 
+    // Apre il fragment per modificare una spesa già esistente
     private fun apriModificaSpesaFragment(spesa: Spesa) {
         btnAggiungiSpesa.visibility = View.GONE
         findViewById<FrameLayout>(R.id.fragment_container).visibility = View.VISIBLE
 
         val fragment = AggiungiSpesaFragment()
 
+        // Passa i dati della spesa da modificare tramite Bundle
         val bundle = Bundle().apply {
             putString("titolo", spesa.titolo)
             putString("descrizione", spesa.descrizione)
@@ -558,8 +561,8 @@ class SoloActivity : AppCompatActivity(),
             putInt("anno", spesa.anno)
             putFloat("importo", spesa.importo)
             putString("categoria", spesa.categoria)
-            putString("documentId", spesa.id) // <--- ID necessario per l'update!
-            putBoolean("modifica", true) // <--- Flag per distinguere modalità modifica
+            putString("documentId", spesa.id) // ID necessario per update
+            putBoolean("modifica", true) // Flag per distinguere modalità modifica
         }
 
         fragment.arguments = bundle
@@ -570,6 +573,7 @@ class SoloActivity : AppCompatActivity(),
             .commit()
     }
 
+    // Mostra dialog di conferma eliminazione spesa
     private fun mostraDialogConfermaEliminazione(spesa: Spesa) {
         AlertDialog.Builder(this)
             .setTitle("Conferma eliminazione")

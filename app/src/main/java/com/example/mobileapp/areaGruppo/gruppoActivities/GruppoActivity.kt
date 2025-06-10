@@ -3,10 +3,8 @@ package com.example.mobileapp.areaGruppo.gruppoActivities
 import android.os.Bundle
 import android.view.Menu
 import android.view.View
-import android.widget.EditText
 import androidx.appcompat.widget.SearchView
 import androidx.activity.viewModels
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import com.example.mobileapp.FabMenuController
@@ -22,15 +20,19 @@ import com.example.mobileapp.viewModels.GruppoViewModel
 import com.example.mobileapp.areaGruppo.gruppoFragments.SchermataSpeseFragment
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.FirebaseFirestore
 
+// Activity principale che gestisce la schermata dei gruppi
 class GruppoActivity : AppCompatActivity() {
 
+    // RecyclerView per mostrare i gruppi
     private lateinit var recyclerView: RecyclerView
+    // Adapter per la lista dei gruppi
     private lateinit var adapter: GruppoAdapter
+    // Lista completa dei gruppi caricati dall'utente
     private var listaCompleta: List<Gruppo> = emptyList()
+    // Controller per la gestione del menu floating (FAB)
     private lateinit var fabMenuController: FabMenuController
+    // ViewModel per la logica dei gruppi
     private val viewModel: GruppoViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -39,26 +41,28 @@ class GruppoActivity : AppCompatActivity() {
         val toolbar = findViewById<Toolbar>(R.id.toolbar2)
         setSupportActionBar(toolbar)
 
+        // Imposta la RecyclerView e il suo Adapter
         recyclerView = findViewById(R.id.recyclerViewGruppi)
         recyclerView.layoutManager = LinearLayoutManager(this)
         adapter = GruppoAdapter(
-            onGruppoClick = { gruppo -> apriSchermataSpeseGruppo(gruppo) },
-            onGruppoLongClick = { gruppo -> mostraDialogGestioneGruppo(gruppo) }
+            onGruppoClick = { gruppo -> apriSchermataSpeseGruppo(gruppo) }
         )
         recyclerView.adapter = adapter
 
+        // Trova i riferimenti ai bottoni e al menu FAB
         val fabMenu = findViewById<ExtendedFloatingActionButton>(R.id.fabMenu)
         val buttonAggiungiGruppo = findViewById<MaterialButton>(R.id.fabAggiungiGruppo)
         val buttonEntraGruppo = findViewById<MaterialButton>(R.id.fabEntraGruppo)
         val touchSchermo = findViewById<View>(R.id.coordinatorLayout)
 
-        //serve ad inzializzare il fabMenuController
+        // Inizializza il controller per il menu FAB
         fabMenuController = FabMenuController(
             fabMenu = fabMenu,
             fabButtons = listOf(buttonAggiungiGruppo, buttonEntraGruppo),
             rootView = touchSchermo
         )
 
+        // Listener per aggiungere un nuovo gruppo
         buttonAggiungiGruppo.setOnClickListener {
             fabMenuController.closeMenu()
             val dialog = AggiungiGruppoDialog()
@@ -71,28 +75,30 @@ class GruppoActivity : AppCompatActivity() {
             dialog.show(supportFragmentManager, "AggiungiGruppoDialog")
         }
 
+        // Listener per entrare in un gruppo esistente tramite dialog
         buttonEntraGruppo.setOnClickListener {
             fabMenuController.closeMenu()
             val dialog = EntraGruppoDialog()
             dialog.show(supportFragmentManager, "EntraGruppoDialog")
         }
 
-
-        // Observer del ViewModel per aggiornare la lista
+        // Observer per aggiornare la lista dei gruppi quando cambia
         viewModel.gruppiUtente.observe(this, Observer { lista ->
             listaCompleta = lista
             adapter.submitList(lista)
         })
 
-        // Carica inizialmente i gruppi dell’utente
+        // Carica i gruppi dell’utente al primo avvio
         viewModel.caricaGruppiUtente()
     }
 
+    // Crea il menu di ricerca nella toolbar
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.menu_main_gruppo_activity, menu)
         val searchItem = menu.findItem(R.id.ricerca)
         val searchView = searchItem.actionView as androidx.appcompat.widget.SearchView
         searchView.queryHint = "Cerca gruppo"
+        // Listener per la ricerca nei gruppi
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
                 return true
@@ -104,11 +110,12 @@ class GruppoActivity : AppCompatActivity() {
         })
 
         return true
+    }
 
-        }
-
+    // Apre il fragment delle spese del gruppo selezionato
     private fun apriSchermataSpeseGruppo(gruppo: Gruppo) {
         val fragment = SchermataSpeseFragment()
+        // Listener per mostrare/nascondere i FAB in base allo stack dei fragment
         supportFragmentManager.addOnBackStackChangedListener {
             val fab = findViewById<ExtendedFloatingActionButton>(R.id.fabMenu)
             val fabAggiungi = findViewById<MaterialButton>(R.id.fabAggiungiGruppo)
@@ -120,7 +127,7 @@ class GruppoActivity : AppCompatActivity() {
             fab.visibility = if (supportFragmentManager.backStackEntryCount == 0) View.VISIBLE else View.GONE
         }
 
-        // Passaggio dati al fragment
+        // Passa i dati del gruppo al fragment
         val bundle = Bundle().apply {
             putString("idGruppo", gruppo.idUnico)
             putString("titoloGruppo", gruppo.titolo)
@@ -129,88 +136,18 @@ class GruppoActivity : AppCompatActivity() {
 
         invalidateOptionsMenu()
 
+        // Sostituisce il fragment corrente con quello delle spese
         supportFragmentManager.beginTransaction()
             .replace(R.id.fragmentContainerView, fragment)
             .addToBackStack(null)
             .commit()
     }
+
+    // Filtra i gruppi in base al testo inserito nella ricerca
     private fun filtraGruppi(query: String) {
         val gruppiFiltrati = listaCompleta.filter {
             it.titolo.contains(query, ignoreCase = true)
         }
         adapter.submitList(gruppiFiltrati)
-    }
-    private fun mostraDialogGestioneGruppo(gruppo: Gruppo) {
-        val uidCorrente = FirebaseAuth.getInstance().currentUser?.uid
-        if (uidCorrente != gruppo.creatoreID) return // solo il creatore può modificare/eliminare
-
-        val opzioni = arrayOf("Modifica Gruppo", "Elimina Gruppo")
-
-        AlertDialog.Builder(this)
-            .setTitle(gruppo.titolo)
-            .setItems(opzioni) { _, which ->
-                when (which) {
-                    0 -> mostraDialogModificaGruppo(gruppo)
-                    1 -> confermaEliminazioneGruppo(gruppo)
-                }
-            }
-            .show()
-    }
-    private fun confermaEliminazioneGruppo(gruppo: Gruppo) {
-        AlertDialog.Builder(this)
-            .setTitle("Elimina gruppo")
-            .setMessage("Vuoi eliminare il gruppo e tutte le sue spese?")
-            .setPositiveButton("Sì") { _, _ ->
-                val db = FirebaseFirestore.getInstance()
-                db.collection("Gruppi")
-                    .whereEqualTo("idUnico", gruppo.idUnico)
-                    .get()
-                    .addOnSuccessListener { result ->
-                        val docId = result.documents.firstOrNull()?.id ?: return@addOnSuccessListener
-
-                        // Prima elimina tutte le spese
-                        db.collection("Gruppi").document(docId)
-                            .collection("Spese")
-                            .get()
-                            .addOnSuccessListener { spese ->
-                                for (doc in spese.documents) {
-                                    doc.reference.delete()
-                                }
-
-                                // Poi elimina il gruppo
-                                db.collection("Gruppi").document(docId).delete().addOnSuccessListener {
-                                    viewModel.caricaGruppiUtente()
-                                }
-                            }
-                    }
-            }
-            .setNegativeButton("Annulla", null)
-            .show()
-    }
-    private fun mostraDialogModificaGruppo(gruppo: Gruppo) {
-        val input = EditText(this).apply {
-            hint = "Titolo nuovo"
-            setText(gruppo.titolo)
-        }
-
-        AlertDialog.Builder(this)
-            .setTitle("Modifica gruppo")
-            .setView(input)
-            .setPositiveButton("Salva") { _, _ ->
-                val nuovoTitolo = input.text.toString()
-                val db = FirebaseFirestore.getInstance()
-
-                db.collection("Gruppi")
-                    .whereEqualTo("idUnico", gruppo.idUnico)
-                    .get()
-                    .addOnSuccessListener { result ->
-                        val docId = result.documents.firstOrNull()?.id ?: return@addOnSuccessListener
-                        db.collection("Gruppi").document(docId)
-                            .update("titolo", nuovoTitolo)
-                            .addOnSuccessListener { viewModel.caricaGruppiUtente() }
-                    }
-            }
-            .setNegativeButton("Annulla", null)
-            .show()
     }
 }

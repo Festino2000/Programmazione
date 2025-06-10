@@ -200,4 +200,24 @@ class SpesaCondivisaFragment : Fragment(R.layout.fragment_spese_condivise) {
         totalePagareView.text = if (totalePagare > 0) "-${"%.2f".format(totalePagare)}€" else "0€"
         totaleRicevereView.text = if (totaleRicevere > 0) "+${"%.2f".format(totaleRicevere)}€" else "0€"
     }
+
+    // funzione per separare aggiornaTotali() da UI, in modo che possa essere testata
+    fun calcolaTotali(spese: List<SpesaCondivisa>, mioId: String): Pair<Double, Double> {
+        var totalePagare = 0.0
+        var totaleRicevere = 0.0
+
+        for (spesa in spese) {
+            val numQuote = spesa.idUtentiCoinvolti.size + 1
+            val tuttiPagato = spesa.pagamentiConfermati.containsAll(spesa.idUtentiCoinvolti)
+            if (tuttiPagato) continue
+
+            if (spesa.idUtentiCoinvolti.contains(mioId)) {
+                totalePagare += spesa.importo / numQuote
+            } else if (spesa.creatoreID == mioId) {
+                totaleRicevere += (spesa.importo / numQuote) * spesa.idUtentiCoinvolti.size
+            }
+        }
+
+        return Pair(totalePagare, totaleRicevere)
+    }
 }

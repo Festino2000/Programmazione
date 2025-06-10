@@ -42,4 +42,30 @@ class SpesaCondivisaFragmentTest {
         assertEquals(20.0, daPagare, 0.01)
         assertEquals(60.0, daRicevere, 0.01)
     }
+
+    @Test
+    fun testSpesaConfermataVieneIgnorata() {
+        val mioId = "user1"
+
+        val spese = listOf(
+            SpesaCondivisa(
+                titolo = "Cena confermata",
+                descrizione = "Tutti hanno pagato",
+                giorno = 3,
+                mese = 6,
+                anno = 2025,
+                importo = 100.0,
+                idUtentiCoinvolti = listOf("user1", "user2"),
+                creatoreID = "user3",
+                pagamentiConfermati = mutableListOf("user1", "user2") // tutti hanno confermato
+            )
+        )
+
+        val fragment = SpesaCondivisaFragment()
+        val (daPagare, daRicevere) = fragment.calcolaTotali(spese, mioId)
+
+        // Essendo già confermata, questa spesa NON deve entrare nei conti
+        assertEquals(0.0, daPagare, 0.01)
+        assertEquals(0.0, daRicevere, 0.01)
+    }
 }
